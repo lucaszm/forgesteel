@@ -14,8 +14,6 @@ export class ConsumableData {
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-black-ash-dart-crafting',
-			name: 'Crafting',
 			prerequisites: 'Three vials of black ash from the College of Black Ash',
 			source: 'Texts or lore in Szetch',
 			characteristic: [ Characteristic.Agility, Characteristic.Intuition ],
@@ -24,6 +22,7 @@ export class ConsumableData {
 		}),
 		effect: `
 As a maneuver, you can make a ranged free strike using a black ash dart. The attack deals 1 bonus damage and adds the following effects to the tier results of the power roll:
+
 * 11 or lower: You can teleport the target up to 2 squares.
 * 12–16: You can teleport the target up to 4 squares.
 * 17+: You can teleport the target up to 6 squares.`
@@ -36,8 +35,6 @@ As a maneuver, you can make a ranged free strike using a black ash dart. The att
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Potion, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-blood-essence-vial-crafting',
-			name: 'Crafting',
 			prerequisites: 'A ruby purloined from a vampire',
 			source: 'Texts or lore in Proto-Ctholl',
 			characteristic: [ Characteristic.Agility, Characteristic.Reason ],
@@ -53,8 +50,6 @@ As a maneuver, you can make a ranged free strike using a black ash dart. The att
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-catapult-dust-crafting',
-			name: 'Crafting',
 			prerequisites: 'An ounce of witherite crystal',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Agility, Characteristic.Intuition ],
@@ -70,8 +65,6 @@ As a maneuver, you can make a ranged free strike using a black ash dart. The att
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Magic, AbilityKeyword.Oil ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-giants-blood-flame-crafting',
-			name: 'Crafting',
 			prerequisites: 'One vial of fire giant blood',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -79,6 +72,7 @@ As a maneuver, you can make a ranged free strike using a black ash dart. The att
 		}),
 		effect: `
 As a maneuver, you coat a weapon in this oil and ignite it. The weapon burns persistently and without harming itself until it is extinguished as a maneuver. Whenever you use a weapon that is ignited this way with a weapon ability, you deal an extra 2 fire damage with rolled damage.
+
 Alternatively, you can use a maneuver to throw the pot up to 5 squares, coating the square where it lands and any creatures or objects in that square with a sticky, flammable oil. If the oil takes any fire damage, it burns persistently and deals 5 fire damage at the end of each of your turns to anything it has coated. A creature covered in the oil or who can reach it can use an action to extinguish the flames and end the effect.`
 	});
 
@@ -89,8 +83,6 @@ Alternatively, you can use a maneuver to throw the pot up to 5 squares, coating 
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Magic, AbilityKeyword.Potion ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-growth-potion-crafting',
-			name: 'Crafting',
 			prerequisites: 'Five ounces of seagrass',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -106,8 +98,6 @@ Alternatively, you can use a maneuver to throw the pot up to 5 squares, coating 
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Magic, AbilityKeyword.Potion ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-healing-potion-crafting',
-			name: 'Crafting',
 			prerequisites: 'One ounce of costmary leaves',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -123,8 +113,6 @@ Alternatively, you can use a maneuver to throw the pot up to 5 squares, coating 
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-imps-tongue-crafting',
-			name: 'Crafting',
 			prerequisites: 'One imp\'s tongue',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -140,8 +128,6 @@ Alternatively, you can use a maneuver to throw the pot up to 5 squares, coating 
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-lachomp-tooth-crafting',
-			name: 'Crafting',
 			prerequisites: 'A leftover carcass of a lachomp meal',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -163,8 +149,6 @@ As a maneuver, you attach a lachomp tooth to a weapon, allowing that weapon to s
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-mirror-token-crafting',
-			name: 'Crafting',
 			prerequisites: 'Three sheets of glass, sunbaked gold dust',
 			source: 'Texts or lore in Variac',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -180,8 +164,6 @@ As a maneuver, you attach a lachomp tooth to a weapon, allowing that weapon to s
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-pocket-homunculus-crafting',
-			name: 'Crafting',
 			prerequisites: 'A strip of starmetal coated in the blood of the item\'s crafter',
 			source: 'Texts or lore in Zaliac',
 			characteristic: [ Characteristic.Reason ],
@@ -189,7 +171,9 @@ As a maneuver, you attach a lachomp tooth to a weapon, allowing that weapon to s
 		}),
 		effect: `
 When activated as a maneuver, this item erupts in a bright flash, you can shift 1 square without your enemies noticing your movement, and a homunculus perfectly resembling you appears in a space adjacent to you. The homunculus is a creature with Stamina 15, a 0 in all their characteristics, and a speed and stability equal to yours.
+
 They appear indistinguishable from you, but can't use any abilities.
+
 While you have line of effect to your homunculus, you can use a maneuver to issue them a telepathic command. The homunculus performs the command to the best of their ability. If not commanded, the homunculus mimics your movements and speech. When you move, the homunculus moves with you, matching your pace. The homunculus crumbles to dust after 1 hour or if reduced to Stamina 0.`
 	});
 
@@ -200,8 +184,6 @@ While you have line of effect to your homunculus, you can use a maneuver to issu
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-portable-cloud-crafting',
-			name: 'Crafting',
 			prerequisites: 'Ten ounces of rainwater from a sacred fey grove',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -217,8 +199,6 @@ While you have line of effect to your homunculus, you can use a maneuver to issu
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-noxious-cloud-crafting',
-			name: 'Crafting',
 			prerequisites: 'Ten ounces of rainwater from a sacred fey grove; one ounce of undead flesh',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -234,8 +214,6 @@ While you have line of effect to your homunculus, you can use a maneuver to issu
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-thunderhead-cloud-crafting',
-			name: 'Crafting',
 			prerequisites: 'Ten ounces of rainwater from a sacred fey grove, a spool of copper wire',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -251,8 +229,6 @@ While you have line of effect to your homunculus, you can use a maneuver to issu
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Potion, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-veratismo-crafting',
-			name: 'Crafting',
 			prerequisites: 'The roots of a just-budded nightshade',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason ],
@@ -268,8 +244,6 @@ While you have line of effect to your homunculus, you can use a maneuver to issu
 		type: ItemType.Consumable,
 		keywords: [ AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-snapdragon-crafting',
-			name: 'Crafting',
 			prerequisites: 'Fifty snapdragon seeds',
 			source: 'Texts or lore in Yllyric',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -288,8 +262,6 @@ export class TrinketData {
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Magic, AbilityKeyword.Neck ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-color-cloak-blue-crafting',
-			name: 'Crafting',
 			prerequisites: 'A pint of blue ichor, soul chalk',
 			source: 'Licensing agreements in Anjali',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -297,6 +269,7 @@ export class TrinketData {
 		}),
 		effect: `
 While worn, a blue Color Cloak grants you cold immunity equal to your level.
+
 Additionally, when you are targeted by any effect that deals cold damage, you can use a triggered action to shift a number of squares equal to your level. If you do so, the cold immunity granted by the cloak becomes cold weakness with the same value until the end of the next round. You can't use this triggered action again until this weakness ends.`
 	});
 
@@ -307,8 +280,6 @@ Additionally, when you are targeted by any effect that deals cold damage, you ca
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Magic, AbilityKeyword.Neck ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-color-cloak-red-crafting',
-			name: 'Crafting',
 			prerequisites: 'A pint of red ichor, soul chalk',
 			source: 'Licensing agreements in Anjali',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -316,6 +287,7 @@ Additionally, when you are targeted by any effect that deals cold damage, you ca
 		}),
 		effect: `
 While worn, a red Color Cloak grants you fire immunity equal to your level.
+
 Additionally, when you are targeted by any effect that deals fire damage, you can use a triggered action to reduce the damage to 0. If you do so, the fire immunity granted by this cloak becomes fire weakness with the same value until the end of the next round. You can't use this triggered action again until this weakness ends.`
 	});
 
@@ -326,8 +298,6 @@ Additionally, when you are targeted by any effect that deals fire damage, you ca
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Magic, AbilityKeyword.Neck ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-color-cloak-yellow-crafting',
-			name: 'Crafting',
 			prerequisites: 'A pint of yellow ichor, soul chalk',
 			source: 'Licensing agreements in Anjali',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -335,6 +305,7 @@ Additionally, when you are targeted by any effect that deals fire damage, you ca
 		}),
 		effect: `
 While worn, a yellow Color Cloak grants you lightning immunity equal to your level.
+
 Additionally, when you are targeted by any effect that deals lightning damage, you can use a triggered action to cause the next damage-dealing ability you use to deal extra lightning damage equal to your level. Once you deal this extra damage, your lightning immunity becomes lightning weakness with the same value until the end of the next round. You can't use this triggered action again until this weakness ends.`
 	});
 
@@ -345,8 +316,6 @@ Additionally, when you are targeted by any effect that deals lightning damage, y
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-deadweight-crafting',
-			name: 'Crafting',
 			prerequisites: 'One humanoid femur, one bar of lead laced with starmetal',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -362,8 +331,6 @@ Additionally, when you are targeted by any effect that deals lightning damage, y
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Arms, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-displacing-replacement-bracer-crafting',
-			name: 'Crafting',
 			prerequisites: 'Petrified wood from a tree that has not been observed since falling',
 			source: 'Texts or lore in Zaliac',
 			characteristic: [ Characteristic.Reason ],
@@ -379,8 +346,6 @@ Additionally, when you are targeted by any effect that deals lightning damage, y
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-divine-vine-crafting',
-			name: 'Crafting',
 			prerequisites: 'Three withered mundane vines, a tree\'s blessing',
 			source: 'Songs in Yllyric',
 			characteristic: [ Characteristic.Reason, Characteristic.Presence ],
@@ -396,8 +361,6 @@ Additionally, when you are targeted by any effect that deals lightning damage, y
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Hands, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-flameshade-gloves-crafting',
-			name: 'Crafting',
 			prerequisites: 'A humanoid\'s shadow disconnected from its source',
 			source: 'Texts or lore in Khelt',
 			characteristic: [ Characteristic.Reason ],
@@ -405,6 +368,7 @@ Additionally, when you are targeted by any effect that deals lightning damage, y
 		}),
 		effect: `
 When you use a move action while wearing these gloves, you can place one hand upon a mundane object as part of that move action. If the object is 1 square thick or less and has open space on the other side (for example, a door or wall), you pull your body through it as though the object wasn't there.
+
 If the object is too thick or has no open space on the other side, your hand becomes stuck inside the object. Removing your hand takes a successful hard Might test made as an action.`
 	});
 
@@ -415,8 +379,6 @@ If the object is too thick or has no open space on the other side, your hand bec
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Hands, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-gecko-gloves-crafting',
-			name: 'Crafting',
 			prerequisites: 'Ten gecko tails',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -432,8 +394,6 @@ If the object is too thick or has no open space on the other side, your hand bec
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Head, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-gyrotoque-crafting',
-			name: 'Crafting',
 			prerequisites: 'A lodestone that has been struck by lightning',
 			source: 'Texts or lore in Zaliac',
 			characteristic: [ Characteristic.Reason ],
@@ -449,8 +409,6 @@ If the object is too thick or has no open space on the other side, your hand bec
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Head, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-hellcharger-helm-crafting',
-			name: 'Crafting',
 			prerequisites: 'One broken contract, one ingot of steel',
 			source: 'Texts or lore in Anjali and Caelian',
 			characteristic: [ Characteristic.Might, Characteristic.Reason ],
@@ -466,8 +424,6 @@ If the object is too thick or has no open space on the other side, your hand bec
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Head, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-mask-of-the-many-crafting',
-			name: 'Crafting',
 			prerequisites: 'One used death shroud',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -483,8 +439,6 @@ If the object is too thick or has no open space on the other side, your hand bec
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-quantum-satchel-crafting',
-			name: 'Crafting',
 			prerequisites: 'One uncut opal',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -500,8 +454,6 @@ If the object is too thick or has no open space on the other side, your hand bec
 		type: ItemType.Trinket,
 		keywords: [ AbilityKeyword.Feet, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-unbinder-boots-crafting',
-			name: 'Crafting',
 			prerequisites: 'One battered gold chain of at least fifty links',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -519,8 +471,6 @@ export class LeveledArmorData {
 		type: ItemType.Leveled,
 		keywords: [ KitArmor.Light, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-adaptive-second-skin-crafting',
-			name: 'Crafting',
 			prerequisites: 'Five rabid honey badger pelts, the quills of a hedgehog',
 			source: 'Texts or lore in Yllyric',
 			characteristic: [ Characteristic.Agility, Characteristic.Intuition ],
@@ -567,8 +517,6 @@ export class LeveledArmorData {
 		type: ItemType.Leveled,
 		keywords: [ KitArmor.Heavy, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-chain-of-the-sea-and-sky-crafting',
-			name: 'Crafting',
 			prerequisites: 'A set of wings from a flying carp, a set of chain mail rusted by seawater',
 			source: 'Texts or lore in Zaliac',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -615,8 +563,6 @@ export class LeveledArmorData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Magic, KitArmor.Medium ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-grand-scarab-crafting',
-			name: 'Crafting',
 			prerequisites: 'A giant scarab beetle carapace',
 			source: 'Texts or lore in Phaedran',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -663,8 +609,6 @@ export class LeveledArmorData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Magic, KitArmor.Shield ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-kings-roar-crafting',
-			name: 'Crafting',
 			prerequisites: 'A ballad of heroism, two ingots of sunmetal',
 			source: 'Songs in Old Sun Elf',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ],
@@ -711,8 +655,6 @@ export class LeveledArmorData {
 		type: ItemType.Leveled,
 		keywords: [ KitArmor.Medium, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-kuranzoi-prismscale-crafting',
-			name: 'Crafting',
 			prerequisites: 'The eyes of a time raider who died valiantly in battle',
 			source: 'Texts or lore in Voll',
 			characteristic: [ Characteristic.Intuition, Characteristic.Presence ],
@@ -759,8 +701,6 @@ export class LeveledArmorData {
 		type: ItemType.Leveled,
 		keywords: [ KitArmor.Light, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-paper-trappings-crafting',
-			name: 'Crafting',
 			prerequisites: 'Ten pages from each of a hundred different books',
 			source: 'Texts or lore in Anjali',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -807,8 +747,6 @@ export class LeveledArmorData {
 		type: ItemType.Leveled,
 		keywords: [ KitArmor.Light, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-shrouded-memory-crafting',
-			name: 'Crafting',
 			prerequisites: 'The will of a deceased person with no heirs',
 			source: 'Texts or lore in Khelt',
 			characteristic: [ Characteristic.Agility, Characteristic.Presence ],
@@ -855,8 +793,6 @@ export class LeveledArmorData {
 		type: ItemType.Leveled,
 		keywords: [ KitArmor.Heavy, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-spiny-turtle-crafting',
-			name: 'Crafting',
 			prerequisites: 'Ten steel gears from an ancient construct',
 			source: 'Texts or lore in Variac',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -903,8 +839,6 @@ export class LeveledArmorData {
 		type: ItemType.Leveled,
 		keywords: [ KitArmor.Heavy, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-star-hunter-crafting',
-			name: 'Crafting',
 			prerequisites: 'Fifty pounds of astral ice, one pint of supercooled mercury',
 			source: 'Texts or lore in Voll',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -951,8 +885,6 @@ export class LeveledArmorData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Psionic, KitArmor.Shield ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-telekinetic-bulwark-crafting',
-			name: 'Crafting',
 			prerequisites: 'Three ingots of steel, six crystals that resonate with psionic power',
 			source: 'Texts or lore in Variac',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -1001,8 +933,6 @@ export class LeveledImplementData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Implement, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-abjurers-bastion-crafting',
-			name: 'Crafting',
 			prerequisites: 'A diamond ring',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Might, Characteristic.Presence, Characteristic.Intuition ],
@@ -1049,8 +979,6 @@ export class LeveledImplementData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Wand ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-brittlebreaker-crafting',
-			name: 'Crafting',
 			prerequisites: 'Three ounces of shattered quartz',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -1097,8 +1025,6 @@ export class LeveledImplementData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Implement, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-chaldorb-crafting',
-			name: 'Crafting',
 			prerequisites: 'An ounce of primordial ice, an ounce of mammoth-ivory shards',
 			source: 'Texts or lore in Zaliac',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -1145,8 +1071,6 @@ export class LeveledImplementData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Implement, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-ether-fueled-vessel-crafting',
-			name: 'Crafting',
 			prerequisites: 'Incense distilled from the essence of ether',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Intuition, Characteristic.Reason ],
@@ -1193,8 +1117,6 @@ export class LeveledImplementData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Implement, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-foesense-lenses-crafting',
-			name: 'Crafting',
 			prerequisites: 'Two clear lenses carved from volcanic glass',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -1241,8 +1163,6 @@ export class LeveledImplementData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Magic, AbilityKeyword.Orb ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-geometric-manipulator-crafting',
-			name: 'Crafting',
 			prerequisites: 'Fourteen gold rings each two inches in diameter',
 			source: 'Texts or lore in Zaliac',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -1289,8 +1209,6 @@ export class LeveledImplementData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Implement, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-words-become-wonders-crafting',
-			name: 'Crafting',
 			prerequisites: 'Written permission from a high elf magistrate',
 			source: 'Texts or lore in Hyrallic',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -1339,8 +1257,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Psionic, KitWeapon.Whip ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-authoritys-end-crafting',
-			name: 'Crafting',
 			prerequisites: 'A lash used to punish a mutineer',
 			source: 'Texts or lore in Khelt',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ],
@@ -1387,8 +1303,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ KitWeapon.Heavy, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-blade-of-quintessence-crafting',
-			name: 'Crafting',
 			prerequisites: 'The skull of a convicted criminal',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -1435,8 +1349,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ KitWeapon.Light, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-blade-of-the-luxurious-fop-crafting',
-			name: 'Crafting',
 			prerequisites: 'A personal blessing from the greatest duelist in the land, six fake and extremely shiny gemstones',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition ],
@@ -1483,8 +1395,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ KitWeapon.Medium, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-displacer-crafting',
-			name: 'Crafting',
 			prerequisites: 'An ancient bronze gear covered in indecipherable runes',
 			source: 'Texts or lore in Zaliac',
 			characteristic: [ Characteristic.Might, Characteristic.Intuition ],
@@ -1531,8 +1441,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ KitWeapon.Heavy, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-executioners-blade-crafting',
-			name: 'Crafting',
 			prerequisites: 'The skull of a convicted criminal',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -1579,8 +1487,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ KitWeapon.Heavy, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-icemaker-maul-crafting',
-			name: 'Crafting',
 			prerequisites: 'Eight iron bars cooled in a glacier, the branch of an ancient evergreen',
 			source: 'Texts in Zaliac',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -1627,8 +1533,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ KitWeapon.Light, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-knife-of-nine-crafting',
-			name: 'Crafting',
 			prerequisites: 'Eighteen daggers - nine taken from personal enemies and nine gifted by friends',
 			source: 'Texts or lore in Variac',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -1675,8 +1579,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Magic, KitWeapon.Polearm ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-lance-of-the-sundered-star-crafting',
-			name: 'Crafting',
 			prerequisites: 'Night-blooming flower petals, a starmetal meteorite',
 			source: 'Texts or lore in Hyrallic',
 			characteristic: [ Characteristic.Agility, Characteristic.Presence ],
@@ -1723,8 +1625,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Magic, KitWeapon.Ensnaring ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-molten-constrictor-crafting',
-			name: 'Crafting',
 			prerequisites: 'Four iron bars coated in magma slag',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -1771,8 +1671,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ KitWeapon.Bow, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-onerous-bow-crafting',
-			name: 'Crafting',
 			prerequisites: 'A venom sac from a giant spider, one valok gyroscope',
 			source: 'Texts or lore in Caelian and Variac',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -1819,8 +1717,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Magic, KitWeapon.Whip ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-steeltongue-crafting',
-			name: 'Crafting',
 			prerequisites: 'One hundred steel arrowheads stained with blood',
 			source: 'Texts or lore in Caelian and Kalliak',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -1867,8 +1763,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ KitWeapon.Bow, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-third-eye-seeker-crafting',
-			name: 'Crafting',
 			prerequisites: 'Heart strings of a tapir, a pound of tiger\'s eye gemstones',
 			source: 'Texts or lore in Variac',
 			characteristic: [ Characteristic.Reason, Characteristic.Intuition ],
@@ -1915,8 +1809,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Magic, KitWeapon.Medium ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-thunderhead-bident-crafting',
-			name: 'Crafting',
 			prerequisites: 'A jar of captured thunder, two ingots of moon metal',
 			source: 'Texts or lore in Zaliac',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -1963,8 +1855,6 @@ export class LeveledWeaponData {
 		type: ItemType.Leveled,
 		keywords: [ KitWeapon.Polearm, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-wetwork-crafting',
-			name: 'Crafting',
 			prerequisites: 'A folded metal blade infused with blood',
 			source: 'Texts or lore in Higaran',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -2013,8 +1903,6 @@ export class LeveledOtherData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ring ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-bloodbound-band-crafting',
-			name: 'Crafting',
 			prerequisites: 'A pair of obituaries that each mention the subject of the other',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -2061,8 +1949,6 @@ export class LeveledOtherData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Hands, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-bloody-hand-wraps-crafting',
-			name: 'Crafting',
 			prerequisites: 'One cotton bolt soaked in the blood of six adventurers',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Might, Characteristic.Agility, Characteristic.Intuition ],
@@ -2109,8 +1995,6 @@ export class LeveledOtherData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Feet, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-lightning-treads-crafting',
-			name: 'Crafting',
 			prerequisites: 'One jar of lightning',
 			source: 'Texts or lore in Yllyric',
 			characteristic: [ Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition ],
@@ -2157,8 +2041,6 @@ export class LeveledOtherData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Neck, AbilityKeyword.Magic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-revengers-wrap-crafting',
-			name: 'Crafting',
 			prerequisites: 'A cloak worn by a murdered monarch',
 			source: 'Texts or lore in Caelian',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -2205,8 +2087,6 @@ export class LeveledOtherData {
 		type: ItemType.Leveled,
 		keywords: [ AbilityKeyword.Neck, AbilityKeyword.Psionic ],
 		crafting: FactoryLogic.createProject({
-			id: 'item-thief-of-joy-crafting',
-			name: 'Crafting',
 			prerequisites: 'A pound of feathers, a pound of bricks from the Seven Cities of Hell',
 			source: 'Texts or lore in Anjali',
 			characteristic: [ Characteristic.Might, Characteristic.Reason, Characteristic.Intuition ],
@@ -2221,7 +2101,9 @@ export class LeveledOtherData {
 						name: '',
 						description: `
 While you wear this torc, you gain a bonus to Stamina equal to twice your highest characteristic score.
+
 Additionally, you can use a maneuver to choose a creature in your line of effect and learn their level. If their level is higher than yours, the torc grants you envy. If their level is equal to or lower than yours, the torc grants you disdain.
+
 You can have both envy and disdain, but not more than one instance of either. Whenever a creature within 10 squares of you deals damage to another creature, you can use a triggered action to expend your envy or disdain. If you expend envy, you deal damage equal to the triggering damage to a creature adjacent to you. If you expend disdain, you reduce the triggering damage by half. At the end of the encounter, you lose any envy or disdain granted by the torc.`
 					})
 				]
@@ -2259,6 +2141,7 @@ export class ArtifactData {
 		keywords: [ AbilityKeyword.Magic, KitWeapon.Light, KitWeapon.Medium, KitWeapon.Heavy ],
 		effect: `
 Whether drawn from a stone, gifted by a lake spirit, forged by a god, or used to kill one, there is a sword that exists outside of time and space. It is always where it needs to be precisely when it needs to be there--then is gone in a flash when the need for it has waned. The sword is depicted in art, song, and story across many living cultures--and even more frequently among those long buried, often after proving the deciding factor in a battle. It's been wielded by numerous heroes of legend, and even more who have slipped into the forgotten shadows of history.
+
 Though its size and make are often debated, the sword is consistently described as a hilt with no crossguard, made from pure starlight. When wielded, a brilliant metal blade springs forth from that hilt, suiting the holder's taste in weapons. Those who touch the blade are filled with the vigor and power of the heroes who have held it before.`,
 		featuresByLevel: [
 			{
@@ -2302,6 +2185,7 @@ Though its size and make are often debated, the sword is consistently described 
 		keywords: [ AbilityKeyword.Magic ],
 		effect: `
 This scepter waits high in the sky, resting within an endlessly raging cyclone. It waits for the one who will unify all people under its light. It awaits its champion.
+
 The Encepter is said to have first manifested in a young world doomed to apocalypse--unless every last inhabitant of that world could stand together. The scepter is said to impose either dominion or obliteration over any threat its light is drawn around. Today, it is most commonly known as a bad omen, and should the Encepter reveal itself, folk know that the world teeters on the brink of destruction. Whether any of the stories are true, few can say, for the only living eyes that have witnessed the Encepter belong to dragons deep in slumber.`,
 		featuresByLevel: [
 			{
@@ -2345,7 +2229,9 @@ The Encepter is said to have first manifested in a young world doomed to apocaly
 		keywords: [ AbilityKeyword.Psionic ],
 		effect: `
 Change is the engine of existence. Permanence begets stagnation. When the past refuses to relinquish control, a path must be cleared for the future. Energized by the flickering of minds and souls passing through the void, the Mortal Coil taps into the entropic potential inherent in every living creature to cast a shadow capable of felling even gods. For the true gift of life is death, and gifts are meant to be given.
+
 Only one destined for death can contain the power of the Mortal Coil. A mortal creature who carries this artifact serves as its host, gaining an additional action on each of their turns, aging at ten times the normal rate, and becoming unable to ever regain Stamina. A host with no natural maximum lifespan permanently reduces their maximum Stamina by 10 each year.
+
 When the Mortal Coil is left unattended or is in the possession of a creature who is not mortal, it activates and can't be deactivated until a mortal creature becomes its host once more. While active, the artifact extends a penumbra of influence for 10 miles in every direction. Every creature in the penumbra is subject to the following effects.`,
 		featuresByLevel: [
 			{
