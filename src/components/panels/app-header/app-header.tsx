@@ -1,34 +1,64 @@
-import { Button } from 'antd';
+import { Button, Popover } from 'antd';
+import { DownOutlined, MenuOutlined } from '@ant-design/icons';
+import { ErrorBoundary } from '../../controls/error-boundary/error-boundary';
+import { LogoPanel } from '../logo/logo-panel';
 import { ReactNode } from 'react';
-import { useNavigation } from '../../../hooks/use-navigation';
-
-import shield from './../../../assets/shield.png';
+import { useMediaQuery } from '../../../hooks/use-media-query';
 
 import './app-header.scss';
 
 interface Props {
-	breadcrumbs: { label: string }[];
+	subheader?: string;
 	children?: ReactNode;
+	showDirectory?: () => void;
+	showRoll: () => void;
+	showRules: () => void;
 	showAbout: () => void;
 }
 
 export const AppHeader = (props: Props) => {
-	const navigation = useNavigation();
+	const isSmall = useMediaQuery('(max-width: 1000px)');
+
+	const actions = (
+		<>
+			{props.children}
+			{props.children ? <div className='divider' /> : null}
+			<Button onClick={props.showRoll}>Roll</Button>
+			<Button onClick={props.showRules}>Rules</Button>
+			<Button onClick={props.showAbout}>About</Button>
+		</>
+	);
 
 	return (
-		<div className='app-header'>
-			<div className='left-section'>
-				<div className={props.breadcrumbs.length > 0 ? 'title clickable' : 'title'} onClick={navigation.goToWelcome}>
-					<img className='title-logo' src={shield} />
-					<div className='title-text'>Forge Steel</div>
+		<ErrorBoundary>
+			<div className='app-header'>
+				<div className='left-section'>
+					{props.showDirectory ? <Button type='text' icon={<MenuOutlined />} onClick={props.showDirectory} /> : null}
+					{!isSmall ? <LogoPanel text={props.subheader} /> : null}
 				</div>
-				{props.breadcrumbs.map((bc, n) => <div key={n} className='breadcrumb'>{bc.label}</div>)}
+				{
+					isSmall ?
+						<div className='action-buttons-dropdown'>
+							<Popover
+								trigger='click'
+								content={(
+									<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+										{actions}
+									</div>
+								)}
+							>
+								<Button type='primary'>
+									Actions
+									<DownOutlined />
+								</Button>
+							</Popover>
+						</div>
+						:
+						<div className='action-buttons-panel'>
+							{actions}
+						</div>
+				}
 			</div>
-			<div className='action-buttons'>
-				{props.children}
-				{props.children ? <div className='divider' /> : null}
-				<Button onClick={props.showAbout}>About</Button>
-			</div>
-		</div>
+		</ErrorBoundary>
 	);
 };

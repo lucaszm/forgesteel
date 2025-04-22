@@ -4,7 +4,6 @@ import { Characteristic } from '../../enums/characteristic';
 import { FactoryLogic } from '../../logic/factory-logic';
 import { FeatureField } from '../../enums/feature-field';
 import { HeroClass } from '../../models/class';
-import { KitType } from '../../enums/kit-type';
 import { PerkList } from '../../enums/perk-list';
 import { SkillList } from '../../enums/skill-list';
 
@@ -12,13 +11,16 @@ export const fury: HeroClass = {
 	id: 'class-fury',
 	name: 'Fury',
 	description: `
-You do not temper the heat of battle within you — you unleash it! Like a raptor, a panther, a wolf, your experience in the wild taught you the secret of channeling unfettered anger into martial prowess. Primordial chaos is your ally. Leave it to others to use finesse to clean up the pieces you leave behind.
+You do not temper the heat of battle within you - you unleash it! Like a raptor, a panther, a wolf, your experience in the wild taught you the secret of channeling unfettered anger into martial prowess. Primordial chaos is your ally. Leave it to others to use finesse to clean up the pieces you leave behind.
 
-As a fury, you have abilities that deal a lot of damage, move you around the battlefield, and grow in strength as your rage increases. Nature has no concept of fairness — and neither do you.`,
+As a fury, you have abilities that deal a lot of damage, move you around the battlefield, and grow in strength as your rage increases. Nature has no concept of fairness - and neither do you.`,
 	heroicResource: 'Rage',
 	subclassName: 'Primordial Aspect',
 	subclassCount: 1,
-	primaryCharacteristics: [ Characteristic.Might, Characteristic.Agility ],
+	primaryCharacteristicsOptions: [
+		[ Characteristic.Might, Characteristic.Agility ]
+	],
+	primaryCharacteristics: [],
 	featuresByLevel: [
 		{
 			level: 1,
@@ -116,7 +118,7 @@ As a fury, you have abilities that deal a lot of damage, move you around the bat
 				characteristic: [ Characteristic.Might ],
 				tier1: '2 + M damage',
 				tier2: '5 + M damage',
-				tier3: '7 + M damage; A < strong, slowed (save ends)'
+				tier3: '7 + M damage; A < [strong], slowed (save ends)'
 			}),
 			effect: 'You can shift 1 square.'
 		}),
@@ -131,9 +133,9 @@ As a fury, you have abilities that deal a lot of damage, move you around the bat
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Might ],
-				tier1: '2 + M damage; M < weak, grabbed',
-				tier2: '5 + M damage; M < average, grabbed',
-				tier3: '7 + M damage; M < strong, grabbed'
+				tier1: '2 + M damage; M < [weak], grabbed',
+				tier2: '5 + M damage; M < [average], grabbed',
+				tier3: '7 + M damage; M < [strong], grabbed'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -172,7 +174,7 @@ As a fury, you have abilities that deal a lot of damage, move you around the bat
 		FactoryLogic.createAbility({
 			id: 'fury-ability-6',
 			name: 'Out of the Way!',
-			description: 'Your enemies will get out of your way—whether they want to or not.',
+			description: 'Your enemies will get out of your way - whether they want to or not.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
 			distance: [ FactoryLogic.distance.createMelee() ],
@@ -215,9 +217,9 @@ As a fury, you have abilities that deal a lot of damage, move you around the bat
 			cost: 3,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Might ],
-				tier1: '3 + M damage; M < weak, bleeding (save ends)',
-				tier2: '5 + M damage; M < average, bleeding (save ends)',
-				tier3: '8 + M damage; M < strong, bleeding (save ends)'
+				tier1: '3 + M damage; M < [weak], bleeding (save ends)',
+				tier2: '5 + M damage; M < [average], bleeding (save ends)',
+				tier3: '8 + M damage; M < [strong], bleeding (save ends)'
 			}),
 			effect: 'While bleeding, the target takes damage equal to your Might score at the end of your turns.'
 		}),
@@ -232,9 +234,9 @@ As a fury, you have abilities that deal a lot of damage, move you around the bat
 			cost: 5,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Might ],
-				tier1: '4 + M damage; M < weak, bleeding and weakened (save ends)',
-				tier2: '6 + M damage; M < average, bleeding and weakened (save ends)',
-				tier3: '10 + M damage; M < strong, bleeding and weakened (save ends)'
+				tier1: '4 + M damage; M < [weak], bleeding and weakened (save ends)',
+				tier2: '6 + M damage; M < [average], bleeding and weakened (save ends)',
+				tier3: '10 + M damage; M < [strong], bleeding and weakened (save ends)'
 			}),
 			effect: 'You can deal 1d6 damage to yourself to deal 1d6 bonus damage to the target.'
 		}),
@@ -536,9 +538,9 @@ As your rage grows, your primordial cunning intensifies. Benefits are cumulative
 											preEffect: 'You shift up to your speed. You make one power roll that targets up to three enemies you come adjacent to during the shift.',
 											powerRoll: FactoryLogic.createPowerRoll({
 												characteristic: [ Characteristic.Might ],
-												tier1: '2 damage; A < weak, dazed (save ends)',
-												tier2: '4 damage; A < average, dazed (save ends)',
-												tier3: '6 damage; A < strong, dazed (save ends)'
+												tier1: '2 damage; A < [weak], dazed (save ends)',
+												tier2: '4 damage; A < [average], dazed (save ends)',
+												tier3: '6 damage; A < [strong], dazed (save ends)'
 											})
 										})
 									}),
@@ -557,9 +559,9 @@ As your rage grows, your primordial cunning intensifies. Benefits are cumulative
 											cost: 5,
 											powerRoll: FactoryLogic.createPowerRoll({
 												characteristic: [ Characteristic.Might ],
-												tier1: '3 + M damage; P < weak, dazed and frightened (save ends)',
-												tier2: '5 + M damage; P < average, dazed and frightened (save ends)',
-												tier3: '8 + M damage; P < strong, dazed and frightened (save ends)'
+												tier1: '3 + M damage; P < [weak], dazed and frightened (save ends)',
+												tier2: '5 + M damage; P < [average], dazed and frightened (save ends)',
+												tier3: '8 + M damage; P < [strong], dazed and frightened (save ends)'
 											})
 										})
 									}),
@@ -597,7 +599,7 @@ As your rage grows, your primordial cunning intensifies. Benefits are cumulative
 						FactoryLogic.feature.createKitChoice({
 							id: 'fury-sub-3-1-2',
 							name: 'Beast Shape',
-							types: [ KitType.Standard, KitType.Stormwight ]
+							types: [ 'Stormwight' ]
 						}),
 						FactoryLogic.feature.create({
 							id: 'fury-sub-3-1-3',
@@ -668,9 +670,9 @@ While in animal form or hybrid form, you can speak normally and can speak to ani
 											cost: 5,
 											powerRoll: FactoryLogic.createPowerRoll({
 												characteristic: [ Characteristic.Might ],
-												tier1: '4 + M damage; I < weak, slowed (save ends)',
-												tier2: '6 + M damage; I < average, slowed (save ends)',
-												tier3: '10 + M damage; I < strong, slowed (save ends)'
+												tier1: '4 + M damage; I < [weak], slowed (save ends)',
+												tier2: '6 + M damage; I < [average], slowed (save ends)',
+												tier3: '10 + M damage; I < [strong], slowed (save ends)'
 											}),
 											effect: 'The target can’t be hidden from you for 24 hours. For the rest of the encounter, whenever the target moves, you can use a free triggered action to move.'
 										})
@@ -690,9 +692,9 @@ While in animal form or hybrid form, you can speak normally and can speak to ani
 											cost: 5,
 											powerRoll: FactoryLogic.createPowerRoll({
 												characteristic: [ Characteristic.Might ],
-												tier1: '2 damage; push 1; M < weak, dazed (save ends)',
-												tier2: '5 damage; push 2; M < average, dazed (save ends)',
-												tier3: '7 damage; push 3; M < strong, dazed (save ends)'
+												tier1: '2 damage; push 1; M < [weak], dazed (save ends)',
+												tier2: '5 damage; push 2; M < [average], dazed (save ends)',
+												tier3: '7 damage; push 3; M < [strong], dazed (save ends)'
 											}),
 											effect: 'This ability deals damage of your primordial storm type.'
 										})

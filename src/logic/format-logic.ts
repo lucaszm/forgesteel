@@ -1,8 +1,7 @@
 import { DamageModifier, Modifier } from '../models/damage-modifier';
+import { Plot, PlotLink } from '../models/plot';
 import { AbilityType } from '../models/ability';
 import { AbilityUsage } from '../enums/ability-usage';
-import { MonsterRole } from '../models/monster';
-import { MonsterRoleType } from '../enums/monster-role-type';
 import { Size } from '../models/size';
 
 export class FormatLogic {
@@ -23,14 +22,6 @@ export class FormatLogic {
 		}
 
 		return `1${size.mod}`;
-	};
-
-	static getRole = (role: MonsterRole) => {
-		if (role.type === MonsterRoleType.NoRole) {
-			return role.organization;
-		}
-
-		return `${role.organization} ${role.type}`;
 	};
 
 	static getDamageModifier = (mod: DamageModifier) => {
@@ -56,9 +47,27 @@ export class FormatLogic {
 		}
 
 		if (mod.valueCharacteristics.length > 0) {
-			sections.push(`+ ${mod.valueCharacteristics.join(' or ')}`);
+			const ch = (mod.valueCharacteristics.length === 5) ? 'highest characteristic' : mod.valueCharacteristics.join(' or ');
+			if (mod.valueCharacteristicMultiplier === 1) {
+				sections.push(`+ ${ch}`);
+			} else {
+				sections.push(`+ ${ch} x ${mod.valueCharacteristicMultiplier}`);
+			}
 		}
 
 		return sections.join(' ') || '+0';
+	};
+
+	static getPlotLinkTitle = (link: PlotLink, parentPlot: Plot) => {
+		let plotPointName = 'Link';
+
+		if (parentPlot) {
+			const plot = parentPlot.plots.find(p => p.id === link.plotID);
+			if (plot && plot.name) {
+				plotPointName = plot.name;
+			}
+		}
+
+		return link.label ? `${link.label}: ${plotPointName}` : plotPointName;
 	};
 }

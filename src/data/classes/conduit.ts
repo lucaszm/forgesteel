@@ -17,7 +17,10 @@ As a conduit, you heal and buff your allies, and debuff your foes while smiting 
 	heroicResource: 'Piety',
 	subclassName: '',
 	subclassCount: 0,
-	primaryCharacteristics: [ Characteristic.Intuition ],
+	primaryCharacteristicsOptions: [
+		[ Characteristic.Intuition ]
+	],
+	primaryCharacteristics: [],
 	featuresByLevel: [
 		{
 			level: 1,
@@ -48,7 +51,7 @@ As a conduit, you heal and buff your allies, and debuff your foes while smiting 
 					description: `
 At the start of each of your turns during combat, you gain 1d3 piety.
 
-Additionally, you can gain more piety by praying to the gods — but beware! Doing so can easily draw their ire, as the gods hate to be annoyed. When you roll to gain 1d3 piety at the start of your turn, you can pray to gain the following additional effects (no action required):
+Additionally, you can gain more piety by praying to the gods - but beware! Doing so can easily draw their ire, as the gods hate to be annoyed. When you roll to gain 1d3 piety at the start of your turn, you can pray to gain the following additional effects (no action required):
 
 * If the roll is a 1, you gain 1 additional piety but anger the gods! You take psychic damage equal to 1d6 + your level, which can’t be reduced in any way.
 * If the roll is a 2, you gain 1 additional piety.
@@ -65,7 +68,7 @@ Additionally, you can gain more piety by praying to the gods — but beware! Doi
 						description: 'Your divine energy restores the righteous.',
 						type: FactoryLogic.type.createManeuver(),
 						keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged ],
-						distance: [ FactoryLogic.distance.createRanged() ],
+						distance: [ FactoryLogic.distance.createRanged(10) ],
 						target: 'Self or 1 ally',
 						effect: 'The target can spend a Recovery.',
 						spend: [
@@ -88,9 +91,9 @@ For each piety spent, you can choose one of the following enhancements:
 						id: 'conduit-1-6',
 						name: 'Ray of Wrath',
 						description: 'You unleash a blast of holy light upon your foe.',
-						type: FactoryLogic.type.createAction(),
+						type: FactoryLogic.type.createAction({ qualifiers: [ 'can be used as a ranged free strike' ] }),
 						keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-						distance: [ FactoryLogic.distance.createRanged() ],
+						distance: [ FactoryLogic.distance.createRanged(10) ],
 						target: '1 creature or object',
 						powerRoll: FactoryLogic.createPowerRoll({
 							characteristic: [ Characteristic.Intuition ],
@@ -113,7 +116,7 @@ For each piety spent, you can choose one of the following enhancements:
 									description: 'You invigorate an attacking ally with divine energy.',
 									type: FactoryLogic.type.createTrigger('The target makes an ability power roll for an ability that deals damage.'),
 									keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged ],
-									distance: [ FactoryLogic.distance.createRanged() ],
+									distance: [ FactoryLogic.distance.createRanged(10) ],
 									target: '1 ally',
 									effect: 'The power roll gains an edge.',
 									spend: [
@@ -134,7 +137,7 @@ For each piety spent, you can choose one of the following enhancements:
 									description: 'Your holy word saps an attacking enemy’s strength.',
 									type: FactoryLogic.type.createTrigger('The target takes damage from an ability that requires a power roll.'),
 									keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged ],
-									distance: [ FactoryLogic.distance.createRanged() ],
+									distance: [ FactoryLogic.distance.createRanged(10) ],
 									target: '1 ally',
 									effect: 'The power roll gains a bane against the target.',
 									spend: [
@@ -154,18 +157,22 @@ For each piety spent, you can choose one of the following enhancements:
 					name: 'Prayer',
 					options: [
 						{
-							feature: FactoryLogic.feature.create({
+							feature: FactoryLogic.feature.createAbilityDamage({
 								id: 'conduit-1-8a',
 								name: 'Prayer of Destruction',
-								description: 'Your god infuses wrath within your being. You gain a +1 rolled damage bonus with magic abilities.'
+								description: 'Your god infuses wrath within your being.',
+								keywords: [ AbilityKeyword.Magic ],
+								modifier: 1
 							}),
 							value: 1
 						},
 						{
-							feature: FactoryLogic.feature.create({
+							feature: FactoryLogic.feature.createAbilityDistance({
 								id: 'conduit-1-8b',
 								name: 'Prayer of Distance',
-								description: 'Your god blesses you with the ability to stretch your divine magic further. You gain a +2 bonus to the distance of your ranged magic abilities.'
+								description: 'Your god blesses you with the ability to stretch your divine magic further.',
+								keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged ],
+								modifier: 2
 							}),
 							value: 1
 						},
@@ -331,7 +338,7 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'Burning radiance falls upon your foe, transferring some of their energy to a nearby ally.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature or object',
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
@@ -365,7 +372,7 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'A tendril of divine energy shoots forth to draw in your foe.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature or object',
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
@@ -398,7 +405,7 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'Divine magic tears at your foe and defends a nearby friend.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature',
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
@@ -431,7 +438,7 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'Your quickly uttered prayer lends aggressive divine energy to a friend engaged in melee.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature',
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
@@ -448,14 +455,14 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'A bolt of holy energy saps the life from a foe.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature or object',
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Intuition ],
-				tier1: '3 + I corruption damage; P < weak, the target takes a bane on their next power roll',
-				tier2: '5 + I corruption damage; P < average, the target takes a bane on their next power roll',
-				tier3: '8 + I corruption damage; P < strong, the target takes a bane on their next power roll'
+				tier1: '3 + I corruption damage; P < [weak], the target takes a bane on their next power roll',
+				tier2: '5 + I corruption damage; P < [average], the target takes a bane on their next power roll',
+				tier3: '8 + I corruption damage; P < [strong], the target takes a bane on their next power roll'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -481,7 +488,7 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'A brilliant column of holy light appears on the battlefield, striking out at nearby enemies.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'Special',
 			cost: 3,
 			effect: 'You summon a spirit of size 2 who can’t be harmed, and who appears in an unoccupied space within distance. The spirit lasts until the end of your next turn. You and your allies can move through the spirit’s space, but enemies can’t. An enemy who moves within 2 squares of the spirit for the first time in a round or starts their turn there takes holy damage equal to your Intuition score.'
@@ -492,14 +499,14 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'Your divine fury is a hammer that crashes down upon the unrighteous.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature or object',
 			cost: 3,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Intuition ],
-				tier1: '3 + I holy damage; A < weak, prone',
-				tier2: '6 + I holy damage; A < average, prone',
-				tier3: '9 + I holy damage; A < strong, prone and can’t stand (save ends)'
+				tier1: '3 + I holy damage; A < [weak], prone',
+				tier2: '6 + I holy damage; A < [average], prone',
+				tier3: '9 + I holy damage; A < [strong], prone and can’t stand (save ends)'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -508,7 +515,7 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'After some holy lightning, your enemy will think twice about their next attack.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature',
 			cost: 3,
 			powerRoll: FactoryLogic.createPowerRoll({
@@ -523,16 +530,16 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			id: 'conduit-ability-13',
 			name: 'Corruption\'s Curse',
 			description: 'Cursed by you, your enemy takes more damage from your allies.',
-			type: FactoryLogic.type.createManeuver(),
+			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature or object',
 			cost: 5,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Intuition ],
-				tier1: '3 + I corruption damage; M < weak, damage weakness 5 (save ends)',
-				tier2: '6 + I corruption damage; M < average, damage weakness 5 (save ends)',
-				tier3: '9 + I corruption damage; M < strong, damage weakness 5 (save ends)'
+				tier1: '3 + I corruption damage; M < [weak], damage weakness 5 (save ends)',
+				tier2: '6 + I corruption damage; M < [average], damage weakness 5 (save ends)',
+				tier3: '9 + I corruption damage; M < [strong], damage weakness 5 (save ends)'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -541,14 +548,14 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'Fear of divine judgment overwhelms your foe.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature',
 			cost: 5,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Intuition ],
-				tier1: '6 + I holy damage; I < weak, frightened (save ends)',
-				tier2: '9 + I holy damage; I < average, frightened (save ends)',
-				tier3: '13 + I holy damage; I < strong, frightened (save ends)'
+				tier1: '6 + I holy damage; I < [weak], frightened (save ends)',
+				tier2: '9 + I holy damage; I < [average], frightened (save ends)',
+				tier3: '13 + I holy damage; I < [strong], frightened (save ends)'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -557,7 +564,7 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'The heroes’ armor glows with golden light, granting divine protection.',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'Self and up to three allies',
 			cost: 5,
 			powerRoll: FactoryLogic.createPowerRoll({
@@ -584,14 +591,14 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'Your divine magic makes a creature appear as what your enemies fear most.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Area, AbilityKeyword.Magic, AbilityKeyword.Ranged ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.create({ type: AbilityDistanceType.Cube, value: 5, within: 10 }) ],
 			target: 'Each enemy in the area',
 			cost: 7,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Intuition ],
-				tier1: '6 psychic damage; I < weak, frightened (save ends)',
-				tier2: '9 psychic damage; I < average, frightened (save ends)',
-				tier3: '13 psychic damage; I < strong, frightened (save ends)'
+				tier1: '6 psychic damage; I < [weak], frightened (save ends)',
+				tier2: '9 psychic damage; I < [average], frightened (save ends)',
+				tier3: '13 psychic damage; I < [strong], frightened (save ends)'
 			}),
 			effect: 'The targets are frightened of you or a creature you choose within 10 squares.'
 		}),
@@ -601,7 +608,7 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'An ally becomes the wearer of an empowered golden cloak.',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 ally',
 			cost: 7,
 			effect: 'The target gains 20 Temporary Stamina and three surges.'
@@ -612,7 +619,7 @@ A creature with a willing soul returns to life at the end of the respite with fu
 			description: 'A beam of energy connects a foe to a friend, draining life from one to heal the other.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 enemy',
 			cost: 7,
 			powerRoll: FactoryLogic.createPowerRoll({

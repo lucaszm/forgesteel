@@ -1,72 +1,62 @@
 # Development Plans
 
-## Add Monsters
-
-* Gnolls
-* Hobgoblins
-* Lizardfolk
-* Orcs
-* Trolls
-* Undead
-* Bugbears
-* Draconians
-* Dragons
-* Elves, High
-* Elves, Shadow
-* Humans
-* Rivals
-* Undead - 2nd Echelon
-* Angulotls
-* Ankheg
-* Ashen Hoarder
-* Basilisks
-* Bredbeddle
-* Demons
-* Demons - 2nd Echelon
-* Devils
-* Elementals
-* Fossil Cryptic
-* Griffons
-* Hag
-* Lightbenders
-* Medusa
-* Minotaurs
-* Ogres
-* Olothec
-* Shambling Mound
-* Time Raiders
-* Voiceless Talkers
-* War Dogs
-* War Dogs - 2nd Echelon
-* Wyverns
-* Xorannox the Tyract
-* Animals
-
-## New Features
-
 ### Heroes
 
-* Retainers
-  * Work out how retainers should be represented
-  * Add retainer data
-  * Add a retainer feature
+* Make sure multiple melee / ranged damage bonuses are handled correctly
 * Hero Builder:
-  * Auto-create heroes
   * Revenants should have 3 ancestry points if small
+  * Auto-create heroes
 
 ### Library
 
-* Set up class editor so you can select a class ability and edit it separately
-* Set up monster group editor so you can select a monster ability and edit it separately
+* It should be possible to add custom keywords to abilities
 * It should be possible to create a homebrew subclass / class ability / monster individually
+* Add data:
+  * Rivals
+* Monster Builder:
+  * Auto-create monsters
 
-### Monster Editor
+### Playbook
 
-* Allow the user to manually add/remove from the set of similar monsters
-* Auto-create monsters
+* Adventure Builder:
+  * Allow subplots
+* Encounter Builder:
+  * Set number of squares for per-square terrain
+  * Use encounter templates
+  * Auto-create encounters
+* Tactical Maps:
+  * Switch map Z level
+    * Show (blurred, translucent, no pointer events) levels below / above
+  * Ability to destroy tile squares / wall sections
+* Regional Maps
 
-### Encounter Editor
+### Session
 
-* Encounters should pull in monsters - like how heroes pull in elements
-* Use encounter templates in encounter editor
-* Auto-create encounters
+* Encounter
+  * Monsters:
+    * Ability to set 'used reaction' flag on heroes / monsters / minions
+    * Ability to duplicate / delete monsters in a slot
+    * Button to roll for initiative (heroes / monsters)
+    * Button to end current turn
+      * Handle EoT (remove) / save ends (roll to remove) conditions on combatants in current group
+      * Select (ready, active) group from other faction; if no more, next turn (mark all as ready)
+  * Terrain:
+    * Show number of squares on terrain encounter row
+    * Show 'should be N squares' for terrain
+    * Ability to add new terrain objects
+* Tactical map
+  * Minis should not be allowed to walk through walls
+  * Add terrain minis / overlays
+
+### Player View
+
+* Add a way to check if data has changed; if it has, update the screen
+
+### Ideas
+
+* Add a way to load / save data from a remote folder / OneDrive / Google Docs / iCloud
+* Add guides for specific features
+  * Heroes / hero state / PDF export
+  * Monster building / genesplice
+  * Encounter building / running
+  * Map making / adding minis

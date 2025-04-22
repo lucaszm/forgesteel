@@ -1,4 +1,4 @@
-import { ArtifactData, ConsumableData, LeveledArmorData, LeveledImplementData, LeveledOtherData, LeveledWeaponData, TrinketData } from './item-data';
+import { ArtifactData, ConsumableData, ImbuedData, LeveledArmorData, LeveledImplementData, LeveledOtherData, LeveledWeaponData, TrinketData } from './item-data';
 import { EnvironmentData, OrganizationData, UpbringingData } from './culture-data';
 import { AncestryData } from './ancestry-data';
 import { CareerData } from './career-data';
@@ -12,6 +12,7 @@ import { PerkData } from './perk-data';
 import { ProjectData } from './project-data';
 import { SkillList } from '../enums/skill-list';
 import { Sourcebook } from '../models/sourcebook';
+import { TerrainData } from './terrain-data';
 import { TitleData } from './title-data';
 
 export class SourcebookData {
@@ -366,18 +367,61 @@ export class SourcebookData {
 			LeveledOtherData.thiefOfJoy,
 			ArtifactData.bladeOfAThousandYears,
 			ArtifactData.encepter,
-			ArtifactData.mortalCoil
+			ArtifactData.mortalCoil,
+			ImbuedData.imbuedArmor,
+			ImbuedData.imbuedImplement,
+			ImbuedData.imbuedWeapon
 		],
 		monsterGroups: [
+			MonsterData.angulotl,
+			MonsterData.animal,
+			MonsterData.ankheg,
+			MonsterData.ashenHoarder,
+			MonsterData.basilisk,
+			MonsterData.bredbeddle,
+			MonsterData.bugbear,
 			MonsterData.chimera,
+			MonsterData.demon,
+			MonsterData.demon2nd,
+			MonsterData.devil,
+			MonsterData.draconian,
+			MonsterData.dragonCrucible,
+			MonsterData.dragonGloom,
+			MonsterData.dragonThorn,
 			MonsterData.dwarf,
+			MonsterData.elemental,
+			MonsterData.elfHigh,
+			MonsterData.elfShadow,
 			MonsterData.elfWode,
+			MonsterData.fossilCryptic,
+			// MonsterData.giant,
+			MonsterData.gnoll,
 			MonsterData.goblin,
+			MonsterData.griffon,
+			MonsterData.hag,
+			MonsterData.hobgoblin,
+			MonsterData.human,
 			MonsterData.kobold,
+			MonsterData.lightbender,
+			MonsterData.lizardfolk,
 			MonsterData.lordSyuul,
 			MonsterData.manticore,
+			MonsterData.medusa,
+			MonsterData.minotaur,
+			MonsterData.ogre,
+			MonsterData.olothec,
+			MonsterData.orc,
 			MonsterData.radenwight,
-			MonsterData.werewolf
+			MonsterData.shamblingMound,
+			MonsterData.timeRaider,
+			MonsterData.troll,
+			MonsterData.undead,
+			MonsterData.undead2nd,
+			MonsterData.voicelessTalker,
+			MonsterData.warDog,
+			MonsterData.werewolf,
+			MonsterData.wyvern,
+			MonsterData.xorannox
 		],
 		skills: [
 			{ name: 'Alchemy', description: 'Make bombs and potions.', list: SkillList.Crafting },
@@ -455,6 +499,44 @@ export class SourcebookData {
 			ProjectData.communityService,
 			ProjectData.fishing,
 			ProjectData.spendTimeWithLovedOnes
+		],
+		terrain: [
+			TerrainData.angryBeehive,
+			TerrainData.brambles,
+			TerrainData.corrosivePool,
+			TerrainData.frozenPond,
+			TerrainData.lava,
+			TerrainData.quicksand,
+			TerrainData.archersStakes,
+			TerrainData.bearTrap,
+			TerrainData.flammableOil,
+			TerrainData.hideyHole,
+			TerrainData.paviseShield,
+			TerrainData.snareTrap,
+			TerrainData.spikeTrap,
+			TerrainData.columnOfBlades,
+			TerrainData.dartTrap,
+			TerrainData.hiddenPortcullis,
+			TerrainData.pillar,
+			TerrainData.pressurePlate,
+			TerrainData.pulley,
+			TerrainData.ram,
+			TerrainData.switch,
+			TerrainData.arrowLauncher,
+			TerrainData.boilingOilCauldron,
+			TerrainData.catapult,
+			TerrainData.explodingMillWheel,
+			TerrainData.fieldBallista,
+			TerrainData.ironDragon,
+			TerrainData.watchtower,
+			TerrainData.theBlackObelisk,
+			TerrainData.theChronalHypercube,
+			TerrainData.theThroneOfAAn,
+			TerrainData.psionicShard,
+			TerrainData.holyIdol,
+			TerrainData.treeOfMight
+
+
 		]
 	};
 
@@ -477,7 +559,7 @@ export class SourcebookData {
 			FactoryLogic.createCulture('Hakaan', 'Rural, communal, labor.', [ 'Vhoric' ], EnvironmentData.rural, OrganizationData.communal, UpbringingData.labor),
 			FactoryLogic.createCulture('Human', 'Urban, communal, labor.', [ 'Vaslorian' ], EnvironmentData.urban, OrganizationData.communal, UpbringingData.labor),
 			FactoryLogic.createCulture('Memonek', 'Nomadic, communal, academic.', [ 'Axiomatic' ], EnvironmentData.nomadic, OrganizationData.communal, UpbringingData.academic),
-			FactoryLogic.createCulture('Orc', 'Wilderness, anarchic, creative.', [ 'Kaliac' ], EnvironmentData.wilderness, OrganizationData.anarchic, UpbringingData.creative),
+			FactoryLogic.createCulture('Orc', 'Wilderness, anarchic, creative.', [ 'Kalliac' ], EnvironmentData.wilderness, OrganizationData.anarchic, UpbringingData.creative),
 			FactoryLogic.createCulture('Polder', 'Urban, communal, creative.', [ 'Khoursirian' ], EnvironmentData.urban, OrganizationData.communal, UpbringingData.creative),
 			FactoryLogic.createCulture('Time Raider', 'Nomadic, anarchic, martial.', [ 'Voll' ], EnvironmentData.nomadic, OrganizationData.anarchic, UpbringingData.martial)
 		],
@@ -663,6 +745,7 @@ export class SourcebookData {
 				description: 'Spoken by dwarves; the language of engineering.'
 			}
 		],
-		projects: []
+		projects: [],
+		terrain: []
 	};
 }

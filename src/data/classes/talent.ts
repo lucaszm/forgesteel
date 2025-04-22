@@ -11,13 +11,16 @@ export const talent: HeroClass = {
 	id: 'class-talent',
 	name: 'Talent',
 	description: `
-The talent is a master of psionics—a source of incredible power created through sheer force of will. A talent can move and change matter, time, gravity, the laws of physics, or another creature’s mind. In rare occurrences, people are born with the potential to harness psionic power, but only those who experience an awakening, an event that activates a talent’s abilities, can actually tap into the mind’s full strength.
+The talent is a master of psionics - a source of incredible power created through sheer force of will. A talent can move and change matter, time, gravity, the laws of physics, or another creature’s mind. In rare occurrences, people are born with the potential to harness psionic power, but only those who experience an awakening, an event that activates a talent’s abilities, can actually tap into the mind’s full strength.
 
 A talent is limited only by the strength of their mind. Powerful psionic heroes can have multiple active powers at once and change reality at will. But with this limitless potential comes a gamble. Every manifestation has a chance of harming the talent, and those who use too many too quickly die from the exertion.`,
 	heroicResource: 'Clarity',
 	subclassName: 'Tradition',
 	subclassCount: 1,
-	primaryCharacteristics: [ Characteristic.Reason, Characteristic.Presence ],
+	primaryCharacteristicsOptions: [
+		[ Characteristic.Reason, Characteristic.Presence ]
+	],
+	primaryCharacteristics: [],
 	featuresByLevel: [
 		{
 			level: 1,
@@ -61,9 +64,9 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 						id: 'talent-1-2',
 						name: 'Mind Spike',
 						description: 'A telepathic bolt instantly zaps a creature’s brain.',
-						type: FactoryLogic.type.createAction(),
+						type: FactoryLogic.type.createAction({ qualifiers: [ 'can be used as a ranged free strike' ] }),
 						keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Telepathy ],
-						distance: [ FactoryLogic.distance.createRanged() ],
+						distance: [ FactoryLogic.distance.createRanged(10) ],
 						target: '1 creature',
 						powerRoll: FactoryLogic.createPowerRoll({
 							characteristic: [ Characteristic.Reason ],
@@ -109,10 +112,11 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 							value: 1
 						},
 						{
-							feature: FactoryLogic.feature.create({
+							feature: FactoryLogic.feature.createAbilityDistance({
 								id: 'talent-1-5b',
 								name: 'Distance Augmentation',
-								description: 'You gain a +2 bonus to the distance of your ranged psionic abilities.'
+								keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged ],
+								modifier: 2
 							}),
 							value: 1
 						},
@@ -136,10 +140,11 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 							value: 1
 						},
 						{
-							feature: FactoryLogic.feature.create({
+							feature: FactoryLogic.feature.createAbilityDamage({
 								id: 'talent-1-5d',
 								name: 'Force Augmentation',
-								description: 'Your damage-dealing psionic abilities gain a +1 rolled damage bonus.'
+								keywords: [ AbilityKeyword.Psionic ],
+								modifier: 1
 							}),
 							value: 1
 						},
@@ -183,7 +188,7 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 									id: 'talent-1-6b',
 									name: 'Repulsive Ward',
 									description: 'You surround yourself with an invisible ward of telekinetic energy.',
-									type: FactoryLogic.type.createTrigger('An adjacent creature deals damage to you.', true),
+									type: FactoryLogic.type.createTrigger('An adjacent creature deals damage to you.', { free: true }),
 									keywords: [],
 									distance: [ FactoryLogic.distance.createSelf() ],
 									target: 'Self',
@@ -256,14 +261,14 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'You advance an enemy’s age for a moment.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Chronopathy, AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'One creature or object',
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Reason ],
-				tier1: '2 + P corruption damage; P < weak, slowed (save ends)',
-				tier2: '3 + P corruption damage; P < average, slowed (save ends)',
-				tier3: '5 + P corruption damage; P < strong, slowed (save ends)'
+				tier1: '2 + P corruption damage; P < [weak], slowed (save ends)',
+				tier2: '3 + P corruption damage; P < [average], slowed (save ends)',
+				tier3: '5 + P corruption damage; P < [strong], slowed (save ends)'
 			}),
 			effect: 'The target takes 1 extra corruption damage for each additional time they are targeted by this ability in the encounter.',
 			strained: 'You gain 1 clarity on a tier 2 or tier 3 result.'
@@ -292,14 +297,14 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'A row of the terrain freezes over ahead of you, turning hard and slick.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Cryokinesis, AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature',
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Reason ],
-				tier1: '2 + R cold damage; M < weak, slowed (EoT)',
-				tier2: '4 + R cold damage; M < average, slowed (EoT)',
-				tier3: '6 + R cold damage; M < strong, slowed (EoT)'
+				tier1: '2 + R cold damage; M < [weak], slowed (EoT)',
+				tier2: '4 + R cold damage; M < [average], slowed (EoT)',
+				tier3: '6 + R cold damage; M < [strong], slowed (EoT)'
 			}),
 			strained: 'A target slowed by this ability is restrained instead, and you are slowed until the end of your next turn.'
 		}),
@@ -344,7 +349,7 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'You picture an object in your mind and give it form in the world, directly above your opponent’s head.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Resopathy, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'One creature or object',
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
@@ -362,14 +367,14 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'Your eyes emit rays of powerful enervating force.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Metamorphosis, AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'One creature or object',
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Reason ],
-				tier1: '2 + R damage; M < weak, prone',
-				tier2: '4 + R damage; M < average, prone',
-				tier3: '6 + R damage; M < strong, prone'
+				tier1: '2 + R damage; M < [weak], prone',
+				tier2: '4 + R damage; M < [average], prone',
+				tier3: '6 + R damage; M < [strong], prone'
 			}),
 			effect: 'When targeting an object with a solid reflective surface or a creature carrying or wearing such an object (a mirror, an unpainted metal shield, shiny metal plate armor, and so forth), you can choose an additional target within 3 squares of the first target.',
 			strained: 'You gain a surge, which you can use immediately, and take damage equal to your Reason score, which can’t be reduced in any way.'
@@ -398,15 +403,15 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'You project psionic energy out to a creature and take on a new visage in their mind.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Telepathy ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'One ally or enemy',
 			cost: 3,
 			preEffect: 'Any ally targeted by this ability gains temporary Stamina equal to twice your Presence score, and can end one effect on them that is ended by a saving throw or that ends at the end of their turn. If you target an enemy, you make a power roll.',
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Reason ],
-				tier1: '3 + P psychic damage; I < weak, frightened (save ends)',
-				tier2: '6 + P psychic damage; I < average, frightened (save ends)',
-				tier3: '9 + P psychic damage; I < strong, frightened (save ends)'
+				tier1: '3 + P psychic damage; I < [weak], frightened (save ends)',
+				tier2: '6 + P psychic damage; I < [average], frightened (save ends)',
+				tier3: '9 + P psychic damage; I < [strong], frightened (save ends)'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -415,14 +420,14 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'Be careful not to choke on your aspirations.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Telekinesis ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature',
 			cost: 3,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Reason ],
-				tier1: '3 + R damage; M < weak, slowed (save ends)',
-				tier2: '5 + R damage; M < average, slowed (save ends)',
-				tier3: '8 + R damage; M < strong, restrained (save ends)'
+				tier1: '3 + R damage; M < [weak], slowed (save ends)',
+				tier2: '5 + R damage; M < [average], slowed (save ends)',
+				tier3: '8 + R damage; M < [strong], restrained (save ends)'
 			}),
 			effect: 'You can vertical pull the target up to 2 squares. You can pull a target restrained by this ability, ignoring their stability.'
 		}),
@@ -443,15 +448,15 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'Smoke flows from your enemy like tears as their skin begins to blacken and flake.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Pyrokinesis, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature',
 			cost: 3,
 			preEffect: 'The target takes damage before this ability imposes any weakness effect. The damage type and the weakness for this ability must be chosen from one of the following: acid, corruption, or fire.',
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Reason ],
-				tier1: '3 + R damage; R < weak, the target has weakness 5 (save ends)',
-				tier2: '6 + R damage; R < average, the target has weakness 5 (save ends)',
-				tier3: '9 + R damage; R < strong, the target has weakness equal to 5 + your Reason score (save ends)'
+				tier1: '3 + R damage; R < [weak], the target has weakness 5 (save ends)',
+				tier2: '6 + R damage; R < [average], the target has weakness 5 (save ends)',
+				tier3: '9 + R damage; R < [strong], the target has weakness equal to 5 + your Reason score (save ends)'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -460,7 +465,7 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'The target is thrown several seconds back through time, and gets to do it all again.',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [ AbilityKeyword.Chronopathy, AbilityKeyword.Psionic, AbilityKeyword.Ranged ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'Self or one ally',
 			cost: 5,
 			effect: 'The target immediately uses an ability they’ve previously used this round without spending any heroic resources.',
@@ -472,7 +477,7 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'Your psionic energy surrounds the target and pushes everything else away from them.',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Telekinesis ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'Self or one ally',
 			cost: 5,
 			effect: 'The target ignores difficult terrain and takes no damage from forced movement until the start of your next turn. Whenever the target moves into a square while under this effect, they can push one adjacent creature up to 2 squares. If pushing an ally, the target can ignore that ally’s stability.',
@@ -484,7 +489,7 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'The target’s skin turns to hard, dark metal, impenetrable and dense.',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [ AbilityKeyword.Metamorphosis, AbilityKeyword.Psionic, AbilityKeyword.Ranged ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'Self or one ally',
 			cost: 5,
 			effect: 'The target’s stability increases by 5 and they gain 10 temporary stamina and two surges.',
@@ -496,7 +501,7 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'You clear the mind of nothing but the goal.',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Telepathy ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'Self or one ally',
 			cost: 5,
 			effect: 'Until the start of your next turn, the target gains a +3 bonus to speed, and they have a double edge on the next power roll they make. If the target gets a tier 3 result on that roll, you gain 1 clarity.',
@@ -508,14 +513,14 @@ Whenever you have clarity below 0, you are strained. Some psionic abilities have
 			description: 'You hurl the target through the annals of time, forcing them to witness every moment of their existence all at once.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Chronopathy, AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'One creature or object',
 			cost: 7,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Presence ],
-				tier1: '3 + P corruption damage; P < weak, weakened (save ends)',
-				tier2: '5 + P corruption damage; the target is flung through time; P < average, weakened (save ends)',
-				tier3: '8 + P corruption damage; the target is flung through time; P < strong, weakened (save ends)'
+				tier1: '3 + P corruption damage; P < [weak], weakened (save ends)',
+				tier2: '5 + P corruption damage; the target is flung through time; P < [average], weakened (save ends)',
+				tier3: '8 + P corruption damage; the target is flung through time; P < [strong], weakened (save ends)'
 			}),
 			effect: 'A target who is flung through time is removed from the encounter until the end of their next turn, reappearing in their original space or the nearest available space.',
 			strained: 'You take 2d6 damage and grow visibly older (the equivalent of 10 years for a human). On a tier 3 result, you gain 2 clarity.'
@@ -559,14 +564,14 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 			description: 'You blast their soul out of their body, leaving it to helplessly float back to a weakened husk.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Animapathy, AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '1 creature',
 			cost: 7,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Presence ],
-				tier1: '6 + P damage; P < weak, dazed (save ends)',
-				tier2: '10 + P damage; P < average, dazed (save ends)',
-				tier3: '14 + P damage; P < strong, dazed (save ends)'
+				tier1: '6 + P damage; P < [weak], dazed (save ends)',
+				tier2: '10 + P damage; P < [average], dazed (save ends)',
+				tier3: '14 + P damage; P < [strong], dazed (save ends)'
 			}),
 			effect: 'The target takes a bane on Presence tests until the end of the encounter.',
 			strained: 'The potency of this ability increases by 1. You take 2d6 damage, and gain 3 surges.'
@@ -588,7 +593,7 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 								description: 'To your ally, it seems as though the world has slowed down.',
 								type: FactoryLogic.type.createManeuver(),
 								keywords: [ AbilityKeyword.Psionic ],
-								distance: [ FactoryLogic.distance.createRanged() ],
+								distance: [ FactoryLogic.distance.createRanged(10) ],
 								target: 'Self or one creature',
 								effect: 'The target immediately shifts up to a number of squares equal to your Reason score.',
 								spend: [
@@ -606,7 +611,7 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 								description: 'You step back a split second to see if things play out a little differently.',
 								type: FactoryLogic.type.createTrigger('The target makes an ability power roll.'),
 								keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged ],
-								distance: [ FactoryLogic.distance.createRanged() ],
+								distance: [ FactoryLogic.distance.createRanged(10) ],
 								target: 'Self or one creature',
 								effect: 'You can use this ability after seeing the power roll for the triggering roll. You force the target to reroll the power roll and use the new result.'
 							})
@@ -632,7 +637,7 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 											description: 'Time slows down around you. Your heartbeat is the only gauge of the extra moments you’ve gained.',
 											type: FactoryLogic.type.createManeuver(),
 											keywords: [ AbilityKeyword.Chronopathy, AbilityKeyword.Psionic, AbilityKeyword.Ranged ],
-											distance: [ FactoryLogic.distance.createRanged() ],
+											distance: [ FactoryLogic.distance.createRanged(10) ],
 											target: 'Special',
 											cost: 5,
 											powerRoll: FactoryLogic.createPowerRoll({
@@ -655,14 +660,14 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 											description: 'Perhaps they wonder why everyone else is moving so quickly?',
 											type: FactoryLogic.type.createManeuver(),
 											keywords: [ AbilityKeyword.Chronopathy, AbilityKeyword.Psionic, AbilityKeyword.Ranged ],
-											distance: [ FactoryLogic.distance.createRanged() ],
+											distance: [ FactoryLogic.distance.createRanged(10) ],
 											target: 'Three creatures or objects',
 											cost: 5,
 											powerRoll: FactoryLogic.createPowerRoll({
 												characteristic: [ Characteristic.Presence ],
-												tier1: 'The target’s speed is halved (save ends), or if P < weak, the target is slowed (save ends).',
-												tier2: 'The target is slowed (save ends), or if P < average, the target’s speed is 0 (save ends).',
-												tier3: 'The target is slowed (save ends), or if P < strong, the target’s speed is 0 (save ends).'
+												tier1: 'The target’s speed is halved (save ends), or if P < [weak], the target is slowed (save ends).',
+												tier2: 'The target is slowed (save ends), or if P < [average], the target’s speed is 0 (save ends).',
+												tier3: 'The target is slowed (save ends), or if P < [strong], the target’s speed is 0 (save ends).'
 											}),
 											effect: 'A target can’t use triggered actions while their speed is reduced by this ability.',
 											strained: 'The potency of this ability increases by 1 and you take 1d6 damage. At the start of each round while any target is affected by this ability, you take 1d6 damage. You can immediately end the effects on all affected targets (no action required).'
@@ -696,7 +701,7 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 								description: 'Wisps of psychic energy ripple visibly from your brain as you force the target to move using only your mind.',
 								type: FactoryLogic.type.createManeuver(),
 								keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged ],
-								distance: [ FactoryLogic.distance.createRanged() ],
+								distance: [ FactoryLogic.distance.createRanged(10) ],
 								target: 'Self, or a size 1 creature or object',
 								effect: 'You slide the target up to a number of squares equal to your Reason score.',
 								spend: [
@@ -719,7 +724,7 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 								description: 'They aren’t going anywhere, but you might!',
 								type: FactoryLogic.type.createTrigger('The target takes damage or is force moved.'),
 								keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged ],
-								distance: [ FactoryLogic.distance.createRanged() ],
+								distance: [ FactoryLogic.distance.createRanged(10) ],
 								target: 'Self or one ally',
 								effect: 'The triggering damage is halved or distance of the triggering forced movement is reduced by a number of squares equal to your Reason score. If the target was damaged and force moved, you choose the effect. If the triggering forced movement is reduced to 0 squares, the target pushes the source of the forced movement a number of squares equal to your Reason score.'
 							})
@@ -734,7 +739,7 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 								id: 'talent-sub-2-2-1',
 								name: 'Ease their Fall',
 								description: '',
-								type: FactoryLogic.type.createTrigger('You land after a fall, or any falling creature lands within 2 squares of you.', true),
+								type: FactoryLogic.type.createTrigger('You land after a fall, or any falling creature lands within 2 squares of you.', { free: true }),
 								distance: [ FactoryLogic.distance.createSelf() ],
 								target: 'Self',
 								effect: 'You can reduce the falling damage by an amount equal to 2 + your Reason score.'
@@ -773,14 +778,14 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 											description: 'You raise the target into the air, then smother them against the ground.',
 											type: FactoryLogic.type.createAction(),
 											keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Telekinesis ],
-											distance: [ FactoryLogic.distance.createRanged() ],
+											distance: [ FactoryLogic.distance.createRanged(10) ],
 											target: 'One creature or object',
 											cost: 5,
 											powerRoll: FactoryLogic.createPowerRoll({
 												characteristic: [ Characteristic.Reason ],
-												tier1: '6 + R damage; M < weak, prone',
-												tier2: '10 + R damage; M < average, prone',
-												tier3: '14 + R damage; M < strong, prone and can’t stand (save ends)'
+												tier1: '6 + R damage; M < [weak], prone',
+												tier2: '10 + R damage; M < [average], prone',
+												tier3: '14 + R damage; M < [strong], prone and can’t stand (save ends)'
 											}),
 											effect: 'A target made prone by this ability is lifted 2 squares into the air before falling immediately to the ground, taking damage as usual.',
 											strained: 'You take half the damage the target takes, including any damage from falling.'
@@ -814,7 +819,7 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 								description: 'Creating a brief psychic link between a foe and their target gives that foe a taste of their own medicine.',
 								type: FactoryLogic.type.createTrigger('The target deals damage to an ally.'),
 								keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged ],
-								distance: [ FactoryLogic.distance.createRanged() ],
+								distance: [ FactoryLogic.distance.createRanged(10) ],
 								target: '1 creature',
 								effect: 'The target takes psychic damage equal to half the triggering damage.'
 							})
@@ -826,7 +831,7 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 								description: 'An ally gains the benefit of your intellect.',
 								type: FactoryLogic.type.createManeuver(),
 								keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged ],
-								distance: [ FactoryLogic.distance.createRanged() ],
+								distance: [ FactoryLogic.distance.createRanged(10) ],
 								target: '1 creature or object',
 								effect: 'The next ability power roll an ally makes against the target before the start of your next turn gains an edge.',
 								spend: [
@@ -858,14 +863,14 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 											description: 'You overload their senses, turning all their subconscious thoughts into conscious ones.',
 											type: FactoryLogic.type.createAction(),
 											keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Telepathy ],
-											distance: [ FactoryLogic.distance.createRanged() ],
+											distance: [ FactoryLogic.distance.createRanged(10) ],
 											target: '1 creature',
 											cost: 5,
 											powerRoll: FactoryLogic.createPowerRoll({
 												characteristic: [ Characteristic.Reason ],
-												tier1: '6 + R psychic damage; I < weak, slowed (save ends)',
-												tier2: '10 + R psychic damage; I < average, weakened (save ends)',
-												tier3: '14 + R psychic damage; I < strong, dazed (save ends)'
+												tier1: '6 + R psychic damage; I < [weak], slowed (save ends)',
+												tier2: '10 + R psychic damage; I < [average], weakened (save ends)',
+												tier3: '14 + R psychic damage; I < [strong], dazed (save ends)'
 											}),
 											strained: 'You start crying. You can’t take triggered actions or take free strikes until the end of the target’s next turn.'
 										})
@@ -880,7 +885,7 @@ Once on each of your turns, you can use a free maneuver to fire an orb at a crea
 											description: 'You gain control over an enemy’s nervous system. How pleasant for them.',
 											type: FactoryLogic.type.createAction(),
 											keywords: [ AbilityKeyword.Psionic, AbilityKeyword.Ranged, AbilityKeyword.Telepathy ],
-											distance: [ FactoryLogic.distance.createRanged() ],
+											distance: [ FactoryLogic.distance.createRanged(10) ],
 											target: '1 enemy',
 											cost: 5,
 											powerRoll: FactoryLogic.createPowerRoll({

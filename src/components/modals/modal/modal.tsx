@@ -1,3 +1,5 @@
+import { Button } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 import { ReactNode } from 'react';
 
 import './modal.scss';
@@ -5,7 +7,7 @@ import './modal.scss';
 interface Props {
 	toolbar?: ReactNode;
 	content: ReactNode;
-	footer?: ReactNode;
+	onClose: () => void;
 }
 
 export const Modal = (props: Props) => {
@@ -19,7 +21,7 @@ export const Modal = (props: Props) => {
 					{props.content}
 				</div>
 				<div className='modal-footer'>
-					{props.footer}
+					<Button className='close-btn' block={true} icon={<CloseOutlined />} onClick={props.onClose}>Close</Button>
 				</div>
 			</div>
 		);

@@ -2,12 +2,13 @@ import { AbilityKeyword } from '../../enums/ability-keyword';
 import { Ancestry } from '../../models/ancestry';
 import { Characteristic } from '../../enums/characteristic';
 import { DamageModifierType } from '../../enums/damage-modifier-type';
+import { DamageType } from '../../enums/damage-type';
 import { FactoryLogic } from '../../logic/factory-logic';
 
 export const revenant: Ancestry = {
 	id: 'ancestry-revenant',
 	name: 'Revenant',
-	description: 'Unlike the necromantic rituals that produce wights and wraiths and zombies, revenants rise from the grave through a combination of an unjust death and a burning desire for vengeance. Creatures sustained on pure will, they have no need of food or water or air—and, unlike their zombified cousins, they retain all their memories and personality from life.',
+	description: 'Unlike the necromantic rituals that produce wights and wraiths and zombies, revenants rise from the grave through a combination of an unjust death and a burning desire for vengeance. Creatures sustained on pure will, they have no need of food or water or air - and, unlike their zombified cousins, they retain all their memories and personality from life.',
 	features: [
 		FactoryLogic.feature.createAncestry({
 			id: 'revenant-feature-1',
@@ -17,46 +18,11 @@ export const revenant: Ancestry = {
 		FactoryLogic.feature.createDamageModifier({
 			id: 'revenant-feature-2',
 			modifiers: [
-				{
-					damageType: 'Cold',
-					type: DamageModifierType.Immunity,
-					value: 1,
-					valueCharacteristics: [],
-					valuePerLevel: 1,
-					valuePerEchelon: 0
-				},
-				{
-					damageType: 'Corruption',
-					type: DamageModifierType.Immunity,
-					value: 1,
-					valueCharacteristics: [],
-					valuePerLevel: 1,
-					valuePerEchelon: 0
-				},
-				{
-					damageType: 'Lightning',
-					type: DamageModifierType.Immunity,
-					value: 1,
-					valueCharacteristics: [],
-					valuePerLevel: 1,
-					valuePerEchelon: 0
-				},
-				{
-					damageType: 'Poison',
-					type: DamageModifierType.Immunity,
-					value: 1,
-					valueCharacteristics: [],
-					valuePerLevel: 1,
-					valuePerEchelon: 0
-				},
-				{
-					damageType: 'Fire',
-					type: DamageModifierType.Weakness,
-					value: 5,
-					valueCharacteristics: [],
-					valuePerLevel: 0,
-					valuePerEchelon: 0
-				}
+				FactoryLogic.damageModifier.createPerLevel({ damageType: DamageType.Cold, modifierType: DamageModifierType.Immunity, value: 1 }),
+				FactoryLogic.damageModifier.createPerLevel({ damageType: DamageType.Corruption, modifierType: DamageModifierType.Immunity, value: 1 }),
+				FactoryLogic.damageModifier.createPerLevel({ damageType: DamageType.Lightning, modifierType: DamageModifierType.Immunity, value: 1 }),
+				FactoryLogic.damageModifier.createPerLevel({ damageType: DamageType.Poison, modifierType: DamageModifierType.Immunity, value: 1 }),
+				FactoryLogic.damageModifier.create({ damageType: DamageType.Fire, modifierType: DamageModifierType.Weakness, value: 5 })
 			]
 		}),
 		FactoryLogic.feature.create({
@@ -124,7 +90,7 @@ You can have an active number of sigils equal to your level. You can remove a si
 									description: 'A magical sigil you placed on a creature explodes with energy.',
 									type: FactoryLogic.type.createAction(),
 									keywords: [ AbilityKeyword.Magic, AbilityKeyword.Ranged, AbilityKeyword.Strike ],
-									distance: [ FactoryLogic.distance.createRanged() ],
+									distance: [ FactoryLogic.distance.createRanged(10) ],
 									target: '1 creature with your sigil',
 									powerRoll: FactoryLogic.createPowerRoll({
 										characteristic: [ Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ],

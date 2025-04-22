@@ -1,14 +1,14 @@
-import { ThunderboltFilled, ThunderboltOutlined } from '@ant-design/icons';
 import { Ability } from '../../../models/ability';
 import { AbilityDistanceType } from '../../../enums/abiity-distance-type';
 import { AbilityLogic } from '../../../logic/ability-logic';
-import { Button } from 'antd';
 import { Collections } from '../../../utils/collections';
+import { ErrorBoundary } from '../../controls/error-boundary/error-boundary';
+import { FeatureType } from '../../../enums/feature-type';
 import { Field } from '../../controls/field/field';
+import { FormatLogic } from '../../../logic/format-logic';
 import { Hero } from '../../../models/hero';
 import { HeroLogic } from '../../../logic/hero-logic';
 import type { PowerRoll } from '../../../models/power-roll';
-import { useState } from 'react';
 
 import './power-roll-panel.scss';
 
@@ -17,21 +17,26 @@ interface Props {
 	ability?: Ability;
 	hero?: Hero;
 	test?: boolean;
+	autoCalc?: boolean;
 }
 
 export const PowerRollPanel = (props: Props) => {
-	const [ autoCalc, setAutoCalc ] = useState<boolean>(true);
-
 	const dmgMelee = props.ability && props.hero ? HeroLogic.getMeleeDamageBonus(props.hero, props.ability) : null;
 	const dmgRanged = props.ability && props.hero ? HeroLogic.getRangedDamageBonus(props.hero, props.ability) : null;
 	const usesPotency = AbilityLogic.usesPotency(props.powerRoll);
 
 	const getHeader = () => {
 		if (props.test) {
-			return (props.powerRoll.characteristic.length > 0) ? `${props.powerRoll.characteristic.join(' or ')} Test` : 'Test';
+			if (props.powerRoll.characteristic.length === 0) {
+				return 'Test';
+			}
+			if (props.powerRoll.characteristic.length === 5) {
+				return 'Highest Characteristic Test';
+			}
+			return `${props.powerRoll.characteristic.join(' or ')} Test`;
 		}
 
-		if (props.hero && autoCalc) {
+		if (props.hero && props.autoCalc) {
 			const values = props.powerRoll.characteristic.map(ch => HeroLogic.getCharacteristic(props.hero!, ch));
 			const bonus = Collections.max(values, v => v) || 0;
 			const sign = bonus >= 0 ? '+' : '';
@@ -39,6 +44,12 @@ export const PowerRollPanel = (props: Props) => {
 		}
 
 		if (props.powerRoll.characteristic.length > 0) {
+			if (props.powerRoll.characteristic.length === 0) {
+				return 'Power Roll';
+			}
+			if (props.powerRoll.characteristic.length === 5) {
+				return 'Power Roll + Highest Characteristic';
+			}
 			return `Power Roll + ${props.powerRoll.characteristic.join(' or ')}`;
 		}
 
@@ -53,7 +64,7 @@ export const PowerRollPanel = (props: Props) => {
 
 		if (props.hero) {
 			const sections = [];
-			if (autoCalc) {
+			if (props.autoCalc) {
 				// Show melee and ranged damage only if:
 				// * we have both, and they're different
 				// * we have only one, but the ability has melee and ranged distances
@@ -85,6 +96,14 @@ export const PowerRollPanel = (props: Props) => {
 					const potency = `weak ${HeroLogic.calculatePotency(props.hero, 'weak')}, average ${HeroLogic.calculatePotency(props.hero, 'average')}, strong ${HeroLogic.calculatePotency(props.hero, 'strong')}`;
 					sections.push(<Field key='potency' label='Potency' value={potency} />);
 				}
+
+				HeroLogic.getFeatures(props.hero)
+					.filter(f => f.type === FeatureType.AbilityDamage)
+					.filter(f => f.data.keywords.every(kw => props.ability?.keywords.includes(kw)))
+					.forEach(f => {
+						const value = `${FormatLogic.getModifier(f.data)} ${f.data.damageType}`;
+						sections.push(<Field key={f.id} label={f.name || 'Damage'} value={value} />);
+					});
 			}
 
 			if (sections.length > 0) {
@@ -100,7 +119,7 @@ export const PowerRollPanel = (props: Props) => {
 	};
 
 	const getTier = (tier: number, value: string) => {
-		if (autoCalc && props.ability && props.hero) {
+		if (props.autoCalc && props.ability && props.hero) {
 			return AbilityLogic.getTierEffect(value, tier, props.ability, props.hero);
 		}
 
@@ -112,35 +131,24 @@ export const PowerRollPanel = (props: Props) => {
 		const footer = getFooter();
 
 		return (
-			<div className='power-roll-panel'>
-				{header ? <div className='power-roll-row power-roll-header'>{header}</div> : null}
-				<div className='power-roll-row'>
-					<div className='tier'>11 -</div>
-					<div className='effect'>{getTier(1, props.powerRoll.tier1)}</div>
+			<ErrorBoundary>
+				<div className='power-roll-panel'>
+					{header ? <div className='power-roll-row power-roll-header'>{header}</div> : null}
+					<div className='power-roll-row'>
+						<div className='tier'>11 -</div>
+						<div className='effect'>{getTier(1, props.powerRoll.tier1)}</div>
+					</div>
+					<div className='power-roll-row'>
+						<div className='tier'>12 - 16</div>
+						<div className='effect'>{getTier(2, props.powerRoll.tier2)}</div>
+					</div>
+					<div className='power-roll-row'>
+						<div className='tier'>17 +</div>
+						<div className='effect'>{getTier(3, props.powerRoll.tier3)}</div>
+					</div>
+					{footer ? <div className='power-roll-row power-roll-footer'>{footer}</div> : null}
 				</div>
-				<div className='power-roll-row'>
-					<div className='tier'>12 - 16</div>
-					<div className='effect'>{getTier(2, props.powerRoll.tier2)}</div>
-				</div>
-				<div className='power-roll-row'>
-					<div className='tier'>17 +</div>
-					<div className='effect'>{getTier(3, props.powerRoll.tier3)}</div>
-				</div>
-				{footer ? <div className='power-roll-row power-roll-footer'>{footer}</div> : null}
-				{
-					props.ability && props.hero ?
-						<Button
-							className='autocalc-btn'
-							type='text'
-							icon={autoCalc ? <ThunderboltFilled style={{ color: 'rgb(22, 119, 255)' }} /> : <ThunderboltOutlined />}
-							onClick={e => {
-								e.stopPropagation();
-								setAutoCalc(!autoCalc);
-							}}
-						/>
-						: null
-				}
-			</div>
+			</ErrorBoundary>
 		);
 	} catch (ex) {
 		console.error(ex);

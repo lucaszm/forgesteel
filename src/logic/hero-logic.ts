@@ -1,19 +1,21 @@
 import { Ability, AbilityDistance } from '../models/ability';
-import { Feature, FeatureAbilityData, FeatureBonusData, FeatureClassAbilityData, FeatureDamageModifierData, FeatureDomainData, FeatureItemChoice, FeatureKitData, FeatureKitTypeData, FeatureLanguageChoiceData, FeatureLanguageData, FeatureSkillChoiceData, FeatureSkillData } from '../models/feature';
+import { AbilityData } from '../data/ability-data';
 import { AbilityDistanceType } from '../enums/abiity-distance-type';
 import { AbilityKeyword } from '../enums/ability-keyword';
 import { Characteristic } from '../enums/characteristic';
 import { Collections } from '../utils/collections';
 import { DamageModifierType } from '../enums/damage-modifier-type';
 import { Domain } from '../models/domain';
-import { FactoryLogic } from './factory-logic';
+import { Feature } from '../models/feature';
 import { FeatureField } from '../enums/feature-field';
 import { FeatureLogic } from './feature-logic';
 import { FeatureType } from '../enums/feature-type';
 import { Hero } from '../models/hero';
+import { Item } from '../models/item';
+import { ItemType } from '../enums/item-type';
 import { Kit } from '../models/kit';
-import { KitType } from '../enums/kit-type';
 import { Language } from '../models/language';
+import { Modifier } from '../models/damage-modifier';
 import { Size } from '../models/size';
 import { Skill } from '../models/skill';
 import { Sourcebook } from '../models/sourcebook';
@@ -21,18 +23,8 @@ import { SourcebookData } from '../data/sourcebook-data';
 import { SourcebookLogic } from './sourcebook-logic';
 
 export class HeroLogic {
-	static getKitTypes = (hero: Hero) => {
-		const types = [ KitType.Standard ];
-
-		// Collate from features
-		this.getFeatures(hero)
-			.filter(f => f.type === FeatureType.KitType)
-			.forEach(f => {
-				const data = f.data as FeatureKitTypeData;
-				types.push(...data.types);
-			});
-
-		return types;
+	static getHeroDescription = (hero: Hero) => {
+		return `Level ${hero.class?.level || 1} ${hero.ancestry?.name || 'Ancestry'} ${hero.class?.name || 'Class'}`;
 	};
 
 	static getKits = (hero: Hero) => {
@@ -42,8 +34,7 @@ export class HeroLogic {
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.Kit)
 			.forEach(f => {
-				const data = f.data as FeatureKitData;
-				kits.push(...data.selected);
+				kits.push(...f.data.selected);
 			});
 
 		return kits;
@@ -56,8 +47,7 @@ export class HeroLogic {
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.Domain)
 			.forEach(f => {
-				const data = f.data as FeatureDomainData;
-				domains.push(...data.selected);
+				domains.push(...f.data.selected);
 			});
 
 		return domains;
@@ -103,36 +93,8 @@ export class HeroLogic {
 		const abilities: Ability[] = [];
 
 		if (includeFreeStrikes) {
-			abilities.push(FactoryLogic.createAbility({
-				id: 'free-melee',
-				name: 'Free Strike (melee)',
-				description: '',
-				type: FactoryLogic.type.createAction({ free: true }),
-				keywords: [ AbilityKeyword.Charge, AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-				distance: [ FactoryLogic.distance.createMelee() ],
-				target: '1 creature or object',
-				powerRoll: FactoryLogic.createPowerRoll({
-					characteristic: [ Characteristic.Might, Characteristic.Agility ],
-					tier1: '2 + M or A damage',
-					tier2: '5 + M or A damage',
-					tier3: '7 + M or A damage'
-				})
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'free-ranged',
-				name: 'Free Strike (ranged)',
-				description: '',
-				type: FactoryLogic.type.createAction({ free: true }),
-				keywords: [ AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-				distance: [ FactoryLogic.distance.createRanged(5) ],
-				target: '1 creature or object',
-				powerRoll: FactoryLogic.createPowerRoll({
-					characteristic: [ Characteristic.Might, Characteristic.Agility ],
-					tier1: '2 + M or A damage',
-					tier2: '4 + M or A damage',
-					tier3: '6 + M or A damage'
-				})
-			}));
+			abilities.push(AbilityData.freeStrikeMelee);
+			abilities.push(AbilityData.freeStrikeRanged);
 		}
 
 		if (includeChoices) {
@@ -141,15 +103,13 @@ export class HeroLogic {
 			this.getFeatures(hero)
 				.filter(f => f.type === FeatureType.Ability)
 				.forEach(f => {
-					const data = f.data as FeatureAbilityData;
-					choices.push(data.ability);
+					choices.push(f.data.ability);
 				});
 
 			this.getFeatures(hero)
 				.filter(f => f.type === FeatureType.ClassAbility)
 				.forEach(f => {
-					const data = f.data as FeatureClassAbilityData;
-					data.selectedIDs.forEach(abilityID => {
+					f.data.selectedIDs.forEach(abilityID => {
 						const ability = hero.class?.abilities.find(a => a.id === abilityID);
 						if (ability) {
 							choices.push(ability);
@@ -174,197 +134,22 @@ export class HeroLogic {
 		}
 
 		if (includeStandard) {
-			abilities.push(FactoryLogic.createAbility({
-				id: 'advance',
-				name: 'Advance',
-				description: '',
-				type: FactoryLogic.type.createMove(),
-				keywords: [],
-				distance: [ FactoryLogic.distance.createSelf() ],
-				target: 'Self',
-				effect: 'When you take the Advance move action, you can move a number of squares up to your speed. You can break up this movement granted with your maneuver and action however you wish.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'disengage',
-				name: 'Disengage',
-				description: '',
-				type: FactoryLogic.type.createMove(),
-				keywords: [],
-				distance: [ FactoryLogic.distance.createSelf() ],
-				target: 'Self',
-				effect: 'When you take the Disengage move action, you can shift 1 square. Some class features, kits, or other rules let you shift more than 1 square when you take this move action, if they do, you can break up the movement granted by this move action with your maneuver and action however you wish.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'ride',
-				name: 'Ride',
-				description: '',
-				type: FactoryLogic.type.createMove(),
-				keywords: [],
-				distance: [ FactoryLogic.distance.createSelf() ],
-				target: 'Self',
-				effect: 'You can only take the Ride move action while mounted on another creature. When you take the Ride move action, you cause your mount to move up to their speed, taking you with them. Alternatively, you can use this move action to have your mount use the Disengage move action as a free triggered action. A mount can only be ridden with this move action once per round.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'aid-attack',
-				name: 'Aid Attack',
-				description: '',
-				type: FactoryLogic.type.createManeuver(),
-				keywords: [],
-				distance: [ FactoryLogic.distance.createMelee() ],
-				target: '1 enemy',
-				effect: 'The next attack an ally makes against the target before the start of your next turn has an edge.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'catch-breath',
-				name: 'Catch Breath',
-				description: '',
-				type: FactoryLogic.type.createManeuver(),
-				keywords: [],
-				distance: [ FactoryLogic.distance.createSelf() ],
-				target: 'Self',
-				effect: `
-By using the Catch Breath maneuver, you spend a Recovery and heal an amount equal to your recovery value. In addition, you also gain the benefit of the Defend action.
-If you are dying, you can’t take the Catch Breath maneuver, but other creatures can help you spend recoveries.`
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'drink-potion',
-				name: 'Drink Potion',
-				description: '',
-				type: FactoryLogic.type.createManeuver(),
-				keywords: [],
-				distance: [
-					FactoryLogic.distance.createSelf(),
-					FactoryLogic.distance.createMelee()
-				],
-				target: 'Self or 1 creature',
-				effect: 'You can use this maneuver to drink a potion yourself or to administer a potion to an adjacent creature.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'escape-grab',
-				name: 'Escape Grab',
-				description: '',
-				type: FactoryLogic.type.createManeuver(),
-				keywords: [],
-				distance: [ FactoryLogic.distance.createSelf() ],
-				target: 'Self',
-				preEffect: 'While you are grabbed by another creature, you can attempt to escape by making a resistance roll. You take a bane on the roll if the creature’s size is larger than yours.',
-				powerRoll: FactoryLogic.createPowerRoll({
-					characteristic: [ Characteristic.Might, Characteristic.Agility ],
-					tier1: 'You fail to escape the grab.',
-					tier2: 'You can escape the grab, but if you do, the creature grabbing you can make a melee free strike against you before you are no longer grabbed.',
-					tier3: 'You are no longer grabbed.'
-				})
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'grab',
-				name: 'Grab',
-				description: '',
-				type: FactoryLogic.type.createManeuver(),
-				keywords: [ AbilityKeyword.Melee ],
-				distance: [ FactoryLogic.distance.createMelee() ],
-				target: '1 creature the same size or smaller than you',
-				powerRoll: FactoryLogic.createPowerRoll({
-					characteristic: [ Characteristic.Might ],
-					tier1: 'No effect',
-					tier2: 'You can grab the target, but if you do, they can make a melee free strike against you right before they become grabbed by you.',
-					tier3: 'The target is grabbed by you.'
-				}),
-				effect: 'You gain an edge on the power roll if the creature’s size is smaller than yours. You can grab only one creature at a time this way.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'hide',
-				name: 'Hide',
-				description: '',
-				type: FactoryLogic.type.createManeuver(),
-				keywords: [],
-				distance: [ FactoryLogic.distance.createSelf() ],
-				target: 'Self',
-				effect: 'You attempt to hide from other creatures who aren’t observing you while you have cover or concealment.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'knockback',
-				name: 'Knockback',
-				description: '',
-				type: FactoryLogic.type.createManeuver(),
-				keywords: [ AbilityKeyword.Melee ],
-				distance: [ FactoryLogic.distance.createMelee() ],
-				target: '1 creature the same size or smaller than you',
-				powerRoll: FactoryLogic.createPowerRoll({
-					characteristic: [ Characteristic.Might ],
-					tier1: 'Push 1',
-					tier2: 'Push 2',
-					tier3: 'Push 3'
-				}),
-				effect: 'You gain an edge on the power roll if the creature’s size is smaller than yours.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'make-assist-test',
-				name: 'Make Or Assist A Test',
-				description: '',
-				type: FactoryLogic.type.createManeuver(),
-				keywords: [],
-				distance: [ FactoryLogic.distance.createSelf() ],
-				target: 'Self',
-				effect: `
-Many tests are maneuvers if made in combat. Searching a chest with a Reason test, picking a door’s lock with an Agility test, or lifting a portcullis with a Might test would all be maneuvers. Assisting a test is also a maneuver in combat.
-Complex or time-consuming tests might require an action if made in combat—or could take so long that they can’t be made during combat at all. Other tests that take no time at all, such as a Reason test to recall lore about mummies, are usually free maneuvers in combat. The Director has the final say regarding which tests can be made as maneuvers.`
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'search',
-				name: 'Search',
-				description: '',
-				type: FactoryLogic.type.createManeuver(),
-				keywords: [],
-				distance: [ FactoryLogic.distance.createSelf() ],
-				target: 'Self',
-				effect: 'You can use this maneuver to attempt to search for creatures hidden from you.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'stand-up',
-				name: 'Stand Up',
-				description: '',
-				type: FactoryLogic.type.createManeuver(),
-				keywords: [],
-				distance: [
-					FactoryLogic.distance.createSelf(),
-					FactoryLogic.distance.createMelee()
-				],
-				target: 'Self or 1 creature',
-				effect: 'You can use this maneuver to stand up if you are prone, ending that condition. Alternatively, you can use this maneuver to make an adjacent prone creature stand up.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'charge',
-				name: 'Charge',
-				description: '',
-				type: FactoryLogic.type.createAction(),
-				keywords: [],
-				distance: [ FactoryLogic.distance.createSelf() ],
-				target: 'Self',
-				effect: 'When you take the Charge action, you move up to your speed in a straight line, then make a melee free strike against a creature when you end your move. You can’t shift when you charge.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'defend',
-				name: 'Defend',
-				description: '',
-				type: FactoryLogic.type.createAction(),
-				keywords: [],
-				distance: [ FactoryLogic.distance.createSelf() ],
-				target: 'Self',
-				effect: 'When you take the Defend action, all attacks against you have a double bane until the end of your next turn. You gain no benefit from this action while another creature is taunted by you.'
-			}));
-			abilities.push(FactoryLogic.createAbility({
-				id: 'heal',
-				name: 'Heal',
-				description: '',
-				type: FactoryLogic.type.createAction(),
-				keywords: [],
-				distance: [
-					FactoryLogic.distance.createSelf(),
-					FactoryLogic.distance.createMelee()
-				],
-				target: 'Self or 1 creature',
-				effect: 'You use your action to employ medicine or inspiring words to make an adjacent creature feel better and stay in the fight. The creature can spend a Recovery to regain Stamina, or can make a resistance roll against a “(resistance ends)” effect they are suffering.'
-			}));
+			abilities.push(AbilityData.advance);
+			abilities.push(AbilityData.disengage);
+			abilities.push(AbilityData.ride);
+			abilities.push(AbilityData.aidAttack);
+			abilities.push(AbilityData.catchBreath);
+			abilities.push(AbilityData.drinkPotion);
+			abilities.push(AbilityData.escapeGrab);
+			abilities.push(AbilityData.grab);
+			abilities.push(AbilityData.hide);
+			abilities.push(AbilityData.knockback);
+			abilities.push(AbilityData.makeAssistTest);
+			abilities.push(AbilityData.search);
+			abilities.push(AbilityData.standUp);
+			abilities.push(AbilityData.charge);
+			abilities.push(AbilityData.defend);
+			abilities.push(AbilityData.heal);
 		}
 
 		return abilities;
@@ -372,6 +157,10 @@ Complex or time-consuming tests might require an action if made in combat—or c
 
 	static getFormerAncestries = (hero: Hero) => {
 		return this.getFeatures(hero).filter(f => f.type === FeatureType.AncestryChoice).map(f => f.data.selected).filter(a => !!a);
+	};
+
+	static getCompanions = (hero: Hero) => {
+		return this.getFeatures(hero).filter(f => f.type === FeatureType.Companion).map(f => f.data.selected).filter(a => !!a);
 	};
 
 	static getCharacteristic = (hero: Hero, characteristic: Characteristic) => {
@@ -383,6 +172,11 @@ Complex or time-consuming tests might require an action if made in combat—or c
 				value += ch.value;
 			}
 		}
+
+		hero.features
+			.filter(f => f.type === FeatureType.CharacteristicBonus)
+			.filter(f => f.data.characteristic === characteristic)
+			.forEach(f => value += f.data.value);
 
 		return value;
 	};
@@ -398,14 +192,12 @@ Complex or time-consuming tests might require an action if made in combat—or c
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.Language)
 			.forEach(f => {
-				const data = f.data as FeatureLanguageData;
-				languageNames.push(data.language);
+				languageNames.push(f.data.language);
 			});
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.LanguageChoice)
 			.forEach(f => {
-				const data = f.data as FeatureLanguageChoiceData;
-				languageNames.push(...data.selected);
+				languageNames.push(...f.data.selected);
 			});
 
 		const allLanguages = sourcebooks.flatMap(cs => cs.languages);
@@ -428,14 +220,12 @@ Complex or time-consuming tests might require an action if made in combat—or c
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.Skill)
 			.forEach(f => {
-				const data = f.data as FeatureSkillData;
-				skillNames.push(data.skill);
+				skillNames.push(f.data.skill);
 			});
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.SkillChoice)
 			.forEach(f => {
-				const data = f.data as FeatureSkillChoiceData;
-				skillNames.push(...data.selected);
+				skillNames.push(...f.data.selected);
 			});
 
 		const skills: Skill[] = [];
@@ -450,30 +240,43 @@ Complex or time-consuming tests might require an action if made in combat—or c
 	};
 
 	static getDamageModifiers = (hero: Hero, type: DamageModifierType) => {
-		const immunities: { type: string, value: number }[] = [];
+		const modifiers: { damageType: string, value: number }[] = [];
 
 		// Collate from features
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.DamageModifier)
 			.forEach(f => {
-				const data = f.data as FeatureDamageModifierData;
-				data.modifiers
+				f.data.modifiers
 					.filter(dm => dm.type === type)
 					.forEach(dm => {
-						let value = dm.value;
-						value += Collections.max(dm.valueCharacteristics.map(ch => HeroLogic.getCharacteristic(hero, ch)), v => v) || 0;
-						if (hero.class) {
-							value += dm.valuePerLevel * (hero.class.level - 1);
-							value += dm.valuePerEchelon * HeroLogic.getEchelon(hero.class.level);
+						const value = HeroLogic.calculateModifierValue(hero, dm);
+
+						const existing = modifiers.find(x => x.damageType === dm.damageType);
+						if (existing) {
+							existing.value = Math.max(existing.value, value);
+						} else {
+							modifiers.push({
+								damageType: dm.damageType,
+								value: value
+							});
 						}
-						immunities.push({
-							type: dm.damageType,
-							value: value
-						});
 					});
 			});
 
-		return Collections.sort(immunities, i => i.type);
+		return Collections.sort(modifiers, dm => dm.damageType);
+	};
+
+	static calculateModifierValue = (hero: Hero, mod: Modifier) => {
+		let value = mod.value;
+
+		value += (Collections.max(mod.valueCharacteristics.map(ch => HeroLogic.getCharacteristic(hero, ch)), v => v) || 0) * mod.valueCharacteristicMultiplier;
+
+		if (hero.class) {
+			value += mod.valuePerLevel * (hero.class.level - 1);
+			value += mod.valuePerEchelon * HeroLogic.getEchelon(hero.class.level);
+		}
+
+		return value;
 	};
 
 	///////////////////////////////////////////////////////////////////////////
@@ -490,7 +293,7 @@ Complex or time-consuming tests might require an action if made in combat—or c
 
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.Bonus)
-			.map(f => f.data as FeatureBonusData)
+			.map(f => f.data)
 			.filter(data => data.field === FeatureField.Stamina)
 			.forEach(data => {
 				value += data.value;
@@ -509,7 +312,7 @@ Complex or time-consuming tests might require an action if made in combat—or c
 
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.Bonus)
-			.map(f => f.data as FeatureBonusData)
+			.map(f => f.data)
 			.filter(data => data.field === FeatureField.RecoveryValue)
 			.forEach(data => {
 				value += data.value;
@@ -528,7 +331,7 @@ Complex or time-consuming tests might require an action if made in combat—or c
 
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.Bonus)
-			.map(f => f.data as FeatureBonusData)
+			.map(f => f.data)
 			.filter(data => data.field === FeatureField.Recoveries)
 			.forEach(data => {
 				value += data.value;
@@ -588,7 +391,7 @@ Complex or time-consuming tests might require an action if made in combat—or c
 
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.Bonus)
-			.map(f => f.data as FeatureBonusData)
+			.map(f => f.data)
 			.filter(data => data.field === FeatureField.Speed)
 			.forEach(data => {
 				value += data.value;
@@ -611,7 +414,7 @@ Complex or time-consuming tests might require an action if made in combat—or c
 
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.Bonus)
-			.map(f => f.data as FeatureBonusData)
+			.map(f => f.data)
 			.filter(data => data.field === FeatureField.Stability)
 			.forEach(data => {
 				value += data.value;
@@ -634,7 +437,7 @@ Complex or time-consuming tests might require an action if made in combat—or c
 
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.Bonus)
-			.map(f => f.data as FeatureBonusData)
+			.map(f => f.data)
 			.filter(data => data.field === FeatureField.Disengage)
 			.forEach(data => {
 				value += data.value;
@@ -649,12 +452,50 @@ Complex or time-consuming tests might require an action if made in combat—or c
 	};
 
 	static getRenown = (hero: Hero) => {
-		let value = 0;
+		let value = hero.state.renown;
 
 		this.getFeatures(hero)
 			.filter(f => f.type === FeatureType.Bonus)
-			.map(f => f.data as FeatureBonusData)
+			.map(f => f.data)
 			.filter(data => data.field === FeatureField.Renown)
+			.forEach(data => {
+				value += data.value;
+				value += Collections.max(data.valueCharacteristics.map(ch => HeroLogic.getCharacteristic(hero, ch)), v => v) || 0;
+				if (hero.class) {
+					value += data.valuePerLevel * (hero.class.level - 1);
+					value += data.valuePerEchelon * HeroLogic.getEchelon(hero.class.level);
+				}
+			});
+
+		return value;
+	};
+
+	static getProjectPoints = (hero: Hero) => {
+		let value = hero.state.projectPoints;
+
+		this.getFeatures(hero)
+			.filter(f => f.type === FeatureType.Bonus)
+			.map(f => f.data)
+			.filter(data => data.field === FeatureField.ProjectPoints)
+			.forEach(data => {
+				value += data.value;
+				value += Collections.max(data.valueCharacteristics.map(ch => HeroLogic.getCharacteristic(hero, ch)), v => v) || 0;
+				if (hero.class) {
+					value += data.valuePerLevel * (hero.class.level - 1);
+					value += data.valuePerEchelon * HeroLogic.getEchelon(hero.class.level);
+				}
+			});
+
+		return value;
+	};
+
+	static getWealth = (hero: Hero) => {
+		let value = hero.state.wealth;
+
+		this.getFeatures(hero)
+			.filter(f => f.type === FeatureType.Bonus)
+			.map(f => f.data)
+			.filter(data => data.field === FeatureField.Wealth)
 			.forEach(data => {
 				value += data.value;
 				value += Collections.max(data.valueCharacteristics.map(ch => HeroLogic.getCharacteristic(hero, ch)), v => v) || 0;
@@ -717,23 +558,61 @@ Complex or time-consuming tests might require an action if made in combat—or c
 		};
 	};
 
+	static getFeatureDamageBonus = (hero: Hero, ability: Ability) => {
+		let value = 0;
+
+		HeroLogic.getFeatures(hero)
+			.filter(f => f.type === FeatureType.AbilityDamage)
+			.filter(f => f.data.keywords.some(kw => ability.keywords.includes(kw)))
+			.forEach(f => {
+				const mod = HeroLogic.calculateModifierValue(hero, f.data);
+				value += mod;
+			});
+
+		return value;
+	};
+
 	static getDistanceBonus = (hero: Hero, ability: Ability, distance: AbilityDistance) => {
-		const kits = this.getKits(hero);
+		let value = 0;
 
-		if (ability.keywords.includes(AbilityKeyword.Melee) && ability.keywords.includes(AbilityKeyword.Weapon) && (distance.type === AbilityDistanceType.Melee)) {
-			// Add maximum melee distance bonus from kits
-			return Collections.max(kits.map(kit => kit.meleeDistance), value => value) || 0;
+		switch (distance.type) {
+			case AbilityDistanceType.Melee:
+				if (ability.keywords.includes(AbilityKeyword.Melee) && ability.keywords.includes(AbilityKeyword.Weapon)) {
+					// Add maximum melee distance bonus from kits
+					value += Collections.max(this.getKits(hero).map(kit => kit.meleeDistance), value => value) || 0;
+				}
+				break;
+			case AbilityDistanceType.Ranged:
+				if (ability.keywords.includes(AbilityKeyword.Ranged) && ability.keywords.includes(AbilityKeyword.Weapon)) {
+					// Add maximum ranged distance bonus from kits
+					value += Collections.max(this.getKits(hero).map(kit => kit.rangedDistance), value => value) || 0;
+				}
+				break;
 		}
 
-		if (ability.keywords.includes(AbilityKeyword.Ranged) && ability.keywords.includes(AbilityKeyword.Weapon) && (distance.type === AbilityDistanceType.Ranged)) {
-			// Add maximum ranged distance bonus from kits
-			return Collections.max(kits.map(kit => kit.rangedDistance), value => value) || 0;
-		}
+		HeroLogic.getFeatures(hero)
+			.filter(f => f.type === FeatureType.AbilityDistance)
+			.filter(f => f.data.keywords.every(kw => ability.keywords.includes(kw)))
+			.forEach(f => {
+				const mod = HeroLogic.calculateModifierValue(hero, f.data);
+				value += mod;
+			});
 
-		return 0;
+		return value;
 	};
 
 	///////////////////////////////////////////////////////////////////////////
+
+	static canUseItem = (hero: Hero, item: Item) => {
+		switch (item.type) {
+			case ItemType.LeveledArmor:
+				return HeroLogic.getKits(hero).flatMap(k => k.armor).some(a => item.keywords.includes(a));
+			case ItemType.LeveledWeapon:
+				return HeroLogic.getKits(hero).flatMap(k => k.weapon).some(w => item.keywords.includes(w));
+		}
+
+		return true;
+	};
 
 	static getEchelon = (level: number) => {
 		switch (level) {
@@ -811,6 +690,10 @@ Complex or time-consuming tests might require an action if made in combat—or c
 		}
 	};
 
+	static isWinded = (hero: Hero) => {
+		return hero.state.staminaDamage >= (HeroLogic.getStamina(hero) / 2);
+	};
+
 	static getMinXP = (level: number) => {
 		switch (level) {
 			case 1:
@@ -846,9 +729,27 @@ Complex or time-consuming tests might require an action if made in combat—or c
 		return hero.state.xp >= this.getMinXP(hero.class.level + 1);
 	};
 
+	static takeRespite = (hero: Hero) => {
+		hero.state.staminaDamage = 0;
+		hero.state.staminaTemp = 0;
+		hero.state.recoveriesUsed = 0;
+		hero.state.surges = 0;
+		hero.state.heroicResource = 0;
+		hero.state.xp += hero.state.victories;
+		hero.state.victories = 0;
+		hero.state.conditions = [];
+		hero.state.hidden = false;
+		hero.state.acted = false;
+		hero.state.defeated = false;
+	};
+
 	///////////////////////////////////////////////////////////////////////////
 
 	static updateHero = (hero: Hero) => {
+		if (hero.folder === undefined) {
+			hero.folder = '';
+		}
+
 		if (hero.settingIDs === undefined) {
 			hero.settingIDs = [ SourcebookData.core.id, SourcebookData.orden.id ];
 		}
@@ -862,12 +763,28 @@ Complex or time-consuming tests might require an action if made in combat—or c
 			}
 		}
 
+		if (hero.class) {
+			if (hero.class.primaryCharacteristicsOptions === undefined) {
+				hero.class.primaryCharacteristicsOptions = [];
+			}
+		}
+
 		if (hero.features === undefined) {
 			hero.features = [];
 		}
 
+		hero.state.conditions.forEach(c => {
+			if (c.text === undefined) {
+				c.text = '';
+			}
+		});
+
 		if (hero.state.surges === undefined) {
 			hero.state.surges = 0;
+		}
+
+		if (hero.state.staminaTemp === undefined) {
+			hero.state.staminaTemp = 0;
 		}
 
 		if (hero.state.xp === undefined) {
@@ -886,32 +803,96 @@ Complex or time-consuming tests might require an action if made in combat—or c
 			hero.state.projects = [];
 		}
 
-		hero.state.inventory = hero.state.inventory.filter(i => (i as unknown as FeatureItemChoice).data === undefined);
+		if (hero.state.notes === undefined) {
+			hero.state.notes = '';
+		}
+
+		if (hero.state.acted === undefined) {
+			hero.state.acted = false;
+		}
+
+		if (hero.state.defeated === undefined) {
+			hero.state.defeated = false;
+		}
+
+		hero.state.inventory.forEach(item => {
+			if (item.customizationsByLevel === undefined) {
+				item.customizationsByLevel = [
+					{
+						level: 1,
+						features: []
+					},
+					{
+						level: 5,
+						features: []
+					},
+					{
+						level: 9,
+						features: []
+					}
+				];
+			}
+		});
 
 		if (hero.abilityCustomizations === undefined) {
 			hero.abilityCustomizations = [];
 		}
 
 		this.getFeatures(hero).filter(f => f.type === FeatureType.Bonus).forEach(f => {
-			const data = f.data as FeatureBonusData;
-			if (data.valueCharacteristics === undefined) {
-				data.valueCharacteristics = [];
+			if (f.data.valueCharacteristics === undefined) {
+				f.data.valueCharacteristics = [];
 			}
-			if (data.valuePerEchelon === undefined) {
-				data.valuePerEchelon = 0;
+			if (f.data.valuePerEchelon === undefined) {
+				f.data.valuePerEchelon = 0;
 			}
 		});
 
 		this.getFeatures(hero).filter(f => f.type === FeatureType.DamageModifier).forEach(f => {
-			const data = f.data as FeatureDamageModifierData;
-			data.modifiers.forEach(dm => {
+			f.data.modifiers.forEach(dm => {
 				if (dm.valueCharacteristics === undefined) {
 					dm.valueCharacteristics = [];
+				}
+				if (dm.valueCharacteristicMultiplier === undefined) {
+					dm.valueCharacteristicMultiplier = 1;
 				}
 				if (dm.valuePerEchelon === undefined) {
 					dm.valuePerEchelon = 0;
 				}
 			});
+		});
+
+		this.getFeatures(hero).filter(f => f.type === FeatureType.Kit).forEach(f => {
+			if (f.data.types.includes('Standard')) {
+				f.data.types = f.data.types.filter(t => t !== 'Standard');
+				f.data.types.push('');
+			}
+		});
+
+		this.getFeatures(hero).filter(f => f.type === FeatureType.ItemChoice).forEach(f => {
+			f.data.selected.forEach(item => {
+				if (item.customizationsByLevel === undefined) {
+					item.customizationsByLevel = [
+						{
+							level: 1,
+							features: []
+						},
+						{
+							level: 5,
+							features: []
+						},
+						{
+							level: 9,
+							features: []
+						}
+					];
+				}
+			});
+		});
+
+		this.getKits(hero).forEach(k => {
+			if (k.type === 'Standard') {
+				k.type = '';
+			}
 		});
 	};
 }

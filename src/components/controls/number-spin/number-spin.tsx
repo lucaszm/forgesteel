@@ -1,5 +1,7 @@
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { ReactNode } from 'react';
 import { Statistic } from 'antd';
+import { Utils } from '../../../utils/utils';
 
 import './number-spin.scss';
 
@@ -7,9 +9,11 @@ interface Props {
 	disabled?: boolean;
 	label?: string;
 	value: number;
+	suffix?: ReactNode;
 	steps?: number[];
 	min?: number;
 	max?: number;
+	children?: ReactNode;
 	format?: (value: number) => string;
 	onChange: (value: number) => void;
 }
@@ -37,8 +41,8 @@ export const NumberSpin = (props: Props) => {
 	}
 
 	const steps = props.steps || [ 1 ];
-	const ascending = (JSON.parse(JSON.stringify(steps)) as number[]).sort((a, b) => a - b);
-	const descending = (JSON.parse(JSON.stringify(steps)) as number[]).sort((a, b) => b - a);
+	const ascending = Utils.copy(steps).sort((a, b) => a - b);
+	const descending = Utils.copy(steps).sort((a, b) => b - a);
 
 	try {
 		return (
@@ -55,11 +59,17 @@ export const NumberSpin = (props: Props) => {
 						))
 					}
 				</div>
-				<Statistic
-					className='spin-middle'
-					title={props.label}
-					value={props.format ? props.format(props.value) : props.value}
-				/>
+				{
+					props.children ?
+						props.children
+						:
+						<Statistic
+							className='spin-middle'
+							title={props.label}
+							value={props.format ? props.format(props.value) : props.value}
+							suffix={props.suffix}
+						/>
+				}
 				<div className='spin-buttons'>
 					{
 						ascending.map((step, n) => (

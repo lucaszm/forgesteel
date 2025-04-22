@@ -1,7 +1,9 @@
-import { Alert, Button, Input, Select, Space } from 'antd';
-import { CaretDownOutlined, CaretUpOutlined, CheckCircleOutlined, EditOutlined, EyeInvisibleOutlined, EyeOutlined, ThunderboltOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, Input, Select, Space } from 'antd';
+import { CaretDownOutlined, CaretUpOutlined, CheckCircleOutlined, EditOutlined, EyeInvisibleOutlined, EyeOutlined, PlusOutlined, ThunderboltOutlined, UploadOutlined } from '@ant-design/icons';
 import { Collections } from '../../../../utils/collections';
 import { DangerButton } from '../../../controls/danger-button/danger-button';
+import { Empty } from '../../../controls/empty/empty';
+import { ErrorBoundary } from '../../../controls/error-boundary/error-boundary';
 import { Expander } from '../../../controls/expander/expander';
 import { HeaderText } from '../../../controls/header-text/header-text';
 import { Hero } from '../../../../models/hero';
@@ -26,7 +28,7 @@ interface Props {
 }
 
 export const SourcebookPanel = (props: Props) => {
-	const [ sourcebook, setSourcebook ] = useState<Sourcebook>(JSON.parse(JSON.stringify(props.sourcebook)));
+	const [ sourcebook, setSourcebook ] = useState<Sourcebook>(Utils.copy(props.sourcebook));
 	const [ isEditing, setIsEditing ] = useState<boolean>(false);
 
 	const toggleEditing = () => {
@@ -42,91 +44,91 @@ export const SourcebookPanel = (props: Props) => {
 	};
 
 	const setName = (value: string) => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.name = value;
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const setDescription = (value: string) => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.description = value;
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const addLanguage = () => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.languages.push({ name: '', description: '' });
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const deleteLanguage = (index: number) => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.languages.splice(index, 1);
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const moveLanguage = (index: number, direction: 'up' | 'down') => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.languages = Collections.move(copy.languages, index, direction);
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const setLanguageName = (index: number, value: string) => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.languages[index].name = value;
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const setLanguageDescription = (index: number, value: string) => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.languages[index].description = value;
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const addSkill = () => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.skills.push({ name: '', description: '', list: SkillList.Crafting });
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const deleteSkill = (index: number) => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.skills.splice(index, 1);
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const moveSkill = (index: number, direction: 'up' | 'down') => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.skills = Collections.move(copy.skills, index, direction);
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const setSkillName = (index: number, value: string) => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.skills[index].name = value;
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const setSkillDescription = (index: number, value: string) => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.skills[index].description = value;
 		setSourcebook(copy);
 		props.onChange(copy);
 	};
 
 	const setSkillList = (index: number, value: SkillList) => {
-		const copy = JSON.parse(JSON.stringify(sourcebook)) as Sourcebook;
+		const copy = Utils.copy(sourcebook);
 		copy.skills[index].list = value;
 		setSourcebook(copy);
 		props.onChange(copy);
@@ -160,9 +162,9 @@ export const SourcebookPanel = (props: Props) => {
 										key={n}
 										title={lang.name || 'Unnamed Language'}
 										extra={[
-											<Button key='up' type='text' icon={<CaretUpOutlined />} onClick={e => { e.stopPropagation(); moveLanguage(n, 'up'); }} />,
-											<Button key='down' type='text' icon={<CaretDownOutlined />} onClick={e => { e.stopPropagation(); moveLanguage(n, 'down'); }} />,
-											<DangerButton key='delete' mode='icon' onConfirm={e => { e.stopPropagation(); deleteLanguage(n); }} />
+											<Button key='up' type='text' title='Move Up' icon={<CaretUpOutlined />} onClick={e => { e.stopPropagation(); moveLanguage(n, 'up'); }} />,
+											<Button key='down' type='text' title='Move Down' icon={<CaretDownOutlined />} onClick={e => { e.stopPropagation(); moveLanguage(n, 'down'); }} />,
+											<DangerButton key='delete' mode='clear' onConfirm={e => { e.stopPropagation(); deleteLanguage(n); }} />
 										]}
 									>
 										<Space direction='vertical' style={{ width: '100%' }}>
@@ -181,14 +183,13 @@ export const SourcebookPanel = (props: Props) => {
 							}
 							{
 								sourcebook.languages.length === 0 ?
-									<Alert
-										type='warning'
-										showIcon={true}
-										message='No languages'
-									/>
+									<Empty />
 									: null
 							}
-							<Button block={true} onClick={addLanguage}>Add a new language</Button>
+							<Button block={true} onClick={addLanguage}>
+								<PlusOutlined />
+								Add a new language
+							</Button>
 						</Space>
 					</Expander>
 					<Expander title='Skills'>
@@ -200,9 +201,9 @@ export const SourcebookPanel = (props: Props) => {
 										key={n}
 										title={skill.name || 'Unnamed Skill'}
 										extra={[
-											<Button key='up' type='text' icon={<CaretUpOutlined />} onClick={e => { e.stopPropagation(); moveSkill(n, 'up'); }} />,
-											<Button key='down' type='text' icon={<CaretDownOutlined />} onClick={e => { e.stopPropagation(); moveSkill(n, 'down'); }} />,
-											<DangerButton key='delete' mode='icon' onConfirm={e => { e.stopPropagation(); deleteSkill(n); }} />
+											<Button key='up' type='text' title='Move Up' icon={<CaretUpOutlined />} onClick={e => { e.stopPropagation(); moveSkill(n, 'up'); }} />,
+											<Button key='down' type='text' title='Move Down' icon={<CaretDownOutlined />} onClick={e => { e.stopPropagation(); moveSkill(n, 'down'); }} />,
+											<DangerButton key='delete' mode='clear' onConfirm={e => { e.stopPropagation(); deleteSkill(n); }} />
 										]}
 									>
 										<Space direction='vertical' style={{ width: '100%' }}>
@@ -229,14 +230,13 @@ export const SourcebookPanel = (props: Props) => {
 							}
 							{
 								sourcebook.skills.length === 0 ?
-									<Alert
-										type='warning'
-										showIcon={true}
-										message='No skills'
-									/>
+									<Empty />
 									: null
 							}
-							<Button block={true} onClick={addSkill}>Add a new skill</Button>
+							<Button block={true} onClick={addSkill}>
+								<PlusOutlined />
+								Add a new skill
+							</Button>
 						</Space>
 					</Expander>
 				</Space>
@@ -245,7 +245,6 @@ export const SourcebookPanel = (props: Props) => {
 				buttons = (
 					<>
 						<Button type='text' title='OK' icon={<CheckCircleOutlined />} onClick={toggleEditing} />
-						<DangerButton disabled={props.heroes.some(h => h.settingIDs.includes(sourcebook.id))} mode='icon' onConfirm={onDelete} />
 					</>
 				);
 			}
@@ -260,21 +259,24 @@ export const SourcebookPanel = (props: Props) => {
 				<>
 					<Button type='text' title='Show / Hide' icon={props.visible ? <EyeOutlined /> : <EyeInvisibleOutlined />} onClick={() => props.onSetVisible(sourcebook, !props.visible)} />
 					{sourcebook.isHomebrew ? <Button type='text' title='Edit' icon={<EditOutlined />} onClick={toggleEditing} /> : null}
-					{sourcebook.isHomebrew ? <Button type='text' title='Export' icon={<UploadOutlined />} onClick={onExport} /> : null}
+					<Button type='text' title='Export' icon={<UploadOutlined />} onClick={onExport} />
+					{sourcebook.isHomebrew ? <DangerButton disabled={props.heroes.some(h => h.settingIDs.includes(sourcebook.id))} mode='clear' onConfirm={onDelete} /> : null}
 				</>
 			);
 		}
 
 		return (
-			<div className='sourcebook-panel' id={sourcebook.id}>
-				<div className='content'>
-					<HeaderText tags={sourcebook.isHomebrew ? [ 'Homebrew' ] : []}>{sourcebook.name || 'Unnamed Sourcebook'}</HeaderText>
-					{content}
+			<ErrorBoundary>
+				<div className='sourcebook-panel' id={sourcebook.id}>
+					<div className='content'>
+						<HeaderText tags={sourcebook.isHomebrew ? [ 'Homebrew' ] : []}>{sourcebook.name || 'Unnamed Sourcebook'}</HeaderText>
+						{content}
+					</div>
+					<div className='action-buttons'>
+						{buttons}
+					</div>
 				</div>
-				<div className='action-buttons'>
-					{buttons}
-				</div>
-			</div>
+			</ErrorBoundary>
 		);
 	} catch (ex) {
 		console.error(ex);

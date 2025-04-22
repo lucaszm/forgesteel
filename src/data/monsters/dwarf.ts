@@ -11,7 +11,7 @@ export const dwarf: MonsterGroup = {
 	id: 'monster-group-dwarf',
 	name: 'Dwarf',
 	description: `
-Possessed of a strength that belies their size, dwarven flesh is infused with stone—a silico-organic hybrid making them physically denser than humans or elves. They enjoy a reputation in Orden as savvy engineers and technologists thanks to the lore they inherited from their elder siblings, the long-extinct steel dwarves.
+Possessed of a strength that belies their size, dwarven flesh is infused with stone - a silico-organic hybrid making them physically denser than humans or elves. They enjoy a reputation in Orden as savvy engineers and technologists thanks to the lore they inherited from their elder siblings, the long-extinct steel dwarves.
 
 They are the children of the elder god Ord. A common phrase among the dwarves is “Ord made the world.” Their way of saying, “What will be, will be.” Dwarves take great pride in knowing that along with Aan, Eth, and Kul, their god created the mundane world, and many dwarves leave their homes to see the world and seek glory in Ord’s name.`,
 	information: [
@@ -21,7 +21,7 @@ They are the children of the elder god Ord. A common phrase among the dwarves is
 			description: `
 Those raised within dwarven enclaves have a relationship with technology not found in many other places on Orden. The gifts of the Steel Dwarves are many in number, but the most prominent is that of pneumatic steam power.
 
-Dwarves have incorporated steam into much of their warfare and weaponry, making them deadly opponents. But like all technology, it's a double headed hammer.  As much as they use it for destruction, construction is where they truly shine. Creating the formidable and brutalist facades common dwarven architecture is made much easier with the use of tools created to utilize pneumatic power. Some of the larger and more metropolitan dwarven cities are rumored to power wealthier districts using steam from geothermal vents.`
+Dwarves have incorporated steam into much of their warfare and weaponry, making them deadly opponents. But like all technology, it's a double headed hammer. As much as they use it for destruction, construction is where they truly shine. Creating the formidable and brutalist facades common dwarven architecture is made much easier with the use of tools created to utilize pneumatic power. Some of the larger and more metropolitan dwarven cities are rumored to power wealthier districts using steam from geothermal vents.`
 		},
 		{
 			id: 'dwarf-info-2',
@@ -106,9 +106,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			id: 'dwarf-1',
 			name: 'Dwarf Runner',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Defender, MonsterOrganizationType.Minion),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Minion, MonsterRoleType.Defender),
 			keywords: [ 'Dwarf', 'Humanoid' ],
 			encounterValue: 6,
+			size: FactoryLogic.createSize(1, 'M'),
 			speed: FactoryLogic.createSpeed(5),
 			stamina: 7,
 			stability: 2,
@@ -124,7 +125,7 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
 						distance: [
-							FactoryLogic.distance.createMelee(1),
+							FactoryLogic.distance.createMelee(),
 							FactoryLogic.distance.createRanged(5)
 						],
 						target: 'One creature or object per minion',
@@ -143,9 +144,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			id: 'dwarf-2',
 			name: 'Dwarf Catchpole',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Brute, MonsterOrganizationType.Minion),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Minion, MonsterRoleType.Brute),
 			keywords: [ 'Dwarf', 'Humanoid' ],
 			encounterValue: 6,
+			size: FactoryLogic.createSize(1, 'M'),
 			speed: FactoryLogic.createSpeed(5),
 			stamina: 7,
 			stability: 2,
@@ -160,7 +162,7 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Charge, AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature or object per minion',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -177,9 +179,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			id: 'dwarf-3',
 			name: 'Dwarf Hunter',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Support, MonsterOrganizationType.Minion),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Minion, MonsterRoleType.Support),
 			keywords: [ 'Dwarf', 'Humanoid' ],
 			encounterValue: 6,
+			size: FactoryLogic.createSize(1, 'M'),
 			speed: FactoryLogic.createSpeed(5),
 			stamina: 6,
 			stability: 1,
@@ -211,9 +214,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			id: 'dwarf-4',
 			name: 'Dwarf Grenadier',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Hexer, MonsterOrganizationType.Platoon),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Platoon, MonsterRoleType.Hexer),
 			keywords: [ 'Dwarf', 'Humanoid' ],
 			encounterValue: 8,
+			size: FactoryLogic.createSize(1, 'M'),
 			speed: FactoryLogic.createSpeed(5),
 			stamina: 39,
 			stability: 3,
@@ -267,9 +271,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			id: 'dwarf-5',
 			name: 'Dwarf Gunner',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Artillery, MonsterOrganizationType.Platoon),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Platoon, MonsterRoleType.Artillery),
 			keywords: [ 'Dwarf', 'Humanoid' ],
 			encounterValue: 12,
+			size: FactoryLogic.createSize(1, 'M'),
 			speed: FactoryLogic.createSpeed(5),
 			stamina: 26,
 			stability: 1,
@@ -320,9 +325,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			id: 'dwarf-6',
 			name: 'Dwarf Reel Winch',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Support, MonsterOrganizationType.Platoon),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Platoon, MonsterRoleType.Support),
 			keywords: [ 'Dwarf', 'Humanoid' ],
 			encounterValue: 13,
+			size: FactoryLogic.createSize(1, 'M'),
 			speed: FactoryLogic.createSpeed(5),
 			stamina: 36,
 			stability: 2,
@@ -370,9 +376,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			id: 'dwarf-7',
 			name: 'Dwarf Shieldwall',
 			level: 3,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Defender, MonsterOrganizationType.Platoon),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Platoon, MonsterRoleType.Defender),
 			keywords: [ 'Dwarf', 'Humanoid' ],
 			encounterValue: 21,
+			size: FactoryLogic.createSize(1, 'M'),
 			speed: FactoryLogic.createSpeed(5),
 			stamina: 72,
 			stability: 4,
@@ -386,7 +393,7 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature or object',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -421,9 +428,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			id: 'dwarf-8',
 			name: 'Dwarf Stonewhisperer',
 			level: 3,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Controller, MonsterOrganizationType.Platoon),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Platoon, MonsterRoleType.Controller),
 			keywords: [ 'Dwarf', 'Humanoid' ],
 			encounterValue: 10,
+			size: FactoryLogic.createSize(1, 'M'),
 			speed: FactoryLogic.createSpeed(5),
 			stamina: 52,
 			stability: 2,
@@ -477,9 +485,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			id: 'dwarf-9',
 			name: 'Dwarf Trapper',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Harrier, MonsterOrganizationType.Platoon),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Platoon, MonsterRoleType.Harrier),
 			keywords: [ 'Dwarf', 'Humanoid' ],
 			encounterValue: 6,
+			size: FactoryLogic.createSize(1, 'M'),
 			speed: FactoryLogic.createSpeed(7),
 			stamina: 36,
 			stability: 2,
@@ -494,7 +503,7 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Charge, AbilityKeyword.Melee, AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
 						distance: [
-							FactoryLogic.distance.createMelee(1),
+							FactoryLogic.distance.createMelee(),
 							FactoryLogic.distance.createRanged(10)
 						],
 						target: 'One creature or object',
@@ -532,9 +541,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			id: 'dwarf-10',
 			name: 'Dwarf Warden',
 			level: 2,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Brute, MonsterOrganizationType.Platoon),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Platoon, MonsterRoleType.Brute),
 			keywords: [ 'Dwarf', 'Humanoid' ],
 			encounterValue: 8,
+			size: FactoryLogic.createSize(1, 'M'),
 			speed: FactoryLogic.createSpeed(5),
 			stamina: 59,
 			stability: 3,
@@ -548,7 +558,7 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature or object',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -588,9 +598,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			id: 'dwarf-11',
 			name: 'Dwarf Marauder Lord',
 			level: 3,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.NoRole, MonsterOrganizationType.Leader),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Leader),
 			keywords: [ 'Dwarf', 'Humanoid' ],
 			encounterValue: 20,
+			size: FactoryLogic.createSize(1, 'M'),
 			speed: FactoryLogic.createSpeed(5),
 			stamina: 132,
 			stability: 4,
@@ -605,7 +616,7 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Psionic, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
 						distance: [
-							FactoryLogic.distance.createMelee(1),
+							FactoryLogic.distance.createMelee(),
 							FactoryLogic.distance.createRanged(10)
 						],
 						target: 'Two creatures or objects',
@@ -690,10 +701,10 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			]
 		}),
 		FactoryLogic.createMonster({
-			id: 'dwarf-servitor-war-walker',
+			id: 'dwarf-12',
 			name: 'Servitor War Worker',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Mount, MonsterOrganizationType.Troop),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Troop, MonsterRoleType.Mount),
 			keywords: [ 'Construct', 'Dwarf' ],
 			encounterValue: 12,
 			size: FactoryLogic.createSize(3),
@@ -705,7 +716,7 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 			features: [
 				FactoryLogic.feature.createAbility({
 					ability: FactoryLogic.createAbility({
-						id: 'dwarf-servitor-war-walker-feature-1',
+						id: 'dwarf-12-feature-1',
 						name: 'Grasping Claws',
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
@@ -723,7 +734,7 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 				}),
 				FactoryLogic.feature.createAbility({
 					ability: FactoryLogic.createAbility({
-						id: 'dwarf-servitor-war-walker-feature-2',
+						id: 'dwarf-12-feature-2',
 						name: 'Stunning Blast',
 						type: FactoryLogic.type.createManeuver(),
 						cost: 3,
@@ -739,16 +750,108 @@ Legends speak of stone singers, dwarves who could move mountains with their song
 					})
 				}),
 				FactoryLogic.feature.create({
-					id: 'dwarf-servitor-war-walker-feature-3',
+					id: 'dwarf-12-feature-3',
 					name: 'Cupola',
 					description: 'Three of the war walker’s size 1 allies can occupy the same space while riding the war walker. Riders have cover against attacks that target them.'
 				}),
 				FactoryLogic.feature.create({
-					id: 'dwarf-servitor-war-walker-feature-4',
+					id: 'dwarf-12-feature-4',
 					name: 'Mobile Prison Harness',
 					description: 'Slowed or restrained creatures adjacent to the war walker become restrained (save ends) and have a bane on all power rolls. Adjacent restrained creatures are automatically moved with the war walker, ignoring stability.'
 				})
 			]
+		}),
+		FactoryLogic.createMonster({
+			id: 'dwarf-13',
+			name: 'Dwarf Mortar',
+			level: 1,
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Retainer, MonsterRoleType.Hexer),
+			keywords: [ 'Dwarf', 'Humanoid' ],
+			encounterValue: 11,
+			size: FactoryLogic.createSize(1, 'M'),
+			speed: FactoryLogic.createSpeed(5),
+			stamina: 20,
+			stability: 3,
+			freeStrikeDamage: 3,
+			characteristics: MonsterLogic.createCharacteristics(2, 0, 0, 1, 0),
+			features: [
+				FactoryLogic.feature.createAbility({
+					ability: FactoryLogic.createAbility({
+						id: 'dwarf-13-feature-1',
+						name: 'Armor-Piercing Shell',
+						type: FactoryLogic.type.createAction(),
+						cost: 'signature',
+						keywords: [ AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
+						distance: [ FactoryLogic.distance.createRanged(15) ],
+						target: '1 creature or object',
+						powerRoll: FactoryLogic.createPowerRoll({
+							characteristic: [ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ],
+							tier1: '3 damage',
+							tier2: '5 damage',
+							tier3: '7 damage'
+						}),
+						effect: 'The attack ignores cover and Temporary Stamina.'
+					})
+				}),
+				FactoryLogic.feature.create({
+					id: 'dwarf-13-feature-2',
+					name: 'Voice Thrower',
+					description: 'The mortar can use a gadget to talk to their mentor over any distance.'
+				})
+			],
+			retainer: {
+				level4: FactoryLogic.feature.createAbility({
+					ability: FactoryLogic.createAbility({
+						id: 'dwarf-13-retainer-4',
+						name: 'Signal Shell',
+						type: FactoryLogic.type.createAction({ qualifiers: [ 'encounter' ] }),
+						keywords: [ AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
+						distance: [ FactoryLogic.distance.createSpecial('See below') ],
+						target: 'All enemies',
+						preEffect: 'The mortar fires a shell up to 2 squares vertically. The shell hovers in the air, shedding light in a 3 burst. Enemies illuminated by this light can’t Hide or turn invisible and can’t benefit from shields. At the start of the mortar’s next turn, the shell explodes, damaging enemies in the area.',
+						powerRoll: FactoryLogic.createPowerRoll({
+							characteristic: [ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ],
+							tier1: '5 fire damage',
+							tier2: '8 fire damage',
+							tier3: '11 fire damage'
+						})
+					})
+				}),
+				level7: FactoryLogic.feature.createAbility({
+					ability: FactoryLogic.createAbility({
+						id: 'dwarf-13-retainer-7',
+						name: 'Screaming Shell',
+						type: FactoryLogic.type.createAction({ qualifiers: [ 'encounter' ] }),
+						keywords: [ AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
+						distance: [ FactoryLogic.distance.create({ type: AbilityDistanceType.Line, value: 10, value2: 1, within: 1 }) ],
+						target: 'All creatures',
+						powerRoll: FactoryLogic.createPowerRoll({
+							characteristic: [ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ],
+							tier1: '6 damage; P (weak) frightened',
+							tier2: '9 damage; P (average) frightened',
+							tier3: '13 damage; P (strong) frightened'
+						}),
+						effect: 'Until the start of the mortar’s next turn, attacks against the mortar and allies within 1 suffer a bane.'
+					})
+				}),
+				level10: FactoryLogic.feature.createAbility({
+					ability: FactoryLogic.createAbility({
+						id: 'dwarf-13-retainer-10',
+						name: 'Pacifier Shell',
+						type: FactoryLogic.type.createAction({ qualifiers: [ 'encounter' ] }),
+						keywords: [ AbilityKeyword.Area, AbilityKeyword.Weapon ],
+						distance: [ FactoryLogic.distance.create({ type: AbilityDistanceType.Cube, value: 3, within: 15 }) ],
+						target: 'All enemies',
+						powerRoll: FactoryLogic.createPowerRoll({
+							characteristic: [ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ],
+							tier1: '8 damage; I (weak) dazed (save ends)',
+							tier2: '12 damage; I (average) dazed (save ends)',
+							tier3: '16 damage; I (strong) dazed (save ends), prone'
+						})
+					})
+				})
+			}
 		})
-	]
+	],
+	addOns: []
 };

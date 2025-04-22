@@ -2,6 +2,8 @@
 
 **FORGE STEEL** is a hero builder app for **DRAW STEEL**, designed by [Andy Aiken](mailto:andy.aiken@live.co.uk).
 
+You can find it [here](https://andyaiken.github.io/forgesteel/).
+
 ## Heroes
 
 With this app you can create heroes using the **DRAW STEEL** backer packet.
@@ -47,7 +49,7 @@ To run the app locally, run the following commands:
 
 ```
 npm install
-npm run dev
+npm run start
 ```
 
 Once built, the app should then be available at `http://localhost:5173/forgesteel/`.

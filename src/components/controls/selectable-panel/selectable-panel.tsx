@@ -6,9 +6,13 @@ import './selectable-panel.scss';
 interface Props {
 	children: ReactNode;
 	showShadow?: boolean;
+	selected?: boolean;
 	style?: CSSProperties;
+	action?: {
+		label: string;
+		onClick: () => void;
+	};
 	onSelect?: () => void;
-	onUnselect?: () => void;
 };
 
 export const SelectablePanel = (props: Props) => {
@@ -17,6 +21,9 @@ export const SelectablePanel = (props: Props) => {
 		if (props.onSelect) {
 			className += ' selectable';
 		}
+		if (props.selected) {
+			className += ' selected';
+		}
 		if (props.showShadow !== false) {
 			className += ' shadow';
 		}
@@ -24,7 +31,7 @@ export const SelectablePanel = (props: Props) => {
 		return (
 			<div className={className} style={props.style} onClick={props.onSelect}>
 				{props.children}
-				{props.onUnselect ? <Button className='unselect-button' onClick={props.onUnselect}>Unselect</Button> : null}
+				{props.action ? <Button className='action-button' onClick={e => { e.stopPropagation(); props.action!.onClick(); }}>{props.action.label}</Button> : null}
 			</div>
 		);
 	} catch (ex) {

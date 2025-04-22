@@ -11,6 +11,15 @@
 		gap: 20px;
 		padding: 20px;
 
+		&.small {
+			gap: 5px;
+			padding: 5px;
+
+			.hero-edit-content {
+				gap: 5px;
+			}
+		}
+
 		.page-selector {
 			flex: 0 0 auto;
 
@@ -56,15 +65,23 @@
 			gap: 20px;
 			overflow: hidden;
 
+			&.centered {
+				justify-content: center;
+			}
+
 			.hero-edit-content-column {
 				flex: 1 1 0;
 				overflow-x: hidden;
 				overflow-y: auto;
 
+				&.start {
+					max-width: 600px;
+				}
+
 				&.grid {
 					padding: 10px;
 					display: grid;
-					grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+					grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
 					gap: 10px;
 				}
 

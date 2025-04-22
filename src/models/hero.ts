@@ -1,27 +1,20 @@
-import { ConditionEndType, ConditionType } from '../enums/condition-type';
 import { Ancestry } from './ancestry';
 import { Career } from './career';
-import { Characteristic } from '../enums/characteristic';
 import { Complication } from './complication';
+import { Condition } from './condition';
 import { Culture } from './culture';
 import { Feature } from './feature';
 import { HeroClass } from './class';
 import { Item } from './item';
 import { Project } from './project';
 
-export interface Condition {
-	id: string;
-	type: ConditionType;
-	ends: ConditionEndType;
-	resistCharacteristic: Characteristic;
-}
-
 export interface HeroState {
 	staminaDamage: number;
+	staminaTemp: number;
 	recoveriesUsed: number;
 	surges: number;
 	victories: number;
-	xp:number;
+	xp: number;
 	heroicResource: number;
 	heroTokens: number;
 	renown: number;
@@ -30,6 +23,10 @@ export interface HeroState {
 	conditions: Condition[];
 	inventory: Item[];
 	projects: Project[];
+	notes: string;
+	hidden: boolean;
+	acted: boolean;
+	defeated: boolean;
 }
 
 export interface AbilityCustomization {
@@ -43,6 +40,7 @@ export interface Hero {
 	id: string;
 	name: string;
 
+	folder: string;
 	settingIDs: string[];
 
 	ancestry: Ancestry | null;
@@ -55,3 +53,5 @@ export interface Hero {
 	state: HeroState;
 	abilityCustomizations: AbilityCustomization[];
 }
+
+export type HeroEditTab = 'start' | 'ancestry' | 'culture' | 'career' | 'class' | 'complication' | 'details';

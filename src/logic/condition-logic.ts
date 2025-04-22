@@ -1,8 +1,11 @@
-import { ConditionType } from '../enums/condition-type';
+import { ConditionEndType, ConditionType } from '../enums/condition-type';
+import { Condition } from '../models/condition';
 
 export class ConditionLogic {
 	static getDescription = (condition: ConditionType) => {
 		switch (condition) {
+			case ConditionType.Custom:
+				return 'A custom condition.';
 			case ConditionType.Bleeding:
 				return 'While bleeding, whenever you make a test using Might or Agility, make a strike, or use an action, maneuver, or a triggered action, you lose 1d6 Stamina after the test, action, maneuver, or triggered action is resolved. This Stamina loss can’t be prevented in any way.';
 			case ConditionType.Dazed:
@@ -29,5 +32,15 @@ If you teleport while restrained, the condition ends.`;
 			case ConditionType.Weakened:
 				return 'While you are weakened, all your power rolls take a bane.';
 		}
+	};
+
+	static getFullDescription = (condition: Condition) => {
+		let end = condition.ends.toLowerCase();
+
+		if (condition.ends === ConditionEndType.EndOfTurn) {
+			end = 'EoT';
+		}
+
+		return `${condition.type} (${end})`;
 	};
 }

@@ -6,7 +6,11 @@ import pkg from '../../../../package.json';
 
 import './about-modal.scss';
 
-export const AboutModal = () => {
+interface Props {
+	onClose: () => void;
+}
+
+export const AboutModal = (props: Props) => {
 	try {
 		return (
 			<Modal
@@ -39,6 +43,7 @@ export const AboutModal = () => {
 						<Field label='Version' value={pkg.version} />
 					</div>
 				}
+				onClose={props.onClose}
 			/>
 		);
 	} catch (ex) {

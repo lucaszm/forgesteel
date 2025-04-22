@@ -1,6 +1,8 @@
 import { AbilityDistanceType } from '../../enums/abiity-distance-type';
 import { AbilityKeyword } from '../../enums/ability-keyword';
 import { Characteristic } from '../../enums/characteristic';
+import { DamageModifierType } from '../../enums/damage-modifier-type';
+import { DamageType } from '../../enums/damage-type';
 import { FactoryLogic } from '../../logic/factory-logic';
 import { FeatureField } from '../../enums/feature-field';
 import { HeroClass } from '../../models/class';
@@ -19,7 +21,10 @@ The null is an unarmed psionic warrior who dampens and absorbs the effects of ma
 	heroicResource: 'Discipline',
 	subclassName: 'Tradition',
 	subclassCount: 1,
-	primaryCharacteristics: [ Characteristic.Agility, Characteristic.Intuition ],
+	primaryCharacteristicsOptions: [
+		[ Characteristic.Agility, Characteristic.Intuition ]
+	],
+	primaryCharacteristics: [],
 	featuresByLevel: [
 		{
 			level: 1,
@@ -53,7 +58,7 @@ The null is an unarmed psionic warrior who dampens and absorbs the effects of ma
 					ability: FactoryLogic.createAbility({
 						id: 'null-1-4',
 						name: 'Null Field',
-						description: 'You intuit where an incoming attack will strike, reducing its effects.',
+						description: 'You project a psionic field of order around your body, dampening the effects of supernatural abilities harmful to you and your allies.',
 						type: FactoryLogic.type.createManeuver(),
 						keywords: [ AbilityKeyword.Psionic ],
 						distance: [ FactoryLogic.distance.create({ type: AbilityDistanceType.Aura, value: 1 }) ],
@@ -74,7 +79,7 @@ This ability stays active even after encounters end. It ends if you are dying or
 					ability: FactoryLogic.createAbility({
 						id: 'null-1-5',
 						name: 'Inertial Shield',
-						description: 'You intuit where an incoming attack will strike, reducing its effects.',
+						description: 'Your instincts for danger let you predict attacks before they happen.',
 						type: FactoryLogic.type.createTrigger('You take damage.'),
 						keywords: [ AbilityKeyword.Psionic ],
 						distance: [ FactoryLogic.distance.createSelf() ],
@@ -130,10 +135,11 @@ This ability stays active even after encounters end. It ends if you are dying or
 							value: 1
 						},
 						{
-							feature: FactoryLogic.feature.create({
+							feature: FactoryLogic.feature.createAbilityDamage({
 								id: 'null-1-7b',
 								name: 'Force Augmentation',
-								description: 'You gain a +1 rolled damage bonus with damage-dealing psionic abilities.'
+								keywords: [ AbilityKeyword.Psionic ],
+								modifier: 1
 							}),
 							value: 1
 						},
@@ -200,7 +206,7 @@ This ability stays active even after encounters end. It ends if you are dying or
 						id: 'null-3-2',
 						name: 'Reorder',
 						description: '',
-						type: FactoryLogic.type.createTrigger('You start your turn.', true),
+						type: FactoryLogic.type.createTrigger('You start your turn.', { free: true }),
 						distance: [ FactoryLogic.distance.createSelf() ],
 						target: 'Self',
 						effect: 'You can end one effect on you or another creature in the area of your Null Field ability.'
@@ -276,9 +282,9 @@ This ability stays active even after encounters end. It ends if you are dying or
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Agility ],
-				tier1: '4 + A damage; A < weak, grabbed',
-				tier2: '7 + A damage; A < average, grabbed',
-				tier3: '9 + A damage; A < strong, grabbed'
+				tier1: '4 + A damage; A < [weak], grabbed',
+				tier2: '7 + A damage; A < [average], grabbed',
+				tier3: '9 + A damage; A < [strong], grabbed'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -341,9 +347,9 @@ This ability stays active even after encounters end. It ends if you are dying or
 			cost: 'signature',
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Agility ],
-				tier1: '4 + A damage; A < weak, weakened (save ends)',
-				tier2: '7 + A damage; A < average, weakened (save ends)',
-				tier3: '9 + A damage; A < strong, weakened (save ends)'
+				tier1: '4 + A damage; A < [weak], weakened (save ends)',
+				tier2: '7 + A damage; A < [average], weakened (save ends)',
+				tier3: '9 + A damage; A < [strong], weakened (save ends)'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -402,9 +408,9 @@ This ability stays active even after encounters end. It ends if you are dying or
 			cost: 3,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Agility ],
-				tier1: '4 + A damage; I < weak, dazed and slowed (save ends)',
-				tier2: '5 + A damage; I < average, dazed and slowed (save ends)',
-				tier3: '7 + A damage; I < strong, dazed and slowed (save ends)'
+				tier1: '4 + A damage; I < [weak], dazed and slowed (save ends)',
+				tier2: '5 + A damage; I < [average], dazed and slowed (save ends)',
+				tier3: '7 + A damage; I < [strong], dazed and slowed (save ends)'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -418,9 +424,9 @@ This ability stays active even after encounters end. It ends if you are dying or
 			cost: 5,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Agility ],
-				tier1: '8 + A psychic damage; M < weak, weakened (save ends)',
-				tier2: '12 + A psychic damage; M < average, weakened (save ends)',
-				tier3: '16 + A psychic damage; M < strong, weakened (save ends)'
+				tier1: '8 + A psychic damage; M < [weak], weakened (save ends)',
+				tier2: '12 + A psychic damage; M < [average], weakened (save ends)',
+				tier3: '16 + A psychic damage; M < [strong], weakened (save ends)'
 			}),
 			effect: 'While weakened this way, the target takes damage equal to your Intuition score when they use a supernatural or ability that costs Malice.'
 		}),
@@ -452,9 +458,9 @@ This ability stays active even after encounters end. It ends if you are dying or
 			cost: 5,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Agility ],
-				tier1: '3 + A psychic damage; I < weak, the target goes out of phase, then is slowed (save ends)',
-				tier2: '4 + A psychic damage; I < average, the target goes out of phase, then is slowed (save ends)',
-				tier3: '6 + A psychic damage; I < strong, the target goes out of phase, then is slowed (save ends)'
+				tier1: '3 + A psychic damage; I < [weak], the target goes out of phase, then is slowed (save ends)',
+				tier2: '4 + A psychic damage; I < [average], the target goes out of phase, then is slowed (save ends)',
+				tier3: '6 + A psychic damage; I < [strong], the target goes out of phase, then is slowed (save ends)'
 			}),
 			effect: 'A target who goes out of phase is removed from the encounter until the end of their next turn, reappearing in their original space or the nearest available space.'
 		}),
@@ -644,7 +650,13 @@ As your discipline grows, your psionic mastery of your body intensifies.
 						FactoryLogic.feature.create({
 							id: 'null-sub-2-2-1',
 							name: 'Entropic Adaptability',
-							description: 'You ignore difficult terrain related to cold and ice, and you can automatically climb at full speed while moving. Additionally, you have cold immunity equal to twice your Intuition score.'
+							description: 'You ignore difficult terrain related to cold and ice, and you can automatically climb at full speed while moving.'
+						}),
+						FactoryLogic.feature.createDamageModifier({
+							id: 'null-sub-2-2-1b',
+							modifiers: [
+								FactoryLogic.damageModifier.createCharacteristic({ damageType: DamageType.Cold, modifierType: DamageModifierType.Immunity, characteristics: [ Characteristic.Intuition ], multiplier: 2 })
+							]
 						}),
 						FactoryLogic.feature.createChoice({
 							id: 'null-sub-2-2-2',
@@ -662,9 +674,9 @@ As your discipline grows, your psionic mastery of your body intensifies.
 											cost: 5,
 											powerRoll: FactoryLogic.createPowerRoll({
 												characteristic: [ Characteristic.Agility ],
-												tier1: '6 cold damage; A < weak, slowed (save ends)',
-												tier2: '9 cold damage; A < average, slowed (save ends)',
-												tier3: '13 cold damage; A < strong, slowed (save ends)'
+												tier1: '6 cold damage; A < [weak], slowed (save ends)',
+												tier2: '9 cold damage; A < [average], slowed (save ends)',
+												tier3: '13 cold damage; A < [strong], slowed (save ends)'
 											})
 										})
 									}),

@@ -13,12 +13,12 @@ export const goblin: MonsterGroup = {
 	description: `
 As with all humanoid ancestries, different types of goblins and goblin cultures can be found across many lands, each with their own ideals. Known among themselves as rogabrin, meaning “more of us” in their language, goblins are one of the most numerous humanoids in the world. They can be found in every environment humans occupy and in places many other humanoids avoid, including deep cave systems.
 
-Their long arms and prehensile toes make goblins particularly well adapted to environments requiring climbing, and they live equally comfortably in treetop cities as in subterranean realms filled with stalactites, ledges, and chasms. However, just as many prefer to dwell in tight-knit neighborhoods within diverse cities. Many of those goblins who cross swords with adventuring heroes are the worst of their society—thieves and murderers shunned by their own people.`,
+Their long arms and prehensile toes make goblins particularly well adapted to environments requiring climbing, and they live equally comfortably in treetop cities as in subterranean realms filled with stalactites, ledges, and chasms. However, just as many prefer to dwell in tight-knit neighborhoods within diverse cities. Many of those goblins who cross swords with adventuring heroes are the worst of their society - thieves and murderers shunned by their own people.`,
 	information: [
 		{
 			id: 'goblin-info-1',
 			name: 'Encountered in Groups',
-			description: 'Whether within a society or living in exile, goblins survive and thrive because they work together. A single goblin forced into the wild is terrified. A dozen outlaw goblins are supremely confident—perhaps overly so. Such groups often become bandits who ambush travelers crossing through their territory, be it desert, forest, or underground. Larger bands might become unscrupulous mercenaries serving powerful villains. No matter how they’re encountered, goblins prefer to fight as an overwhelming force and to flee when foes outnumber friends.'
+			description: 'Whether within a society or living in exile, goblins survive and thrive because they work together. A single goblin forced into the wild is terrified. A dozen outlaw goblins are supremely confident - perhaps overly so. Such groups often become bandits who ambush travelers crossing through their territory, be it desert, forest, or underground. Larger bands might become unscrupulous mercenaries serving powerful villains. No matter how they’re encountered, goblins prefer to fight as an overwhelming force and to flee when foes outnumber friends.'
 		},
 		{
 			id: 'goblin-info-2',
@@ -43,7 +43,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 		{
 			id: 'goblin-info-6',
 			name: 'Warg',
-			description: 'Some goblins form a special bond with wargs—canine creatures that many goblin communities raise as mounts, guardians, and companions.'
+			description: 'Some goblins form a special bond with wargs - canine creatures that many goblin communities raise as mounts, guardians, and companions.'
 		},
 		{
 			id: 'goblin-info-7',
@@ -88,12 +88,13 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			id: 'goblin-1',
 			name: 'Goblin Runner',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Harrier, MonsterOrganizationType.Minion),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Minion, MonsterRoleType.Harrier),
 			keywords: [ 'Goblin', 'Humanoid' ],
 			encounterValue: 6,
 			size: FactoryLogic.createSize(1, 'S'),
 			speed: FactoryLogic.createSpeed(6, 'climb'),
 			stamina: 4,
+			stability: 0,
 			freeStrikeDamage: 1,
 			withCaptain: 'Edge on strikes',
 			characteristics: MonsterLogic.createCharacteristics(-2, 2, 0, 0, -1),
@@ -105,7 +106,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Charge, AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature or object per minion',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -126,12 +127,13 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			id: 'goblin-2',
 			name: 'Goblin Sniper',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Artillery, MonsterOrganizationType.Minion),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Minion, MonsterRoleType.Artillery),
 			keywords: [ 'Goblin', 'Humanoid' ],
 			encounterValue: 6,
 			size: FactoryLogic.createSize(1, 'S'),
 			speed: FactoryLogic.createSpeed(5, 'climb'),
 			stamina: 3,
+			stability: 0,
 			freeStrikeDamage: 2,
 			withCaptain: 'Ranged distance +5',
 			characteristics: MonsterLogic.createCharacteristics(-2, 2, 0, 0, -1),
@@ -163,14 +165,15 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 		}),
 		FactoryLogic.createMonster({
 			id: 'goblin-3',
-			name: 'Goblin Spineclever',
+			name: 'Goblin Spinecleaver',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Brute, MonsterOrganizationType.Minion),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Minion, MonsterRoleType.Brute),
 			keywords: [ 'Goblin', 'Humanoid' ],
 			encounterValue: 6,
 			size: FactoryLogic.createSize(1, 'S'),
 			speed: FactoryLogic.createSpeed(5, 'climb'),
 			stamina: 5,
+			stability: 0,
 			freeStrikeDamage: 2,
 			withCaptain: 'Strike damage +1',
 			characteristics: MonsterLogic.createCharacteristics(2, 0, 0, 0, -1),
@@ -182,7 +185,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature or object per minion',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -204,12 +207,13 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			id: 'goblin-skitterling',
 			name: 'Skitterling',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Hexer, MonsterOrganizationType.Minion),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Minion, MonsterRoleType.Hexer),
 			keywords: [ 'Animal', 'Goblin' ],
 			encounterValue: 6,
 			size: FactoryLogic.createSize(1, 'T'),
 			speed: FactoryLogic.createSpeed(5, 'fly'),
 			stamina: 3,
+			stability: 0,
 			freeStrikeDamage: 1,
 			withCaptain: 'Speed +3',
 			characteristics: MonsterLogic.createCharacteristics(-5, 2, -4, 0, -2),
@@ -221,7 +225,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature or object per minion',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -238,12 +242,13 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			id: 'goblin-5',
 			name: 'Goblin Assassin',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Brute, MonsterOrganizationType.Band),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Band, MonsterRoleType.Brute),
 			keywords: [ 'Goblin', 'Humanoid' ],
 			encounterValue: 3,
 			size: FactoryLogic.createSize(1, 'S'),
 			speed: FactoryLogic.createSpeed(6, 'climb'),
 			stamina: 15,
+			stability: 0,
 			freeStrikeDamage: 2,
 			characteristics: MonsterLogic.createCharacteristics(-2, 2, 0, 0, -2),
 			features: [
@@ -254,7 +259,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature or object',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -298,12 +303,13 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			id: 'goblin-6',
 			name: 'Goblin Cursespitter',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Hexer, MonsterOrganizationType.Band),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Band, MonsterRoleType.Hexer),
 			keywords: [ 'Goblin', 'Humanoid' ],
 			encounterValue: 3,
 			size: FactoryLogic.createSize(1, 'S'),
 			speed: FactoryLogic.createSpeed(5, 'climb'),
 			stamina: 10,
+			stability: 0,
 			freeStrikeDamage: 1,
 			characteristics: MonsterLogic.createCharacteristics(-2, 1, 0, 2, 0),
 			features: [
@@ -352,12 +358,13 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			id: 'goblin-7',
 			name: 'Goblin Stinker',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Controller, MonsterOrganizationType.Band),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Band, MonsterRoleType.Controller),
 			keywords: [ 'Goblin', 'Humanoid' ],
 			encounterValue: 3,
 			size: FactoryLogic.createSize(1, 'S'),
 			speed: FactoryLogic.createSpeed(5, 'climb'),
 			stamina: 10,
+			stability: 0,
 			freeStrikeDamage: 1,
 			characteristics: MonsterLogic.createCharacteristics(-2, 1, 0, 0, 2),
 			features: [
@@ -403,12 +410,13 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			id: 'goblin-8',
 			name: 'Goblin Underboss',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Support, MonsterOrganizationType.Band),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Band, MonsterRoleType.Support),
 			keywords: [ 'Goblin', 'Humanoid' ],
 			encounterValue: 3,
 			size: FactoryLogic.createSize(1, 'S'),
 			speed: FactoryLogic.createSpeed(5, 'climb'),
 			stamina: 15,
+			stability: 0,
 			freeStrikeDamage: 1,
 			characteristics: MonsterLogic.createCharacteristics(-1, 2, 0, 0, 1),
 			features: [
@@ -419,7 +427,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature or object',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -455,12 +463,13 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			id: 'goblin-9',
 			name: 'Goblin Warrior',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Harrier, MonsterOrganizationType.Band),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Band, MonsterRoleType.Harrier),
 			keywords: [ 'Goblin', 'Humanoid' ],
 			encounterValue: 3,
 			size: FactoryLogic.createSize(1, 'S'),
 			speed: FactoryLogic.createSpeed(6, 'climb'),
 			stamina: 15,
+			stability: 0,
 			freeStrikeDamage: 1,
 			characteristics: MonsterLogic.createCharacteristics(-2, 2, 0, 0, -1),
 			features: [
@@ -471,7 +480,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Charge, AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature or object',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -488,7 +497,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 						type: FactoryLogic.type.createAction(),
 						cost: 2,
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -509,7 +518,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			id: 'goblin-10',
 			name: 'Goblin Monarch',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.NoRole, MonsterOrganizationType.Leader),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Leader),
 			keywords: [ 'Goblin', 'Humanoid' ],
 			encounterValue: 12,
 			size: FactoryLogic.createSize(1, 'S'),
@@ -527,7 +536,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
 						distance: [
-							FactoryLogic.distance.createMelee(1),
+							FactoryLogic.distance.createMelee(),
 							FactoryLogic.distance.createRanged(5)
 						],
 						target: 'Two creatures or objects',
@@ -555,7 +564,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 						id: 'goblin-10-feature-3',
 						name: 'Meat Shield!',
 						type: FactoryLogic.type.createTrigger('A creature targets the monarch with a strike.'),
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One ally',
 						effect: 'The ally becomes the target of othe triggering strike instead.'
 					})
@@ -578,7 +587,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 						keywords: [ AbilityKeyword.Area ],
 						distance: [ FactoryLogic.distance.create({ type: AbilityDistanceType.Burst, value: 10 }) ],
 						target: 'Each ally',
-						effect: 'Each target can movoe up to their speed or make a free strike.'
+						effect: 'Each target can move up to their speed or make a free strike.'
 					})
 				}),
 				FactoryLogic.feature.createAbility({
@@ -605,10 +614,10 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			]
 		}),
 		FactoryLogic.createMonster({
-			id: 'goblin-war-spider',
+			id: 'goblin-11',
 			name: 'War Spider',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Mount, MonsterOrganizationType.Troop),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Troop, MonsterRoleType.Mount),
 			keywords: [ 'Animal', 'Goblin' ],
 			encounterValue: 12,
 			size: FactoryLogic.createSize(3),
@@ -620,18 +629,18 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			features: [
 				FactoryLogic.feature.createAbility({
 					ability: FactoryLogic.createAbility({
-						id: 'goblin-war-spider-feature-1',
+						id: 'goblin-11-feature-1',
 						name: 'Bite',
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature or object',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
 							tier1: '7 poison damage',
 							tier2: '11 poison damage',
-							tier3: '14 poisoin damage; M<2 weakened (save ends)'
+							tier3: '14 poison damage; M<2 weakened (save ends)'
 						}),
 						spend: [
 							{ value: 2, effect: 'M<3 weakened (save ends)' }
@@ -640,11 +649,11 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 				}),
 				FactoryLogic.feature.createAbility({
 					ability: FactoryLogic.createAbility({
-						id: 'goblin-war-spider-feature-2',
+						id: 'goblin-11-feature-2',
 						name: 'Leg Blade',
 						type: FactoryLogic.type.createAction(),
 						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'Two creatures or objects',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -656,7 +665,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 				}),
 				FactoryLogic.feature.createAbility({
 					ability: FactoryLogic.createAbility({
-						id: 'goblin-war-spider-feature-3',
+						id: 'goblin-11-feature-3',
 						name: 'Trample',
 						type: FactoryLogic.type.createAction(),
 						cost: 5,
@@ -668,7 +677,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 				}),
 				FactoryLogic.feature.createAbility({
 					ability: FactoryLogic.createAbility({
-						id: 'goblin-war-spider-feature-4',
+						id: 'goblin-11-feature-4',
 						name: 'Web',
 						type: FactoryLogic.type.createManeuver(),
 						keywords: [ AbilityKeyword.Area, AbilityKeyword.Weapon ],
@@ -684,7 +693,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 				}),
 				FactoryLogic.feature.createAbility({
 					ability: FactoryLogic.createAbility({
-						id: 'goblin-war-spider-feature-5',
+						id: 'goblin-11-feature-5',
 						name: 'Skitter',
 						type: FactoryLogic.type.createTrigger('The spider or an ally riding the spider is targeted by an ability.'),
 						distance: [ FactoryLogic.distance.createSelf() ],
@@ -693,22 +702,22 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 					})
 				}),
 				FactoryLogic.feature.create({
-					id: 'goblin-war-spider-feature-6',
+					id: 'goblin-11-feature-6',
 					name: 'Ride Launcher',
 					description: 'An ally who leaps off the back of the spider can jump up to 6 squares without a test, and takes no damage if they fall during the jump. After the jump, the first melee strike an ally makes on the same turn gains an edge.'
 				}),
 				FactoryLogic.feature.create({
-					id: 'goblin-war-spider-feature-7',
+					id: 'goblin-11-feature-7',
 					name: 'Wide Back',
 					description: 'Two of the spider’s size 1 allies can occupy the same space while riding the spider.'
 				})
 			]
 		}),
 		FactoryLogic.createMonster({
-			id: 'goblin-warg',
+			id: 'goblin-12',
 			name: 'Warg',
 			level: 1,
-			role: FactoryLogic.createMonsterRole(MonsterRoleType.Mount, MonsterOrganizationType.Band),
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Band, MonsterRoleType.Mount),
 			keywords: [ 'Animal', 'Goblin' ],
 			encounterValue: 3,
 			size: FactoryLogic.createSize(1, 'L'),
@@ -720,12 +729,12 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 			features: [
 				FactoryLogic.feature.createAbility({
 					ability: FactoryLogic.createAbility({
-						id: 'goblin-warg-feature-1',
+						id: 'goblin-12-feature-1',
 						name: 'Bite',
 						type: FactoryLogic.type.createAction(),
 						cost: 'signature',
 						keywords: [ AbilityKeyword.Charge, AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
-						distance: [ FactoryLogic.distance.createMelee(1) ],
+						distance: [ FactoryLogic.distance.createMelee() ],
 						target: 'One creature or object',
 						powerRoll: FactoryLogic.createPowerRoll({
 							bonus: 2,
@@ -737,7 +746,7 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 				}),
 				FactoryLogic.feature.createAbility({
 					ability: FactoryLogic.createAbility({
-						id: 'goblin-warg-feature-2',
+						id: 'goblin-12-feature-2',
 						name: 'Sprint',
 						type: FactoryLogic.type.createManeuver(),
 						cost: 1,
@@ -747,16 +756,103 @@ Their long arms and prehensile toes make goblins particularly well adapted to en
 					})
 				}),
 				FactoryLogic.feature.create({
-					id: 'goblin-warg-feature-3',
+					id: 'goblin-12-feature-3',
 					name: 'Mounted Charger',
 					description: 'If a warg used as a mount charges, their rider gains an edge on melee strikes until the end of their turn.'
 				}),
 				FactoryLogic.feature.create({
-					id: 'goblin-warg-feature-4',
+					id: 'goblin-12-feature-4',
 					name: 'Shared Crafty',
 					description: 'If the warg’s rider has the Crafty trait, the warg also has the Crafty trait.'
 				})
 			]
+		}),
+		FactoryLogic.createMonster({
+			id: 'goblin-13',
+			name: 'Goblin Guide',
+			level: 1,
+			role: FactoryLogic.createMonsterRole(MonsterOrganizationType.Retainer, MonsterRoleType.Harrier),
+			keywords: [ 'Goblin', 'Humanoid' ],
+			encounterValue: 13,
+			size: FactoryLogic.createSize(1, 'S'),
+			speed: FactoryLogic.createSpeed(5, 'climb'),
+			stamina: 30,
+			stability: 0,
+			freeStrikeDamage: 2,
+			characteristics: MonsterLogic.createCharacteristics(-1, 1, 0, 0, 1),
+			features: [
+				FactoryLogic.feature.createAbility({
+					ability: FactoryLogic.createAbility({
+						id: 'goblin-13-feature-1',
+						name: 'Stabbity Stab',
+						type: FactoryLogic.type.createAction(),
+						cost: 'signature',
+						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
+						distance: [ FactoryLogic.distance.createMelee() ],
+						target: '1 creature or object',
+						powerRoll: FactoryLogic.createPowerRoll({
+							characteristic: [ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ],
+							tier1: '3 damage',
+							tier2: '5 damage',
+							tier3: '7 damage'
+						}),
+						effect: 'The target can’t make opportunity attacks until the end of the guide’s turn.'
+					})
+				}),
+				FactoryLogic.feature.create({
+					id: 'goblin-13-feature-2',
+					name: 'Crafty',
+					description: 'The guide doesn’t provoke opportunity attacks by moving.'
+				})
+			],
+			retainer: {
+				level4: FactoryLogic.feature.createAbility({
+					ability: FactoryLogic.createAbility({
+						id: 'goblin-13-retainer-4',
+						name: 'Weaving Knives',
+						type: FactoryLogic.type.createAction({ qualifiers: [ 'encounter' ] }),
+						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
+						distance: [ FactoryLogic.distance.createMelee() ],
+						target: '1 creature or object',
+						powerRoll: FactoryLogic.createPowerRoll({
+							characteristic: [ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ],
+							tier1: '5 damage',
+							tier2: '9 damage',
+							tier3: '12 damage'
+						}),
+						effect: 'The guide can shift up to their speed before and after the attack.'
+					})
+				}),
+				level7: FactoryLogic.feature.createAbility({
+					ability: FactoryLogic.createAbility({
+						id: 'goblin-13-retainer-7',
+						name: 'Sneak and Stab',
+						type: FactoryLogic.type.createAction({ qualifiers: [ 'encounter' ] }),
+						keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
+						distance: [ FactoryLogic.distance.createMelee() ],
+						target: '1 creature',
+						powerRoll: FactoryLogic.createPowerRoll({
+							characteristic: [ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ],
+							tier1: '8 damage',
+							tier2: '12 damage; the guide and their mentor can move up to their speed',
+							tier3: '16 damage; the guide and their mentor can move up to their speed and use the Hide maneuver'
+						}),
+						effect: 'If the guide is hidden from the target, the attack has a double edge.'
+					})
+				}),
+				level10: FactoryLogic.feature.createAbility({
+					ability: FactoryLogic.createAbility({
+						id: 'goblin-13-retainer-10',
+						name: 'Poison Blade',
+						type: FactoryLogic.type.createManeuver({ qualifiers: [ 'encounter' ] }),
+						keywords: [],
+						distance: [ FactoryLogic.distance.createSpecial('Special') ],
+						target: 'Special',
+						effect: 'The guide applies poison to their weapon. The next time the guide gets a tier 2 or 3 result on an attack with the Weapon keyword, the attack deals an extra 10 poison damage and the target is M (average) weakened (save ends). If the guide is adjacent to their mentor when they use Poison Blade, the mentor’s weapon is poisoned in the same way.'
+					})
+				})
+			}
 		})
-	]
+	],
+	addOns: []
 };

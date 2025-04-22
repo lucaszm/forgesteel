@@ -17,7 +17,10 @@ As a shadow, you have abilities that deal a lot of damage, let you move swiftly 
 	heroicResource: 'Insight',
 	subclassName: 'Shadow College',
 	subclassCount: 1,
-	primaryCharacteristics: [ Characteristic.Agility ],
+	primaryCharacteristicsOptions: [
+		[ Characteristic.Agility ]
+	],
+	primaryCharacteristics: [],
 	featuresByLevel: [
 		{
 			level: 1,
@@ -60,7 +63,7 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 						id: 'shadow-1-5',
 						name: 'Hesitation Is Weakness',
 						description: 'Keep up the attack. Never give them a moment’s grace.',
-						type: FactoryLogic.type.createTrigger('Another hero ends their turn. That hero can’t have used this ability to start their turn.', true),
+						type: FactoryLogic.type.createTrigger('Another hero ends their turn. That hero can’t have used this ability to start their turn.', { free: true }),
 						distance: [ FactoryLogic.distance.createSelf() ],
 						target: 'Self',
 						cost: 1,
@@ -129,7 +132,7 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 				characteristic: [ Characteristic.Agility ],
 				tier1: '3 + A damage',
 				tier2: '5 + A damage',
-				tier3: '8 + A damage; I < strong, prone'
+				tier3: '8 + A damage; I < [strong], prone'
 			}),
 			effect: 'An ally of your choice within 5 squares of the target gains a surge.'
 		}),
@@ -155,7 +158,7 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 		}),
 		FactoryLogic.createAbility({
 			id: 'shadow-ability-3',
-			name: 'Teamwork Has It\'s Place',
+			name: 'Teamwork Has Its Place',
 			description: 'You attack an enemy, distracting them long enough for an ally to stab them.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Melee, AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
@@ -221,9 +224,9 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 			cost: 3,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Agility ],
-				tier1: '4 + A damage; A < weak, bleeding (save ends)',
-				tier2: '6 + A damage; A < average, bleeding (save ends)',
-				tier3: '10 + A damage; A < strong, bleeding (save ends)'
+				tier1: '4 + A damage; A < [weak], bleeding (save ends)',
+				tier2: '6 + A damage; A < [average], bleeding (save ends)',
+				tier3: '10 + A damage; A < [strong], bleeding (save ends)'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -309,9 +312,9 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 			cost: 5,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Agility ],
-				tier1: '6 + A damage; R < weak, the target has damage weakness 5 (save ends)',
-				tier2: '9 + A damage; R < average, the target has damage weakness 5 (save ends)',
-				tier3: '13 + A damage; R < strong, the target has damage weakness 5 (save ends)'
+				tier1: '6 + A damage; R < [weak], the target has damage weakness 5 (save ends)',
+				tier2: '9 + A damage; R < [average], the target has damage weakness 5 (save ends)',
+				tier3: '13 + A damage; R < [strong], the target has damage weakness 5 (save ends)'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -359,7 +362,7 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 		FactoryLogic.createAbility({
 			id: 'shadow-ability-15',
 			name: 'Pinning Shot',
-			description: 'One missile—placed well and placed hard.',
+			description: 'One missile - placed well and placed hard.',
 			type: FactoryLogic.type.createAction(),
 			keywords: [ AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
 			distance: [ FactoryLogic.distance.createRanged(5) ],
@@ -367,9 +370,9 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 			cost: 7,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Agility ],
-				tier1: '8 + A damage; A < weak, restrained (save ends)',
-				tier2: '12 + A damage; A < average, restrained (save ends)',
-				tier3: '16 + A damage; A < strong, restrained (save ends)'
+				tier1: '8 + A damage; A < [weak], restrained (save ends)',
+				tier2: '12 + A damage; A < [average], restrained (save ends)',
+				tier3: '16 + A damage; A < [strong], restrained (save ends)'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -386,9 +389,9 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 			cost: 7,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Agility ],
-				tier1: '7 + A damage; M < weak, slowed (save ends)',
-				tier2: '11 + A damage; M < average, prone and can’t stand (save ends)',
-				tier3: '16 + A damage; M < strong, prone and can’t stand (save ends)'
+				tier1: '7 + A damage; M < [weak], slowed (save ends)',
+				tier2: '11 + A damage; M < [average], prone and can’t stand (save ends)',
+				tier3: '16 + A damage; M < [strong], prone and can’t stand (save ends)'
 			})
 		})
 	],
@@ -481,7 +484,7 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 											id: 'shadow-sub-1-2-1b',
 											name: 'Too Slow',
 											description: 'Your foe made a big mistake.',
-											type: FactoryLogic.type.createTrigger('You use your In All This Confusion ability.', true),
+											type: FactoryLogic.type.createTrigger('You use your In All This Confusion ability.', { free: true }),
 											keywords: [ AbilityKeyword.Melee, AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
 											distance: [ FactoryLogic.distance.createSelf() ],
 											target: 'Self',
@@ -492,6 +495,11 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 									value: 1
 								}
 							]
+						}),
+						FactoryLogic.feature.create({
+							id: 'shadow-sub-1-2-2',
+							name: 'Burning Ash',
+							description: 'The ash you leave behind burns your foes. The first time on a turn that you use a shadow ability to teleport away from or into a space adjacent to an enemy, that enemy takes fire damage equal to your Reason score.'
 						})
 					]
 				},
@@ -571,7 +579,7 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 											description: 'Explosives are best when they’re attached to an enemy.',
 											type: FactoryLogic.type.createAction(),
 											keywords: [ AbilityKeyword.Ranged ],
-											distance: [ FactoryLogic.distance.createRanged() ],
+											distance: [ FactoryLogic.distance.createRanged(10) ],
 											target: '1 creature',
 											cost: 5,
 											preEffect: 'You attach a small bomb to a creature. If you are hidden from the creature, they don’t notice the bomb and you remain hidden. The creature otherwise notices the bomb and can remove it as an action, disarming the bomb. At the end of your next turn, the bomb detonates. You can also detonate it earlier (no action required). When the bomb detonates, you make a power roll targeting each enemy within 3 squares of it.',
@@ -608,6 +616,11 @@ When you use a heroic ability that has a power roll, that ability costs 1 less i
 									value: 1
 								}
 							]
+						}),
+						FactoryLogic.feature.create({
+							id: 'shadow-sub-2-2-2',
+							name: 'Trained Assassin',
+							description: 'You know just where to cut your enemies. Whenever you make a strike with at least one surge and no banes, the strike gains an extra surge which you must use on that strike.'
 						})
 					]
 				},
@@ -700,7 +713,7 @@ The illusion ends when you harm another creature, when you and any creature phys
 											id: 'shadow-sub-3-2-1b',
 											name: 'So Gullible',
 											description: 'When your enemy strikes, you reveal you were in a different place all along.',
-											type: FactoryLogic.type.createTrigger('An enemy strikes you.', true),
+											type: FactoryLogic.type.createTrigger('An enemy strikes you.', { free: true }),
 											keywords: [ AbilityKeyword.Magic, AbilityKeyword.Melee, AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
 											distance: [ FactoryLogic.distance.createSelf() ],
 											target: 'Self',
@@ -711,6 +724,14 @@ The illusion ends when you harm another creature, when you and any creature phys
 									value: 1
 								}
 							]
+						}),
+						FactoryLogic.feature.create({
+							id: 'shadow-sub-3-2-2',
+							name: 'Friend!',
+							description: `
+Your illusions make your enemies believe you are their friend in critical moments. Whenever an enemy uses an ability or trait that targets multiple allies and you are within distance of the effect, you can choose to be a target of the effect as well.
+
+Additionally when you use your I’m No Threat ability, you can take the Disengage move action as part of that ability.`
 						})
 					]
 				},

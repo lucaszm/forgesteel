@@ -17,7 +17,10 @@ As a tactician, you have abilities that heal your allies and grant them increase
 	heroicResource: 'Focus',
 	subclassName: 'Tactical Doctrine',
 	subclassCount: 1,
-	primaryCharacteristics: [ Characteristic.Might, Characteristic.Reason ],
+	primaryCharacteristicsOptions: [
+		[ Characteristic.Might, Characteristic.Reason ]
+	],
+	primaryCharacteristics: [],
 	featuresByLevel: [
 		{
 			level: 1,
@@ -57,10 +60,10 @@ As a tactician, you have abilities that heal your allies and grant them increase
 					ability: FactoryLogic.createAbility({
 						id: 'tactician-1-5',
 						name: 'Mark',
-						description: 'You draw your allies’ attention to a specific foe — with devastating effect.',
+						description: 'You draw your allies’ attention to a specific foe - with devastating effect.',
 						type: FactoryLogic.type.createManeuver(),
 						keywords: [ AbilityKeyword.Ranged ],
-						distance: [ FactoryLogic.distance.createRanged() ],
+						distance: [ FactoryLogic.distance.createRanged(10) ],
 						target: '1 creature',
 						effect: `
 The target is marked by you until the end of the encounter, you die, you use this ability again, or you willingly end this effect (no action required). If another tactician marks the target, then your mark on the target ends. You can have one target marked this way, but other tactician abilities can allow you to have multiple marked creatures.
@@ -83,7 +86,7 @@ In addition, you can spend 1 focus to take one of the following free triggered a
 						description: 'Your foe left an opening. You point this out to an ally!',
 						type: FactoryLogic.type.createAction(),
 						keywords: [ AbilityKeyword.Ranged ],
-						distance: [ FactoryLogic.distance.createRanged() ],
+						distance: [ FactoryLogic.distance.createRanged(10) ],
 						target: '1 ally',
 						effect: 'The target can make a signature attack as a free triggered action.',
 						spend: [
@@ -121,7 +124,7 @@ In addition, you can spend 1 focus to take one of the following free triggered a
 						id: 'tactician-3-1',
 						name: 'Out of Position',
 						description: 'You are prepared for all eventualities.',
-						type: FactoryLogic.type.createTrigger('At the start of an encounter', true),
+						type: FactoryLogic.type.createTrigger('At the start of an encounter', { free: true }),
 						keywords: [],
 						distance: [ FactoryLogic.distance.createSelf() ],
 						target: 'Self',
@@ -142,7 +145,7 @@ In addition, you can spend 1 focus to take one of the following free triggered a
 			description: 'You shout a phrase that galvanizes your team.',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [ AbilityKeyword.Ranged ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'Three allies',
 			cost: 3,
 			powerRoll: FactoryLogic.createPowerRoll({
@@ -166,9 +169,9 @@ In addition, you can spend 1 focus to take one of the following free triggered a
 			cost: 3,
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Might ],
-				tier1: '3 + M damage; M < weak, dazed (save ends)',
-				tier2: '5 + M damage; M < average, dazed (save ends)',
-				tier3: '8 + M damage; M < strong, dazed (save ends)'
+				tier1: '3 + M damage; M < [weak], dazed (save ends)',
+				tier2: '5 + M damage; M < [average], dazed (save ends)',
+				tier3: '8 + M damage; M < [strong], dazed (save ends)'
 			})
 		}),
 		FactoryLogic.createAbility({
@@ -196,7 +199,7 @@ In addition, you can spend 1 focus to take one of the following free triggered a
 			description: 'On your command, you and your allies force back the enemy line.',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [ AbilityKeyword.Ranged ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: 'Self and two allies',
 			cost: 3,
 			effect: 'Each target can move their speed.'
@@ -236,16 +239,16 @@ In addition, you can spend 1 focus to take one of the following free triggered a
 			preEffect: 'You mark the target.',
 			powerRoll: FactoryLogic.createPowerRoll({
 				characteristic: [ Characteristic.Might ],
-				tier1: '4 + M damage; R < weak, weakened (save ends)',
-				tier2: '6 + M damage; R < average, weakened (save ends)',
-				tier3: '10 + M damage; R < strong, weakened (save ends)'
+				tier1: '4 + M damage; R < [weak], weakened (save ends)',
+				tier2: '6 + M damage; R < [average], weakened (save ends)',
+				tier3: '10 + M damage; R < [strong], weakened (save ends)'
 			}),
 			effect: 'The first time any ally deals damage any target you’ve marked before the start of your next turn, that ally can spend a Recovery.'
 		}),
 		FactoryLogic.createAbility({
 			id: 'tactician-ability-7',
 			name: 'Now!',
-			description: 'Your allies wait for your command — then unleash death!',
+			description: 'Your allies wait for your command - then unleash death!',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [ AbilityKeyword.Ranged, AbilityKeyword.Weapon ],
 			distance: [ FactoryLogic.distance.createRanged(5) ],
@@ -259,7 +262,7 @@ In addition, you can spend 1 focus to take one of the following free triggered a
 			description: 'All those coordination drills you made them do finally pay off.',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [ AbilityKeyword.Ranged ],
-			distance: [ FactoryLogic.distance.createRanged() ],
+			distance: [ FactoryLogic.distance.createRanged(10) ],
 			target: '2 allies',
 			cost: 5,
 			effect: 'Each target who hasn’t acted yet this round can take their turn in any order immediately after yours.'
@@ -295,11 +298,11 @@ In addition, you can spend 1 focus to take one of the following free triggered a
 			distance: [ FactoryLogic.distance.createSelf() ],
 			target: 'Self',
 			cost: 7,
-			effect: 'Until the end of the encounter or you are dying, whenever you or any ally deals damage to a target marked by you, if that target has R < average, they are frightened of the damage dealer (save ends).'
+			effect: 'Until the end of the encounter or you are dying, whenever you or any ally deals damage to a target marked by you, if that target has R < [average], they are frightened of the damage dealer (save ends).'
 		}),
 		FactoryLogic.createAbility({
 			id: 'tactician-ability-12',
-			name: 'Stay Strong, and Focus',
+			name: 'Stay [strong], and Focus',
 			description: 'We can do this! Keep faith and hold fast!',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [],
@@ -334,7 +337,7 @@ In addition, you can spend 1 focus to take one of the following free triggered a
 								description: 'Your leadership aids an ally.',
 								type: FactoryLogic.type.createTrigger('The target deals damage to another creature.'),
 								keywords: [ AbilityKeyword.Ranged ],
-								distance: [ FactoryLogic.distance.createRanged() ],
+								distance: [ FactoryLogic.distance.createRanged(10) ],
 								target: 'Any creature',
 								effect: 'The target gains two surges, which they can use on the triggering damage.',
 								spend: [
@@ -366,7 +369,7 @@ In addition, you can spend 1 focus to take one of the following free triggered a
 											description: 'Your unorthodox strategy causes enemies to lash out in fear, heedless of who they might be attacking.',
 											type: FactoryLogic.type.createManeuver(),
 											keywords: [ AbilityKeyword.Ranged ],
-											distance: [ FactoryLogic.distance.createRanged() ],
+											distance: [ FactoryLogic.distance.createRanged(10) ],
 											target: '2 creatures',
 											cost: 5,
 											effect: `
@@ -382,7 +385,7 @@ Each target is marked by you. You immediately force each targeted creature to ma
 										ability: FactoryLogic.createAbility({
 											id: 'tactician-sub-1-2-2b',
 											name: 'Try Me Instead',
-											description: '“Try picking on someone MY size.',
+											description: '“Try picking on someone MY size.”',
 											type: FactoryLogic.type.createAction(),
 											keywords: [ AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
 											distance: [ FactoryLogic.distance.createMelee() ],
@@ -391,9 +394,9 @@ Each target is marked by you. You immediately force each targeted creature to ma
 											preEffect: 'You shift your speed directly toward an ally adjacent to the target, then swap locations with the ally as long as you can each fit into the other’s space. The ally can spend a Recovery, and you make a power roll against the target.',
 											powerRoll: FactoryLogic.createPowerRoll({
 												characteristic: [ Characteristic.Reason ],
-												tier1: '2 + R damage; R < weak, frightened (save ends)',
-												tier2: '3 + R damage; R < average, frightened (save ends)',
-												tier3: '4 + R damage; R < strong, frightened (save ends)'
+												tier1: '2 + R damage; R < [weak], frightened (save ends)',
+												tier2: '3 + R damage; R < [average], frightened (save ends)',
+												tier3: '4 + R damage; R < [strong], frightened (save ends)'
 											})
 										})
 									}),
@@ -455,13 +458,13 @@ You can only make this test once for each encounter and negotiation.`
 								description: 'Under your direction, an ally waits for just the right moment to strike.',
 								type: FactoryLogic.type.createTrigger('The target moves.'),
 								keywords: [ AbilityKeyword.Ranged ],
-								distance: [ FactoryLogic.distance.createRanged() ],
+								distance: [ FactoryLogic.distance.createRanged(10) ],
 								target: '1 enemy',
 								effect: 'At any point during the target’s movement, one ally can make a free strike against them.',
 								spend: [
 									{
 										value: 1,
-										effect: 'If the target has R < average, they are also slowed (EoT).'
+										effect: 'If the target has R < [average], they are also slowed (EoT).'
 									}
 								]
 							})
@@ -476,7 +479,7 @@ You can only make this test once for each encounter and negotiation.`
 								id: 'tactician-sub-2-2-1',
 								name: 'Goaded',
 								description: 'You have learned to leverage the psychology of your marked foes and goad them into acting before they are tactically ready.',
-								type: FactoryLogic.type.createTrigger('A creature marked by you uses a strike that targets you or an ally.', true),
+								type: FactoryLogic.type.createTrigger('A creature marked by you uses a strike that targets you or an ally.', { free: true }),
 								keywords: [],
 								distance: [ FactoryLogic.distance.createSelf() ],
 								target: 'Self',
@@ -499,9 +502,9 @@ You can only make this test once for each encounter and negotiation.`
 											cost: 5,
 											powerRoll: FactoryLogic.createPowerRoll({
 												characteristic: [ Characteristic.Reason ],
-												tier1: '2 + R damage; R < weak, the target is frightened of an ally of your choice within range (save ends)',
-												tier2: '3 + R damage; R < average, the target is frightened of an ally of your choice within range (save ends)',
-												tier3: '5 + R damage; R < strong, the target is frightened of an ally of your choice within range (save ends)'
+												tier1: '2 + R damage; R < [weak], the target is frightened of an ally of your choice within range (save ends)',
+												tier2: '3 + R damage; R < [average], the target is frightened of an ally of your choice within range (save ends)',
+												tier3: '5 + R damage; R < [strong], the target is frightened of an ally of your choice within range (save ends)'
 											}),
 											effect: 'One ally adjacent to the target can spend a Recovery.'
 										})
@@ -603,9 +606,9 @@ After constant drills you have improved your ability to anticipate an enemy’s 
 											preEffect: 'You move up to your speed toward the target, ending your move in the nearest square adjacent to them if you can. The triggering ally can spend a Recovery, and gains 5 Temporary Stamina for each enemy you move past while moving to the target. You then make a power roll against the target.',
 											powerRoll: FactoryLogic.createPowerRoll({
 												characteristic: [ Characteristic.Might ],
-												tier1: 'R < weak, frightened of the triggering ally (save ends)',
-												tier2: ' R < average, frightened of the triggering ally (save ends)',
-												tier3: 'R < strong, frightened of the triggering ally (save ends)'
+												tier1: 'R < [weak], frightened of the triggering ally (save ends)',
+												tier2: ' R < [average], frightened of the triggering ally (save ends)',
+												tier3: 'R < [strong], frightened of the triggering ally (save ends)'
 											})
 										})
 									}),

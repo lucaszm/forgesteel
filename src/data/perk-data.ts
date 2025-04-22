@@ -98,7 +98,7 @@ export class PerkData {
 	static friendCatapult: Perk = {
 		id: 'perk-friend-catapult',
 		name: 'Friend Catapult',
-		description: '',
+		description: 'You hurl your ally through the air.',
 		type: FeatureType.Ability,
 		data: {
 			ability: FactoryLogic.createAbility({
@@ -118,7 +118,7 @@ export class PerkData {
 	static iveGotYou: Perk = {
 		id: 'perk-ive-got-you',
 		name: 'I\'ve Got You',
-		description: '',
+		description: 'You catch a falling ally at the last possible moment.',
 		type: FeatureType.Ability,
 		data: {
 			ability: FactoryLogic.createAbility({
@@ -334,7 +334,7 @@ For you, music is a universal language.
 	static gumUpTheWorks: Perk = {
 		id: 'perk-gum-up-the-works',
 		name: 'Gum Up The Works',
-		description: '',
+		description: 'You prevent a trap from activating.',
 		type: FeatureType.Ability,
 		data: {
 			ability: FactoryLogic.createAbility({
@@ -501,7 +501,7 @@ Choose one of the following effects:
 	static creatureSense: Perk = {
 		id: 'perk-creature-sense',
 		name: 'Creature Sense',
-		description: '',
+		description: 'You intuit a creature\'s keywords.',
 		type: FeatureType.Ability,
 		data: {
 			ability: FactoryLogic.createAbility({
@@ -522,7 +522,7 @@ Choose one of the following effects:
 		id: 'perk-familiar',
 		name: 'Familiar',
 		description: `
-A magic spirit, which has taken the form of a specific small animal or animate object, has chosen to be your familiar — or to adopt you as its familiar. The familiar can’t perform activities that require hands, and it can’t harm other creatures or objects. It can provide flanking benefits only to you. The familiar uses the familiar stat block.
+A magic spirit, which has taken the form of a specific small animal or animate object, has chosen to be your familiar - or to adopt you as its familiar. The familiar can’t perform activities that require hands, and it can’t harm other creatures or objects. It can provide flanking benefits only to you. The familiar uses the familiar stat block.
 
 If the familiar is destroyed, you can restore them as a respite activity or by spending a Recovery as an action to bring them back into existence into an unoccupied space adjacent to you.`,
 		type: FeatureType.Text,
@@ -533,7 +533,7 @@ If the familiar is destroyed, you can restore them as a respite activity or by s
 	static invisibleForce: Perk = {
 		id: 'perk-invisible-force',
 		name: 'Invisible Force',
-		description: '',
+		description: 'You manipulate a tiny object with your mind.',
 		type: FeatureType.Ability,
 		data: {
 			ability: FactoryLogic.createAbility({
@@ -542,7 +542,7 @@ If the familiar is destroyed, you can restore them as a respite activity or by s
 				description: 'You manipulate a tiny object with your mind.',
 				type: FactoryLogic.type.createManeuver(),
 				keywords: [ AbilityKeyword.Psionic ],
-				distance: [ FactoryLogic.distance.createRanged() ],
+				distance: [ FactoryLogic.distance.createRanged(10) ],
 				target: '1 size 1T unattended object',
 				effect: 'You can grab or manipulate the target with your mind. You can move the object up to a number of squares equal to your Reason, Intuition, or Presence score (your choice). You can use this ability to turn doorknobs, pull levers, and manipulate other smaller, movable pieces of a larger object as long as the piece you\'re manipulating is unattended and size 1T (though you can’t use this ability to break smaller piece off of a larger object).'
 			})
@@ -553,7 +553,7 @@ If the familiar is destroyed, you can restore them as a respite activity or by s
 	static psychicWhisper: Perk = {
 		id: 'perk-psychic-whisper',
 		name: 'Psychic Whisper',
-		description: '',
+		description: 'You send a one-way telepathic message to a friend.',
 		type: FeatureType.Ability,
 		data: {
 			ability: FactoryLogic.createAbility({
@@ -562,7 +562,7 @@ If the familiar is destroyed, you can restore them as a respite activity or by s
 				description: 'You send a one-way telepathic message to a friend.',
 				type: FactoryLogic.type.createManeuver(),
 				keywords: [ AbilityKeyword.Psionic ],
-				distance: [ FactoryLogic.distance.createRanged() ],
+				distance: [ FactoryLogic.distance.createRanged(10) ],
 				target: '1 ally who understands at least one language',
 				effect: 'You send a telepathic message to the target that takes 10 seconds or less to speak.'
 			})
