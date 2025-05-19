@@ -9,7 +9,7 @@ export class AbilityData {
 		id: 'free-melee',
 		name: 'Free Strike (melee)',
 		description: '',
-		type: FactoryLogic.type.createAction(),
+		type: FactoryLogic.type.createFreeStrike(),
 		keywords: [ AbilityKeyword.Charge, AbilityKeyword.Melee, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
 		distance: [ FactoryLogic.distance.createMelee() ],
 		target: '1 creature or object',
@@ -25,7 +25,7 @@ export class AbilityData {
 		id: 'free-ranged',
 		name: 'Free Strike (ranged)',
 		description: '',
-		type: FactoryLogic.type.createAction(),
+		type: FactoryLogic.type.createFreeStrike(),
 		keywords: [ AbilityKeyword.Ranged, AbilityKeyword.Strike, AbilityKeyword.Weapon ],
 		distance: [ FactoryLogic.distance.createRanged(5) ],
 		target: '1 creature or object',
@@ -140,7 +140,7 @@ If you are dying, you can’t take the Catch Breath maneuver, but other creature
 		type: FactoryLogic.type.createManeuver(),
 		keywords: [ AbilityKeyword.Melee ],
 		distance: [ FactoryLogic.distance.createMelee() ],
-		target: '1 creature the same size or smaller than you',
+		target: '1 creature no more than 1 size larger than you',
 		powerRoll: FactoryLogic.createPowerRoll({
 			characteristic: [ Characteristic.Might ],
 			tier1: 'No effect',
@@ -199,7 +199,14 @@ Complex or time-consuming tests might require an action if made in combat - or c
 		keywords: [],
 		distance: [ FactoryLogic.distance.createSelf() ],
 		target: 'Self',
-		effect: 'You can use this maneuver to attempt to search for creatures hidden from you.'
+		preEffect: 'You can use this maneuver to attempt to search for creatures hidden from you, as long as those creatures are within 10 squares of you and you have line of effect to them.',
+		powerRoll: FactoryLogic.createPowerRoll({
+			characteristic: Characteristic.Intuition,
+			tier1: 'You find any hidden creatures with an Agility of 0 or lower and who don’t have the Hide skill',
+			tier2: 'You find any hidden creatures who don’t have the Hide skill',
+			tier3: 'You find all hidden creatures'
+		}),
+		effect: 'As part of this maneuver, you can point out any creatures you find to allies within 10 squares of you, making those creatures no longer hidden from those allies. If a creature is hidden from your allies but not from you, you can use a maneuver without making a test to point them out to your allies.'
 	});
 
 	static standUp = FactoryLogic.createAbility({
@@ -251,6 +258,17 @@ Complex or time-consuming tests might require an action if made in combat - or c
 		distance: [ FactoryLogic.distance.createMelee() ],
 		target: '1 creature',
 		effect: 'You use your action to employ medicine or inspiring words to make an adjacent creature feel better and stay in the fight. The creature can spend a Recovery to regain Stamina, or can make a saving throw against a “(save ends)” effect they are suffering.'
+	});
+
+	static swap = FactoryLogic.createAbility({
+		id: 'swap',
+		name: 'Swap',
+		description: '',
+		type: FactoryLogic.type.createAction(),
+		keywords: [],
+		distance: [ FactoryLogic.distance.createSelf() ],
+		target: 'Self',
+		effect: 'You can turn your action into a move action or a maneuver, so that your turn can alternatively consist of two move actions and a maneuver, or two maneuvers and a move action.'
 	});
 
 	//#endregion

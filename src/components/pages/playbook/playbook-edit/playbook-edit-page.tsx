@@ -1,5 +1,5 @@
 import { Alert, Button, Divider, Flex, Input, Popover, Select, Space, Tabs } from 'antd';
-import { CaretDownOutlined, CaretUpOutlined, CloseOutlined, PlusOutlined, SaveOutlined, SettingOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, CaretUpOutlined, CloseOutlined, DownOutlined, PlusOutlined, SaveOutlined, SettingOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Encounter, EncounterGroup, EncounterObjective, EncounterSlot, TerrainSlot } from '../../../../models/encounter';
 import { Monster, MonsterGroup } from '../../../../models/monster';
 import { MonsterFilter, TerrainFilter } from '../../../../models/filter';
@@ -7,6 +7,7 @@ import { Playbook, PlaybookElementKind } from '../../../../models/playbook';
 import { ReactNode, useState } from 'react';
 import { Adventure } from '../../../../models/adventure';
 import { AdventurePanel } from '../../../panels/elements/adventure-panel/adventure-panel';
+import { AppFooter } from '../../../panels/app-footer/app-footer';
 import { AppHeader } from '../../../panels/app-header/app-header';
 import { Badge } from '../../../controls/badge/badge';
 import { Characteristic } from '../../../../enums/characteristic';
@@ -14,6 +15,7 @@ import { Collections } from '../../../../utils/collections';
 import { DangerButton } from '../../../controls/danger-button/danger-button';
 import { DropdownButton } from '../../../controls/dropdown-button/dropdown-button';
 import { Element } from '../../../../models/element';
+import { ElementEditPanel } from '../../../panels/edit/element-edit/element-edit-panel';
 import { Empty } from '../../../controls/empty/empty';
 import { EncounterDifficultyPanel } from '../../../panels/encounter-difficulty/encounter-difficulty-panel';
 import { EncounterLogic } from '../../../../logic/encounter-logic';
@@ -42,9 +44,6 @@ import { NumberSpin } from '../../../controls/number-spin/number-spin';
 import { Options } from '../../../../models/options';
 import { OptionsPanel } from '../../../panels/options/options-panel';
 import { PanelMode } from '../../../../enums/panel-mode';
-import { PlaybookLogic } from '../../../../logic/playbook-logic';
-import { Plot } from '../../../../models/plot';
-import { PlotEditPanel } from '../../../panels/edit/plot-edit/plot-edit-panel';
 import { SelectablePanel } from '../../../controls/selectable-panel/selectable-panel';
 import { Sourcebook } from '../../../../models/sourcebook';
 import { SourcebookLogic } from '../../../../logic/sourcebook-logic';
@@ -55,6 +54,7 @@ import { Terrain } from '../../../../models/terrain';
 import { TerrainFilterPanel } from '../../../panels/terrain-filter/terrain-filter-panel';
 import { TerrainLogic } from '../../../../logic/terrain-logic';
 import { TerrainPanel } from '../../../panels/elements/terrain-panel/terrain-panel';
+import { Toggle } from '../../../controls/toggle/toggle';
 import { Utils } from '../../../../utils/utils';
 import { useNavigation } from '../../../../hooks/use-navigation';
 import { useParams } from 'react-router';
@@ -69,7 +69,7 @@ interface Props {
 	showDirectory: () => void;
 	showAbout: () => void;
 	showRoll: () => void;
-	showRules: () => void;
+	showReference: () => void;
 	showMonster: (monster: Monster, monsterGroup: MonsterGroup) => void;
 	showTerrain: (terrain: Terrain, upgradeIDs: string[]) => void;
 	saveChanges: (kind: PlaybookElementKind, element: Element) => void;
@@ -125,7 +125,7 @@ export const PlaybookEditPage = (props: Props) => {
 			<Space direction='vertical' style={{ width: '100%' }}>
 				<HeaderText>Name</HeaderText>
 				<Input
-					className={element.name === '' ? 'input-empty' : ''}
+					status={element.name === '' ? 'warning' : ''}
 					placeholder='Name'
 					allowClear={true}
 					addonAfter={<ThunderboltOutlined className='random-btn' onClick={() => setName(NameGenerator.generateName())} />}
@@ -134,186 +134,6 @@ export const PlaybookEditPage = (props: Props) => {
 				/>
 				<HeaderText>Description</HeaderText>
 				<MultiLine label='Description' value={element.description} onChange={setDescription} />
-			</Space>
-		);
-	};
-
-	const getAdventurePartySection = () => {
-		const adventure = element as Adventure;
-
-		const setCount = (value: number) => {
-			const copy = Utils.copy(element) as Adventure;
-			copy.party.count = value;
-			setElement(copy);
-			setDirty(true);
-		};
-
-		const setLevel = (value: number) => {
-			const copy = Utils.copy(element) as Adventure;
-			copy.party.level = value;
-			setElement(copy);
-			setDirty(true);
-		};
-
-		return (
-			<Space direction='vertical' style={{ width: '100%' }}>
-				<HeaderText>Number of Heroes</HeaderText>
-				<NumberSpin min={1} value={adventure.party.count} onChange={setCount} />
-				<HeaderText>Hero Level</HeaderText>
-				<NumberSpin min={1} max={10} value={adventure.party.level} onChange={setLevel} />
-			</Space>
-		);
-	};
-
-	const getAdventureIntroductionSection = () => {
-		const adventure = element as Adventure;
-
-		const addSection = () => {
-			const copy = Utils.copy(element) as Adventure;
-			copy.introduction.push(FactoryLogic.createElement());
-			setElement(copy);
-			setDirty(true);
-		};
-
-		const setSectionName = (index: number, value: string) => {
-			const copy = Utils.copy(element) as Adventure;
-			const m = copy.introduction[index];
-			m.name = value;
-			setElement(copy);
-			setDirty(true);
-		};
-
-		const setSectionDescription = (index: number, value: string) => {
-			const copy = Utils.copy(element) as Adventure;
-			const m = copy.introduction[index];
-			m.description = value;
-			setElement(copy);
-			setDirty(true);
-		};
-
-		const moveSection = (index: number, direction: 'up' | 'down') => {
-			const copy = Utils.copy(element) as Adventure;
-			copy.introduction = Collections.move(copy.introduction, index, direction);
-			setElement(copy);
-			setDirty(true);
-		};
-
-		const deleteSection = (id: string) => {
-			const copy = Utils.copy(element) as Adventure;
-			copy.introduction = copy.introduction.filter(section => section.id !== id);
-			setElement(copy);
-			setDirty(true);
-		};
-
-		return (
-			<Space direction='vertical' style={{ width: '100%' }}>
-				{
-					adventure.introduction.map((section, n) => (
-						<Expander
-							key={section.id}
-							title={section.name || 'Unnamed Section'}
-							extra={[
-								<Button key='up' type='text' title='Move Up' icon={<CaretUpOutlined />} onClick={e => { e.stopPropagation(); moveSection(n, 'up'); }} />,
-								<Button key='down' type='text' title='Move Down' icon={<CaretDownOutlined />} onClick={e => { e.stopPropagation(); moveSection(n, 'down'); }} />,
-								<DangerButton key='delete' mode='clear' onConfirm={e => { e.stopPropagation(); deleteSection(section.id); }} />
-							]}
-						>
-							<HeaderText>Section</HeaderText>
-							<Space direction='vertical' style={{ width: '100%' }}>
-								<Input
-									className={section.name === '' ? 'input-empty' : ''}
-									placeholder='Name'
-									allowClear={true}
-									value={section.name}
-									onChange={e => setSectionName(n, e.target.value)}
-								/>
-								<MultiLine label='Description' value={section.description} onChange={value => setSectionDescription(n, value)} />
-							</Space>
-						</Expander>
-					))
-				}
-				{
-					adventure.introduction.length === 0 ?
-						<Empty />
-						: null
-				}
-				<Button block={true} onClick={addSection}>
-					<PlusOutlined />
-					Add a section
-				</Button>
-			</Space>
-		);
-	};
-
-	const getAdventurePlotSection = () => {
-		const adventure = element as Adventure;
-
-		const addPlotPoint = () => {
-			const copy = Utils.copy(element) as Adventure;
-			copy.plot.plots.push(FactoryLogic.createAdventurePlot());
-			setElement(copy);
-			setDirty(true);
-		};
-
-		const changePlotPoint = (plot: Plot) => {
-			const copy = Utils.copy(element) as Adventure;
-			const parent = PlaybookLogic.getPlotPointParent(copy.plot, plot.id);
-			if (parent) {
-				const index = parent.plots.findIndex(p => p.id === plot.id);
-				if (index !== -1) {
-					parent.plots[index] = plot;
-				}
-				setElement(copy);
-				setDirty(true);
-			}
-		};
-
-		const movePlotPoint = (index: number, direction: 'up' | 'down') => {
-			const copy = Utils.copy(element) as Adventure;
-			copy.plot.plots = Collections.move(copy.plot.plots, index, direction);
-			setElement(copy);
-			setDirty(true);
-		};
-
-		const deletePlotPoint = (id: string) => {
-			const copy = Utils.copy(element) as Adventure;
-			copy.plot.plots = copy.plot.plots.filter(p => p.id !== id);
-			setElement(copy);
-			setDirty(true);
-		};
-
-		return (
-			<Space direction='vertical' style={{ width: '100%' }}>
-				{
-					adventure.plot.plots.map((p, n) => (
-						<Expander
-							key={p.id}
-							title={p.name || 'Unnamed Plot Point'}
-							extra={[
-								<Button key='up' type='text' title='Move Up' icon={<CaretUpOutlined />} onClick={e => { e.stopPropagation(); movePlotPoint(n, 'up'); }} />,
-								<Button key='down' type='text' title='Move Down' icon={<CaretDownOutlined />} onClick={e => { e.stopPropagation(); movePlotPoint(n, 'down'); }} />,
-								<DangerButton key='delete' mode='clear' onConfirm={e => { e.stopPropagation(); deletePlotPoint(p.id); }} />
-							]}
-						>
-							<PlotEditPanel
-								plot={p}
-								adventure={adventure}
-								playbook={props.playbook}
-								sourcebooks={props.sourcebooks}
-								onChange={changePlotPoint}
-							/>
-						</Expander>
-					))
-				}
-				{
-					adventure.introduction.length === 0 ?
-						<Empty />
-						: null
-				}
-				<Button block={true} onClick={addPlotPoint}>
-					<PlusOutlined />
-					Add a plot point
-				</Button>
 			</Space>
 		);
 	};
@@ -401,6 +221,15 @@ export const PlaybookEditPage = (props: Props) => {
 											mode='multiple'
 											options={Collections.sort(monsterGroup.addOns, a => a.name).map(a => ({ value: a.id, label: a.name, feature: a, cost: a.data.cost }))}
 											optionRender={option => <FeaturePanel feature={option.data.feature} options={props.options} cost={option.data.cost} mode={PanelMode.Full} />}
+											showSearch={true}
+											filterOption={(input, option) => {
+												const strings = option ?
+													[
+														option.label
+													]
+													: [];
+												return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+											}}
 											value={slot.customization.addOnIDs}
 											onChange={ids => setSlotAddOnIDs(group.id, slot.id, ids)}
 										/>
@@ -468,7 +297,13 @@ export const PlaybookEditPage = (props: Props) => {
 				{
 					encounter.groups.map((group, n) => (
 						<div key={group.id} className='group-row'>
-							{encounter.groups.length > 1 ? <HeaderText>Group {(n + 1).toString()}</HeaderText> : null}
+							<HeaderText
+								extra={[
+									<DangerButton mode='clear' label='Delete Group' onConfirm={() => deleteGroup(group)} />
+								]}
+							>
+								Group {(n + 1).toString()}
+							</HeaderText>
 							{group.slots.map(slot => getSlot(slot, group))}
 							{
 								group.slots.length === 0 ?
@@ -493,7 +328,6 @@ export const PlaybookEditPage = (props: Props) => {
 									/>
 									: null
 							}
-							{encounter.groups.length > 1 ? <DangerButton mode='block' label='Delete Group' onConfirm={() => deleteGroup(group)} /> : null}
 						</div>
 					))
 				}
@@ -550,6 +384,15 @@ export const PlaybookEditPage = (props: Props) => {
 											mode='multiple'
 											options={Collections.sort(terrain.upgrades, a => a.label).map(a => ({ value: a.id, label: a.label, cost: a.cost }))}
 											optionRender={option => <Flex align='center' gap={8}><div className='ds-text'>{option.data.label}</div><Badge>+{option.data.cost} EV</Badge></Flex>}
+											showSearch={true}
+											filterOption={(input, option) => {
+												const strings = option ?
+													[
+														option.label
+													]
+													: [];
+												return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+											}}
 											value={slot.upgradeIDs}
 											onChange={ids => setTerrainUpgradeIDs(slot.id, ids)}
 										/>
@@ -596,7 +439,7 @@ export const PlaybookEditPage = (props: Props) => {
 	const getEncounterObjectiveSection = () => {
 		const encounter = element as Encounter;
 
-		const setObjective = (value: EncounterObjective) => {
+		const setObjective = (value: EncounterObjective | null) => {
 			const copy = Utils.copy(element) as Encounter;
 			copy.objective = Utils.copy(value);
 			setElement(copy);
@@ -605,49 +448,62 @@ export const PlaybookEditPage = (props: Props) => {
 
 		const setObjectiveName = (value: string) => {
 			const copy = Utils.copy(element) as Encounter;
-			copy.objective.name = value;
-			setElement(copy);
-			setDirty(true);
+			if (copy.objective) {
+				copy.objective.name = value;
+				setElement(copy);
+				setDirty(true);
+			}
 		};
 
 		const setObjectiveDescription = (value: string) => {
 			const copy = Utils.copy(element) as Encounter;
-			copy.objective.description = value;
-			setElement(copy);
-			setDirty(true);
+			if (copy.objective) {
+				copy.objective.description = value;
+				setElement(copy);
+				setDirty(true);
+			}
 		};
 
 		const setObjectiveDifficultyModifier = (value: string) => {
 			const copy = Utils.copy(element) as Encounter;
-			copy.objective.difficultyModifier = value;
-			setElement(copy);
-			setDirty(true);
+			if (copy.objective) {
+				copy.objective.difficultyModifier = value;
+				setElement(copy);
+				setDirty(true);
+			}
 		};
 
 		const setObjectiveSuccessCondition = (value: string) => {
 			const copy = Utils.copy(element) as Encounter;
-			copy.objective.successCondition = value;
-			setElement(copy);
-			setDirty(true);
+			if (copy.objective) {
+				copy.objective.successCondition = value;
+				setElement(copy);
+				setDirty(true);
+			}
 		};
 
 		const setObjectiveFailureCondition = (value: string) => {
 			const copy = Utils.copy(element) as Encounter;
-			copy.objective.failureCondition = value;
-			setElement(copy);
-			setDirty(true);
+			if (copy.objective) {
+				copy.objective.failureCondition = value;
+				setElement(copy);
+				setDirty(true);
+			}
 		};
 
 		const setObjectiveVictories = (value: string) => {
 			const copy = Utils.copy(element) as Encounter;
-			copy.objective.victories = value;
-			setElement(copy);
-			setDirty(true);
+			if (copy.objective) {
+				copy.objective.victories = value;
+				setElement(copy);
+				setDirty(true);
+			}
 		};
 
 		return (
 			<Space direction='vertical' style={{ width: '100%' }}>
-				<Flex justify='end'>
+				<Flex align='center' justify='space-between' gap={10}>
+					<Toggle label='Specify an encounter objective' value={!!encounter.objective} onChange={value => setObjective(value ? FactoryLogic.createEncounterObjective() : null)} />
 					<Popover
 						trigger='click'
 						content={(
@@ -673,26 +529,105 @@ export const PlaybookEditPage = (props: Props) => {
 					>
 						<Button>
 							Common Objectives
+							<DownOutlined />
 						</Button>
 					</Popover>
 				</Flex>
-				<HeaderText>Name</HeaderText>
-				<Input
-					placeholder='Name'
-					allowClear={true}
-					value={encounter.objective.name}
-					onChange={e => setObjectiveName(e.target.value)}
-				/>
-				<HeaderText>Description</HeaderText>
-				<MultiLine label='Description' value={encounter.objective.description} onChange={setObjectiveDescription} />
-				<HeaderText>Difficulty Modifier</HeaderText>
-				<MultiLine label='Difficulty Modifier' value={encounter.objective.difficultyModifier} onChange={setObjectiveDifficultyModifier} />
-				<HeaderText>Success Condition</HeaderText>
-				<MultiLine label='Success Condition' value={encounter.objective.successCondition} onChange={setObjectiveSuccessCondition} />
-				<HeaderText>Failure Condition</HeaderText>
-				<MultiLine label='Failure Condition' value={encounter.objective.failureCondition} onChange={setObjectiveFailureCondition} />
-				<HeaderText>Victories</HeaderText>
-				<MultiLine label='Victories' value={encounter.objective.victories} onChange={setObjectiveVictories} />
+				{
+					encounter.objective ?
+						<>
+							<HeaderText>Name</HeaderText>
+							<Input
+								placeholder='Name'
+								allowClear={true}
+								value={encounter.objective.name}
+								onChange={e => setObjectiveName(e.target.value)}
+							/>
+							<HeaderText>Description</HeaderText>
+							<MultiLine label='Description' value={encounter.objective.description} onChange={setObjectiveDescription} />
+							<HeaderText>Difficulty Modifier</HeaderText>
+							<MultiLine label='Difficulty Modifier' value={encounter.objective.difficultyModifier} onChange={setObjectiveDifficultyModifier} />
+							<HeaderText>Success Condition</HeaderText>
+							<MultiLine label='Success Condition' value={encounter.objective.successCondition} onChange={setObjectiveSuccessCondition} />
+							<HeaderText>Failure Condition</HeaderText>
+							<MultiLine label='Failure Condition' value={encounter.objective.failureCondition} onChange={setObjectiveFailureCondition} />
+							<HeaderText>Victories</HeaderText>
+							<MultiLine label='Victories' value={encounter.objective.victories} onChange={setObjectiveVictories} />
+						</>
+						: null
+				}
+			</Space>
+		);
+	};
+
+	const getEncounterNotesSection = () => {
+		const encounter = element as Encounter;
+
+		const addNote = () => {
+			const copy = Utils.copy(encounter) as Encounter;
+			copy.notes.push({
+				id: Utils.guid(),
+				name: '',
+				description: ''
+			});
+			setElement(copy);
+			setDirty(true);
+		};
+
+		const changeNote = (notes: Element) => {
+			const copy = Utils.copy(encounter) as Encounter;
+			const index = copy.notes.findIndex(i => i.id === notes.id);
+			if (index !== -1) {
+				copy.notes[index] = notes;
+			}
+			setElement(copy);
+			setDirty(true);
+		};
+
+		const moveNote = (notes: Element, direction: 'up' | 'down') => {
+			const copy = Utils.copy(encounter) as Encounter;
+			const index = copy.notes.findIndex(i => i.id === notes.id);
+			copy.notes = Collections.move(copy.notes, index, direction);
+			setElement(copy);
+			setDirty(true);
+		};
+
+		const deleteNote = (notes: Element) => {
+			const copy = Utils.copy(encounter) as Encounter;
+			copy.notes = copy.notes.filter(i => i.id !== notes.id);
+			setElement(copy);
+			setDirty(true);
+		};
+
+		return (
+			<Space direction='vertical' style={{ width: '100%' }}>
+				{
+					encounter.notes.map(i => (
+						<Expander
+							key={i.id}
+							title={i.name || 'Unnamed Note'}
+							extra={[
+								<Button key='up' type='text' title='Move Up' icon={<CaretUpOutlined />} onClick={e => { e.stopPropagation(); moveNote(i, 'up'); }} />,
+								<Button key='down' type='text' title='Move Down' icon={<CaretDownOutlined />} onClick={e => { e.stopPropagation(); moveNote(i, 'down'); }} />,
+								<DangerButton key='delete' mode='clear' onConfirm={e => { e.stopPropagation(); deleteNote(i); }} />
+							]}
+						>
+							<ElementEditPanel
+								element={i}
+								onChange={changeNote}
+							/>
+						</Expander>
+					))
+				}
+				{
+					encounter.notes.length === 0 ?
+						<Empty />
+						: null
+				}
+				<Button block={true} onClick={addNote}>
+					<PlusOutlined />
+					Add a new note
+				</Button>
 			</Space>
 		);
 	};
@@ -972,7 +907,7 @@ export const PlaybookEditPage = (props: Props) => {
 														>
 															<HeaderText>Name</HeaderText>
 															<Input
-																className={element.name === '' ? 'input-empty' : ''}
+																status={element.name === '' ? 'warning' : ''}
 																placeholder='Name'
 																allowClear={true}
 																value={c.name}
@@ -983,17 +918,26 @@ export const PlaybookEditPage = (props: Props) => {
 															<HeaderText>Characteristics</HeaderText>
 															<Select
 																style={{ width: '100%' }}
-																className={c.characteristics.length < 2 ? 'selection-empty' : ''}
+																status={c.characteristics.length < 2 ? 'warning' : ''}
 																mode='multiple'
 																placeholder='Select characteristics'
 																options={[ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ].map(ch => ({ value: ch }))}
 																optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+																showSearch={true}
+																filterOption={(input, option) => {
+																	const strings = option ?
+																		[
+																			option.value
+																		]
+																		: [];
+																	return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+																}}
 																value={c.characteristics}
 																onChange={value => setChallengeCharacteristics(sectionIndex, challengeIndex, value)}
 															/>
 															<HeaderText>Skills</HeaderText>
 															<Input
-																className={element.name === '' ? 'input-empty' : ''}
+																status={element.name === '' ? 'warning' : ''}
 																placeholder='Skills'
 																allowClear={true}
 																value={c.skills}
@@ -1001,7 +945,7 @@ export const PlaybookEditPage = (props: Props) => {
 															/>
 															<HeaderText>Abilities</HeaderText>
 															<Input
-																className={element.name === '' ? 'input-empty' : ''}
+																status={element.name === '' ? 'warning' : ''}
 																placeholder='Skills'
 																allowClear={true}
 																value={c.abilities}
@@ -1044,7 +988,7 @@ export const PlaybookEditPage = (props: Props) => {
 														>
 															<HeaderText>Name</HeaderText>
 															<Input
-																className={element.name === '' ? 'input-empty' : ''}
+																status={element.name === '' ? 'warning' : ''}
 																placeholder='Name'
 																allowClear={true}
 																value={t.name}
@@ -1055,17 +999,26 @@ export const PlaybookEditPage = (props: Props) => {
 															<HeaderText>Characteristics</HeaderText>
 															<Select
 																style={{ width: '100%' }}
-																className={t.characteristics.length < 2 ? 'selection-empty' : ''}
+																status={t.characteristics.length < 2 ? 'warning' : ''}
 																mode='multiple'
 																placeholder='Select characteristics'
 																options={[ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ].map(ch => ({ value: ch }))}
 																optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+																showSearch={true}
+																filterOption={(input, option) => {
+																	const strings = option ?
+																		[
+																			option.value
+																		]
+																		: [];
+																	return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+																}}
 																value={t.characteristics}
 																onChange={value => setTwistCharacteristics(sectionIndex, twistIndex, value)}
 															/>
 															<HeaderText>Skills</HeaderText>
 															<Input
-																className={element.name === '' ? 'input-empty' : ''}
+																status={element.name === '' ? 'warning' : ''}
 																placeholder='Skills'
 																allowClear={true}
 																value={t.skills}
@@ -1073,7 +1026,7 @@ export const PlaybookEditPage = (props: Props) => {
 															/>
 															<HeaderText>Abilities</HeaderText>
 															<Input
-																className={element.name === '' ? 'input-empty' : ''}
+																status={element.name === '' ? 'warning' : ''}
 																placeholder='Skills'
 																allowClear={true}
 																value={t.abilities}
@@ -1246,6 +1199,16 @@ export const PlaybookEditPage = (props: Props) => {
 									placeholder='Trait'
 									options={[ NegotiationTrait.Benevolence, NegotiationTrait.Discovery, NegotiationTrait.Freedom, NegotiationTrait.Greed, NegotiationTrait.HigherAuthority, NegotiationTrait.Justice, NegotiationTrait.Legacy, NegotiationTrait.Peace, NegotiationTrait.Power, NegotiationTrait.Protection, NegotiationTrait.Revelry, NegotiationTrait.Vengeance ].map(nt => ({ label: nt, value: nt, desc: NegotiationLogic.getMotivationDescription(nt) }))}
 									optionRender={option => <Field label={option.data.label} value={option.data.desc} />}
+									showSearch={true}
+									filterOption={(input, option) => {
+										const strings = option ?
+											[
+												option.label,
+												option.desc
+											]
+											: [];
+										return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+									}}
 									value={m.trait}
 									onChange={t => setMotivationTrait(n, t)}
 								/>
@@ -1330,6 +1293,16 @@ export const PlaybookEditPage = (props: Props) => {
 									placeholder='Trait'
 									options={[ NegotiationTrait.Benevolence, NegotiationTrait.Discovery, NegotiationTrait.Freedom, NegotiationTrait.Greed, NegotiationTrait.HigherAuthority, NegotiationTrait.Justice, NegotiationTrait.Legacy, NegotiationTrait.Peace, NegotiationTrait.Power, NegotiationTrait.Protection, NegotiationTrait.Revelry, NegotiationTrait.Vengeance ].map(nt => ({ label: nt, value: nt, desc: NegotiationLogic.getPitfallDescription(nt) }))}
 									optionRender={option => <Field label={option.data.label} value={option.data.desc} />}
+									showSearch={true}
+									filterOption={(input, option) => {
+										const strings = option ?
+											[
+												option.label,
+												option.desc
+											]
+											: [];
+										return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+									}}
 									value={p.trait}
 									onChange={t => setPitfallTrait(n, t)}
 								/>
@@ -1379,17 +1352,35 @@ export const PlaybookEditPage = (props: Props) => {
 	};
 
 	const getTacticalMapBuilder = () => {
-		const map = element as TacticalMap;
-
 		return (
 			<div className='tactical-map-container'>
 				<TacticalMapPanel
-					map={map}
+					map={element as TacticalMap}
 					display={TacticalMapDisplayType.DirectorEdit}
 					options={props.options}
 					mode={PanelMode.Full}
 					updateMap={map => {
 						setElement(map);
+						setDirty(true);
+					}}
+				/>
+			</div>
+		);
+	};
+
+	const getAdventureBuilder = () => {
+		return (
+			<div className='adventure-container'>
+				<AdventurePanel
+					adventure={element as Adventure}
+					mode={PanelMode.Full}
+					playbook={props.playbook}
+					sourcebooks={props.sourcebooks}
+					heroes={props.heroes}
+					options={props.options}
+					allowSelection={true}
+					onChange={(adventure: Adventure) => {
+						setElement(adventure);
 						setDirty(true);
 					}}
 				/>
@@ -1404,32 +1395,7 @@ export const PlaybookEditPage = (props: Props) => {
 	const getEditSection = () => {
 		switch (kind!) {
 			case 'adventure':
-				return (
-					<Tabs
-						items={[
-							{
-								key: '1',
-								label: 'Adventure',
-								children: getNameAndDescriptionSection()
-							},
-							{
-								key: '2',
-								label: 'Party',
-								children: getAdventurePartySection()
-							},
-							{
-								key: '3',
-								label: 'Introduction',
-								children: getAdventureIntroductionSection()
-							},
-							{
-								key: '4',
-								label: 'Plot',
-								children: getAdventurePlotSection()
-							}
-						]}
-					/>
-				);
+				return getAdventureBuilder();
 			case 'encounter':
 				return (
 					<Tabs
@@ -1453,6 +1419,11 @@ export const PlaybookEditPage = (props: Props) => {
 								key: '4',
 								label: 'Objective',
 								children: getEncounterObjectiveSection()
+							},
+							{
+								key: '5',
+								label: 'Notes',
+								children: getEncounterNotesSection()
 							}
 						]}
 					/>
@@ -1531,6 +1502,7 @@ export const PlaybookEditPage = (props: Props) => {
 				<EncounterPanel
 					encounter={element as Encounter}
 					sourcebooks={props.sourcebooks}
+					heroes={props.heroes}
 					options={props.options}
 					mode={PanelMode.Full}
 				/>
@@ -1678,13 +1650,14 @@ export const PlaybookEditPage = (props: Props) => {
 	const getPreviewHeaderSection = () => {
 		if (kind === 'encounter') {
 			const strength = EncounterLogic.getStrength(element as Encounter, props.sourcebooks);
-			const difficulty = EncounterLogic.getDifficulty(strength, props.options);
+			const difficulty = EncounterLogic.getDifficulty(strength, props.options, props.heroes);
 
 			return (
 				<Expander title='Difficulty' tags={[ difficulty ]}>
 					<EncounterDifficultyPanel
 						encounter={element as Encounter}
 						sourcebooks={props.sourcebooks}
+						heroes={props.heroes}
 						options={props.options}
 					/>
 				</Expander>
@@ -1696,18 +1669,6 @@ export const PlaybookEditPage = (props: Props) => {
 
 	const getPreview = () => {
 		switch (kind!) {
-			case 'adventure':
-				return (
-					<SelectablePanel>
-						<AdventurePanel
-							adventure={element as Adventure}
-							mode={PanelMode.Full}
-							playbook={props.playbook}
-							sourcebooks={props.sourcebooks}
-							options={props.options}
-						/>
-					</SelectablePanel>
-				);
 			case 'encounter':
 				return (
 					<Tabs
@@ -1749,6 +1710,8 @@ export const PlaybookEditPage = (props: Props) => {
 					</SelectablePanel>
 				);
 		}
+
+		return null;
 	};
 
 	//#endregion
@@ -1765,7 +1728,7 @@ export const PlaybookEditPage = (props: Props) => {
 		return (
 			<ErrorBoundary>
 				<div className='playbook-edit-page'>
-					<AppHeader subheader={`${getSubheader()} Builder`} showDirectory={props.showDirectory} showAbout={props.showAbout} showRoll={props.showRoll} showRules={props.showRules}>
+					<AppHeader subheader={`${getSubheader()} Builder`} showDirectory={props.showDirectory}>
 						<Button type='primary' icon={<SaveOutlined />} disabled={!dirty} onClick={() => props.saveChanges(kind!, element)}>
 							Save Changes
 						</Button>
@@ -1785,6 +1748,7 @@ export const PlaybookEditPage = (props: Props) => {
 								>
 									<Button icon={<SettingOutlined />}>
 										Options
+										<DownOutlined />
 									</Button>
 								</Popover>
 								: null
@@ -1796,7 +1760,7 @@ export const PlaybookEditPage = (props: Props) => {
 							{getEditSection()}
 						</div>
 						{
-							kind !== 'tactical-map' ?
+							(kind !== 'adventure') && (kind !== 'tactical-map') ?
 								<div className='preview-column'>
 									{getPreviewHeaderSection()}
 									{getPreview()}
@@ -1804,6 +1768,7 @@ export const PlaybookEditPage = (props: Props) => {
 								: null
 						}
 					</div>
+					<AppFooter page='playbook' showAbout={props.showAbout} showRoll={props.showRoll} showReference={props.showReference} />
 				</div>
 			</ErrorBoundary>
 		);

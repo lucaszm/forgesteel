@@ -1,5 +1,6 @@
 import { Alert, Button, Input, Popover, Segmented, Space } from 'antd';
-import { PlusOutlined, ReadOutlined, SettingOutlined } from '@ant-design/icons';
+import { DownOutlined, ReadOutlined, SettingOutlined } from '@ant-design/icons';
+import { AppFooter } from '../../../panels/app-footer/app-footer';
 import { AppHeader } from '../../../panels/app-header/app-header';
 import { CounterRunPanel } from '../../../panels/run/counter-run/counter-run-panel';
 import { DangerButton } from '../../../controls/danger-button/danger-button';
@@ -41,7 +42,7 @@ interface Props {
 	showDirectory: () => void;
 	showAbout: () => void;
 	showRoll: () => void;
-	showRules: () => void;
+	showReference: () => void;
 	showPlayerView: () => void;
 	updateHero: (hero: Hero) => void;
 	updateSession: (session: Playbook) => void;
@@ -469,7 +470,7 @@ export const SessionDirectorPage = (props: Props) => {
 		return (
 			<ErrorBoundary>
 				<div className='session-director-page'>
-					<AppHeader subheader='Session' showDirectory={props.showDirectory} showAbout={props.showAbout} showRoll={props.showRoll} showRules={props.showRules}>
+					<AppHeader subheader='Session' showDirectory={props.showDirectory}>
 						<Popover
 							trigger='click'
 							content={(
@@ -485,8 +486,9 @@ export const SessionDirectorPage = (props: Props) => {
 								</div>
 							)}
 						>
-							<Button type='primary' icon={<PlusOutlined />}>
-								Add
+							<Button type='primary'>
+								Start
+								<DownOutlined />
 							</Button>
 						</Popover>
 						{
@@ -505,6 +507,7 @@ export const SessionDirectorPage = (props: Props) => {
 						>
 							<Button icon={<SettingOutlined />}>
 								Options
+								<DownOutlined />
 							</Button>
 						</Popover>
 					</AppHeader>
@@ -512,6 +515,7 @@ export const SessionDirectorPage = (props: Props) => {
 						{getSelector()}
 						{getSelectedContent()}
 					</div>
+					<AppFooter page='session' showAbout={props.showAbout} showRoll={props.showRoll} showReference={props.showReference} />
 				</div>
 			</ErrorBoundary>
 		);

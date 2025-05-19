@@ -1,10 +1,14 @@
-import { Button, Input, Popover, Space, Tabs, Upload } from 'antd';
-import { DownloadOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Input, Popover, Tabs, Upload } from 'antd';
+import { DownOutlined, DownloadOutlined, PlusOutlined, SearchOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { AppFooter } from '../../../panels/app-footer/app-footer';
 import { AppHeader } from '../../../panels/app-header/app-header';
 import { Collections } from '../../../../utils/collections';
 import { Empty } from '../../../controls/empty/empty';
 import { ErrorBoundary } from '../../../controls/error-boundary/error-boundary';
 import { Hero } from '../../../../models/hero';
+import { HeroData } from '../../../../data/hero-data';
+import { HeroInfo } from '../../../controls/token/token';
+import { HeroLogic } from '../../../../logic/hero-logic';
 import { HeroPanel } from '../../../panels/hero/hero-panel';
 import { Options } from '../../../../models/options';
 import { SelectablePanel } from '../../../controls/selectable-panel/selectable-panel';
@@ -23,9 +27,10 @@ interface Props {
 	showDirectory: () => void;
 	showAbout: () => void;
 	showRoll: () => void;
-	showRules: () => void;
-	addHero: () => void;
-	importHero: (hero: Hero) => void;
+	showReference: () => void;
+	addHero: (folder: string) => void;
+	importHero: (hero: Hero, folder: string) => void;
+	showParty: (folder: string) => void;
 }
 
 export const HeroListPage = (props: Props) => {
@@ -79,11 +84,25 @@ export const HeroListPage = (props: Props) => {
 	};
 
 	try {
+
+		const exampleHeroes = [
+			HeroData.dwarfFury,
+			HeroData.highElfTactician,
+			HeroData.humanCensor,
+			HeroData.humanNull,
+			HeroData.humanTalent,
+			HeroData.orcConduit,
+			HeroData.polderElementalist,
+			HeroData.polderShadow,
+			HeroData.wodeElfTroubadour
+		];
+
 		return (
 			<ErrorBoundary>
 				<div className='hero-list-page'>
-					<AppHeader subheader='Heroes' showDirectory={props.showDirectory} showAbout={props.showAbout} showRoll={props.showRoll} showRules={props.showRules}>
+					<AppHeader subheader='Heroes' showDirectory={props.showDirectory}>
 						<Input
+							name='search'
 							placeholder='Search'
 							allowClear={true}
 							value={searchTerm}
@@ -94,10 +113,15 @@ export const HeroListPage = (props: Props) => {
 						<Popover
 							trigger='click'
 							content={(
-								<div style={{ display: 'flex', flexDirection: 'column' }}>
-									<Space>
-										<Button type='primary' block={true} icon={<PlusOutlined />} onClick={props.addHero}>Create</Button>
-										<div className='ds-text'>or</div>
+								<div style={{ width: '500px' }}>
+									<Button type='primary' block={true} icon={<PlusOutlined />} onClick={() => props.addHero(currentTab)}>
+										Create a New Hero
+									</Button>
+									<div className='ds-text centered-text'>or</div>
+									<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
+										<Button block={true} icon={<ThunderboltOutlined />} onClick={() => props.importHero(HeroLogic.createRandomHero(), currentTab)}>
+											Generate a Random Hero
+										</Button>
 										<Upload
 											style={{ width: '100%' }}
 											accept='.drawsteel-hero'
@@ -107,21 +131,44 @@ export const HeroListPage = (props: Props) => {
 													.text()
 													.then(json => {
 														const hero = (JSON.parse(json) as Hero);
-														props.importHero(hero);
+														props.importHero(hero, currentTab);
 													});
 												return false;
 											}}
 										>
-											<Button block={true} icon={<DownloadOutlined />}>Import</Button>
+											<Button block={true} icon={<DownloadOutlined />}>
+												Import a Hero File
+											</Button>
 										</Upload>
-									</Space>
+									</div>
+									<div className='ds-text centered-text'>or start with a premade example:</div>
+									<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
+										{
+											exampleHeroes.map(h => (
+												<Button key={h.id} className='container-button' block={true} onClick={() => props.importHero(h, currentTab)}>
+													<HeroInfo hero={h} />
+												</Button>
+											))
+										}
+									</div>
 								</div>
 							)}
 						>
-							<Button type='primary' icon={<PlusOutlined />}>
+							<Button type='primary'>
 								Add
+								<DownOutlined />
 							</Button>
 						</Popover>
+						{
+							getHeroes(currentTab).length > 1 ?
+								<>
+									<div className='divider' />
+									<Button onClick={() => props.showParty(currentTab)}>
+										Party Overview
+									</Button>
+								</>
+								: null
+						}
 					</AppHeader>
 					<div className='hero-list-page-content'>
 						<Tabs
@@ -136,9 +183,10 @@ export const HeroListPage = (props: Props) => {
 								),
 								children: getHeroesSection(getHeroes(f))
 							}))}
-							onChange={folder => navigation.goToHeroList(folder)}
+							onChange={navigation.goToHeroList}
 						/>
 					</div>
+					<AppFooter page='heroes' showAbout={props.showAbout} showRoll={props.showRoll} showReference={props.showReference} />
 				</div>
 			</ErrorBoundary>
 		);

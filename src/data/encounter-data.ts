@@ -32,7 +32,7 @@ export class EncounterData {
 						}
 					}
 				],
-				acted: false
+				encounterState: 'ready'
 			},
 			{
 				id: 'group-2',
@@ -57,7 +57,7 @@ export class EncounterData {
 						}
 					}
 				],
-				acted: false
+				encounterState: 'ready'
 			},
 			{
 				id: 'group-3',
@@ -82,7 +82,7 @@ export class EncounterData {
 						}
 					}
 				],
-				acted: false
+				encounterState: 'ready'
 			},
 			{
 				id: 'group-4',
@@ -107,7 +107,7 @@ export class EncounterData {
 						}
 					}
 				],
-				acted: false
+				encounterState: 'ready'
 			}
 		],
 		terrain: [
@@ -128,6 +128,8 @@ export class EncounterData {
 		],
 		heroes: [],
 		objective: EncounterObjectiveData.diminishNumbers,
+		notes: [],
+		initiative: undefined,
 		round: 1,
 		malice: 0
 	};
@@ -160,12 +162,14 @@ export class EncounterData {
 						}
 					}
 				],
-				acted: false
+				encounterState: 'ready'
 			}
 		],
 		terrain: [],
 		heroes: [],
-		objective: EncounterObjectiveData.holdThemOff,
+		objective: null,
+		notes: [],
+		initiative: undefined,
 		round: 1,
 		malice: 0
 	};

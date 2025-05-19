@@ -36,9 +36,10 @@ As a tactician, you have abilities that heal your allies and grant them increase
 					field: FeatureField.Recoveries,
 					value: 10
 				}),
-				FactoryLogic.feature.createSkill({
+				FactoryLogic.feature.createSkillChoice({
 					id: 'tactician-1-1',
-					skill: 'Lead'
+					listOptions: [ SkillList.Interpersonal ],
+					selected: [ 'Lead' ]
 				}),
 				FactoryLogic.feature.createSkillChoice({
 					id: 'tactician-1-2',
@@ -302,7 +303,7 @@ In addition, you can spend 1 focus to take one of the following free triggered a
 		}),
 		FactoryLogic.createAbility({
 			id: 'tactician-ability-12',
-			name: 'Stay [strong], and Focus',
+			name: 'Stay Strong and Focus',
 			description: 'We can do this! Keep faith and hold fast!',
 			type: FactoryLogic.type.createManeuver(),
 			keywords: [],

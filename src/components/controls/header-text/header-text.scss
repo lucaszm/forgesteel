@@ -32,6 +32,7 @@
 	}
 
 	.header-text-content {
+		min-height: 32px;
 		display: flex;
 		align-items: center;
 		gap: 10px;
@@ -56,6 +57,10 @@
 			.header-text {
 				color: rgba(255, 255, 255, 0.88);
 			}
+		}
+
+		.ant-btn-icon {
+			color: rgba(255, 255, 255, 0.88);
 		}
 	}	
 }

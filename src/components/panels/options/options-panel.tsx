@@ -4,6 +4,7 @@ import { ErrorBoundary } from '../../controls/error-boundary/error-boundary';
 import { Hero } from '../../../models/hero';
 import { NumberSpin } from '../../controls/number-spin/number-spin';
 import { Options } from '../../../models/options';
+import { OptionsLogic } from '../../../logic/options-logic';
 import { PanelWidth } from '../../../enums/panel-width';
 import { Toggle } from '../../controls/toggle/toggle';
 import { Utils } from '../../../utils/utils';
@@ -18,15 +19,21 @@ interface Props {
 }
 
 export const OptionsPanel = (props: Props) => {
-	const setShowSkillsInGroups = (value: boolean) => {
+	const setSinglePage = (value: boolean) => {
 		const copy = Utils.copy(props.options);
-		copy.showSkillsInGroups = value;
+		copy.singlePage = value;
 		props.setOptions(copy);
 	};
 
-	const setShowFreeStrikes = (value: boolean) => {
+	const setSeparateInventoryFeatures = (value: boolean) => {
 		const copy = Utils.copy(props.options);
-		copy.showFreeStrikes = value;
+		copy.separateInventoryFeatures = value;
+		props.setOptions(copy);
+	};
+
+	const setShowSkillsInGroups = (value: boolean) => {
+		const copy = Utils.copy(props.options);
+		copy.showSkillsInGroups = value;
 		props.setOptions(copy);
 	};
 
@@ -42,9 +49,9 @@ export const OptionsPanel = (props: Props) => {
 		props.setOptions(copy);
 	};
 
-	const setFeatureWidth = (value: PanelWidth) => {
+	const setShowSources = (value: boolean) => {
 		const copy = Utils.copy(props.options);
-		copy.featureWidth = value;
+		copy.showSources = value;
 		props.setOptions(copy);
 	};
 
@@ -102,6 +109,12 @@ export const OptionsPanel = (props: Props) => {
 		props.setOptions(copy);
 	};
 
+	const setHeroParty = (value: string) => {
+		const copy = Utils.copy(props.options);
+		copy.heroParty = value;
+		props.setOptions(copy);
+	};
+
 	const setHeroCount = (value: number) => {
 		const copy = Utils.copy(props.options);
 		copy.heroCount = value;
@@ -120,6 +133,12 @@ export const OptionsPanel = (props: Props) => {
 		props.setOptions(copy);
 	};
 
+	const setShowDefeatedCombatants = (value: boolean) => {
+		const copy = Utils.copy(props.options);
+		copy.showDefeatedCombatants = value;
+		props.setOptions(copy);
+	};
+
 	const setGridSize = (value: number) => {
 		const copy = Utils.copy(props.options);
 		copy.gridSize = value;
@@ -133,12 +152,15 @@ export const OptionsPanel = (props: Props) => {
 	};
 
 	const getContent = () => {
-		const getPartySection = (initialDivider: boolean) => {
-			const parties = Collections
+		const getParties = () => {
+			return Collections
 				.distinct(props.heroes.map(h => h.folder), f => f)
 				.sort()
 				.filter(f => !!f);
+		};
 
+		const getPartySection = (initialDivider: boolean) => {
+			const parties = getParties();
 			if (parties.length === 0) {
 				return null;
 			}
@@ -150,8 +172,17 @@ export const OptionsPanel = (props: Props) => {
 					<Select
 						style={{ width: '100%' }}
 						placeholder='Select a party'
-						options={[ '', ...parties ].map(s => ({ value: s, label: s || 'No heroes' }))}
+						options={[ '', ...parties ].map(p => ({ value: p, label: p || 'No heroes' }))}
 						optionRender={option => <div className='ds-text'>{option.data.label}</div>}
+						showSearch={true}
+						filterOption={(input, option) => {
+							const strings = option ?
+								[
+									option.label
+								]
+								: [];
+							return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+						}}
 						value={props.options.party}
 						onChange={p => setParty(p || '')}
 					/>
@@ -159,32 +190,16 @@ export const OptionsPanel = (props: Props) => {
 			);
 		};
 
-		const getPartyDescription = () => {
-			const heroes = `${props.options.heroCount === 1 ? 'hero' : 'heroes'}`;
-			const victories = `${props.options.heroVictories === 1 ? 'victory' : 'victories'}`;
-
-			if (props.options.heroVictories > 0) {
-				return `${props.options.heroCount} ${heroes} at level ${props.options.heroLevel} with ${props.options.heroVictories} ${victories}`;
-			}
-
-			return `${props.options.heroCount} ${heroes} at level ${props.options.heroLevel}`;
-		};
-
 		switch (props.mode) {
 			case 'hero':
 				return (
 					<>
+						<Toggle label='Single page' value={props.options.singlePage} onChange={setSinglePage} />
+						<Toggle label='Separate inventory features' value={props.options.separateInventoryFeatures} onChange={setSeparateInventoryFeatures} />
 						<Toggle label='Show skills in groups' value={props.options.showSkillsInGroups} onChange={setShowSkillsInGroups} />
-						<Toggle label='Show free strikes' value={props.options.showFreeStrikes} onChange={setShowFreeStrikes} />
-						<Toggle label='Show standard abilities' value={props.options.showStandardAbilities} onChange={setShowStandardAbilities} />
+						<Toggle label='Include standard abilities' value={props.options.showStandardAbilities} onChange={setShowStandardAbilities} />
 						<Toggle label='Dim unavailable abilities' value={props.options.dimUnavailableAbilities} onChange={setDimUnavailableAbilities} />
-						<div className='option-heading'>Features</div>
-						<Segmented
-							name='featurewidth'
-							options={[ PanelWidth.Narrow, PanelWidth.Medium, PanelWidth.Wide, PanelWidth.ExtraWide ]}
-							value={props.options.featureWidth}
-							onChange={setFeatureWidth}
-						/>
+						<Toggle label='Show feature / ability sources' value={props.options.showSources} onChange={setShowSources} />
 						<div className='option-heading'>Abilities</div>
 						<Segmented
 							name='abilitywidth'
@@ -223,10 +238,33 @@ export const OptionsPanel = (props: Props) => {
 						<NumberSpin label='Minions per group' min={1} value={props.options.minionCount} onChange={setMinionCount} />
 						{getPartySection(true)}
 						<Divider />
-						<Alert type='info' showIcon={true} message={`Calculate encounter difficulty based on a party of ${getPartyDescription()}.`} />
-						<NumberSpin label='Number of heroes' min={1} value={props.options.heroCount} onChange={setHeroCount} />
-						<NumberSpin label='Hero level' min={1} max={10} value={props.options.heroLevel} onChange={setHeroLevel} />
-						<NumberSpin label='Number of victories' min={0} value={props.options.heroVictories} onChange={setHeroVictories} />
+						<Alert type='info' showIcon={true} message={`Calculate encounter difficulty based on ${OptionsLogic.getPartyDescription(props.options)}.`} />
+						<Select
+							style={{ width: '100%' }}
+							placeholder='Select a party'
+							options={[ ...getParties(), '' ].map(p => ({ value: p, label: p || 'A custom party' }))}
+							optionRender={option => <div className='ds-text'>{option.data.label}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.label
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
+							value={props.options.heroParty}
+							onChange={p => setHeroParty(p || '')}
+						/>
+						{
+							props.options.heroParty === '' ?
+								<>
+									<NumberSpin label='Number of heroes' min={1} value={props.options.heroCount} onChange={setHeroCount} />
+									<NumberSpin label='Hero level' min={1} max={10} value={props.options.heroLevel} onChange={setHeroLevel} />
+									<NumberSpin label='Number of victories' min={0} value={props.options.heroVictories} onChange={setHeroVictories} />
+								</>
+								: null
+						}
 					</>
 				);
 			case 'tactical-map':
@@ -240,6 +278,7 @@ export const OptionsPanel = (props: Props) => {
 					<>
 						{getPartySection(false)}
 						<Divider />
+						<Toggle label='Show defeated combatants' value={props.options.showDefeatedCombatants} onChange={setShowDefeatedCombatants} />
 						<NumberSpin label='Map Grid Size' min={5} steps={[ 5 ]} value={props.options.gridSize} onChange={setGridSize} />
 					</>
 				);

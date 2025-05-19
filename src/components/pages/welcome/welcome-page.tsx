@@ -1,5 +1,6 @@
 import { BookOutlined, PlayCircleOutlined, ReadOutlined, TeamOutlined } from '@ant-design/icons';
 import { Button, Flex, Segmented } from 'antd';
+import { AppFooter } from '../../panels/app-footer/app-footer';
 import { AppHeader } from '../../panels/app-header/app-header';
 import { ErrorBoundary } from '../../controls/error-boundary/error-boundary';
 import { HeaderText } from '../../controls/header-text/header-text';
@@ -12,7 +13,7 @@ interface Props {
 	showDirectory: () => void;
 	showAbout: () => void;
 	showRoll: () => void;
-	showRules: () => void;
+	showReference: () => void;
 }
 
 export const WelcomePage = (props: Props) => {
@@ -52,6 +53,9 @@ export const WelcomePage = (props: Props) => {
 								Need to tweak your hero in a way that's not strictly by the book? No problem! You can customize your hero in any number of ways - an extra ability, bonuses to your characteristics, extra skills, retainers, etc.
 							</li>
 						</ul>
+						<div className='ds-text'>
+							In addition, you can quickly look up rules at any time using the Reference button at the bottom right of the screen.
+						</div>
 					</div>
 				);
 			case 'director-prep':
@@ -167,7 +171,7 @@ export const WelcomePage = (props: Props) => {
 		return (
 			<ErrorBoundary>
 				<div className='welcome-page'>
-					<AppHeader showDirectory={props.showDirectory} showAbout={props.showAbout} showRoll={props.showRoll} showRules={props.showRules} />
+					<AppHeader showDirectory={props.showDirectory} />
 					<div className='welcome-page-content'>
 						<div className='welcome-column'>
 							<HeaderText level={1}>Welcome to FORGE STEEL</HeaderText>
@@ -219,6 +223,7 @@ export const WelcomePage = (props: Props) => {
 							{getContent(page)}
 						</div>
 					</div>
+					<AppFooter page='welcome' showAbout={props.showAbout} showRoll={props.showRoll} showReference={props.showReference} />
 				</div>
 			</ErrorBoundary>
 		);

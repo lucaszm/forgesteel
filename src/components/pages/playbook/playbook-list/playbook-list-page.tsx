@@ -1,8 +1,9 @@
 import { Button, Divider, Flex, Input, Popover, Segmented, Space, Tabs, Upload } from 'antd';
-import { DownloadOutlined, PlusOutlined, SearchOutlined, SettingOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { DownOutlined, DownloadOutlined, PlusOutlined, SearchOutlined, SettingOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Playbook, PlaybookElementKind } from '../../../../models/playbook';
 import { Adventure } from '../../../../models/adventure';
 import { AdventurePanel } from '../../../panels/elements/adventure-panel/adventure-panel';
+import { AppFooter } from '../../../panels/app-footer/app-footer';
 import { AppHeader } from '../../../panels/app-header/app-header';
 import { Element } from '../../../../models/element';
 import { Empty } from '../../../controls/empty/empty';
@@ -45,7 +46,7 @@ interface Props {
 	showDirectory: () => void;
 	showAbout: () => void;
 	showRoll: () => void;
-	showRules: () => void;
+	showReference: () => void;
 	createElement: (kind: PlaybookElementKind, original: Element | null) => void;
 	importElement: (kind: PlaybookElementKind, element: Element) => void;
 	setOptions: (options: Options) => void;
@@ -158,6 +159,7 @@ export const PlaybookListPage = (props: Props) => {
 								adventure={a}
 								playbook={props.playbook}
 								sourcebooks={props.sourcebooks}
+								heroes={props.heroes}
 								options={props.options}
 							/>
 						</SelectablePanel>
@@ -179,7 +181,7 @@ export const PlaybookListPage = (props: Props) => {
 				{
 					list.map(e => (
 						<SelectablePanel key={e.id} onSelect={() => navigation.goToPlaybookView('encounter', e.id)}>
-							<EncounterPanel encounter={e} sourcebooks={props.sourcebooks} options={props.options} />
+							<EncounterPanel encounter={e} sourcebooks={props.sourcebooks} heroes={props.heroes} options={props.options} />
 						</SelectablePanel>
 					))
 				}
@@ -288,8 +290,9 @@ export const PlaybookListPage = (props: Props) => {
 		return (
 			<ErrorBoundary>
 				<div className='playbook-list-page'>
-					<AppHeader subheader='Playbook' showDirectory={props.showDirectory} showAbout={props.showAbout} showRoll={props.showRoll} showRules={props.showRules}>
+					<AppHeader subheader='Playbook' showDirectory={props.showDirectory}>
 						<Input
+							name='search'
 							placeholder='Search'
 							allowClear={true}
 							value={searchTerm}
@@ -300,7 +303,7 @@ export const PlaybookListPage = (props: Props) => {
 						<Popover
 							trigger='click'
 							content={(
-								<div style={{ display: 'flex', flexDirection: 'column' }}>
+								<div style={{ width: '300px' }}>
 									<Flex align='center' justify='center' gap={10}>
 										<Button type='primary' icon={<PlusOutlined />} onClick={() => createElement(null)}>Create</Button>
 										<div className='ds-text'>or</div>
@@ -453,8 +456,9 @@ export const PlaybookListPage = (props: Props) => {
 								</div>
 							)}
 						>
-							<Button type='primary' icon={<PlusOutlined />}>
+							<Button type='primary'>
 								Add
+								<DownOutlined />
 							</Button>
 						</Popover>
 						{
@@ -470,6 +474,7 @@ export const PlaybookListPage = (props: Props) => {
 								>
 									<Button icon={<SettingOutlined />}>
 										Options
+										<DownOutlined />
 									</Button>
 								</Popover>
 								: null
@@ -533,6 +538,7 @@ export const PlaybookListPage = (props: Props) => {
 							onChange={k => navigation.goToPlaybookList(k as PlaybookElementKind)}
 						/>
 					</div>
+					<AppFooter page='playbook' showAbout={props.showAbout} showRoll={props.showRoll} showReference={props.showReference} />
 				</div>
 			</ErrorBoundary>
 		);

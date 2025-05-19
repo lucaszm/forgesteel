@@ -43,14 +43,15 @@ import { Montage } from '../../models/montage';
 import { Negotiation } from '../../models/negotiation';
 import { Options } from '../../models/options';
 import { PDFExport } from '../../utils/pdf-export';
+import { PartyModal } from '../modals/party/party-modal';
 import { Perk } from '../../models/perk';
 import { PlaybookEditPage } from '../pages/playbook/playbook-edit/playbook-edit-page';
 import { PlaybookListPage } from '../pages/playbook/playbook-list/playbook-list-page';
 import { PlaybookLogic } from '../../logic/playbook-logic';
 import { PlaybookViewPage } from '../pages/playbook/playbook-view/playbook-view-page';
 import { PlayerViewModal } from '../modals/player-view/player-view-modal';
+import { ReferenceModal } from '../modals/reference/reference-modal';
 import { RollModal } from '../modals/roll/roll-modal';
-import { RulesModal } from '../modals/rules/rules-modal';
 import { RulesPage } from '../../enums/rules-page';
 import { SessionDirectorPage } from '../pages/session/director/session-director-page';
 import { SessionPlayerPage } from '../pages/session/player/session-player-page';
@@ -147,33 +148,36 @@ export const Main = (props: Props) => {
 
 	//#region Heroes
 
-	const createHero = () => {
+	const createHero = (folder: string) => {
 		const hero = FactoryLogic.createHero([
 			SourcebookData.core.id,
 			SourcebookData.orden.id
 		]);
+		hero.folder = folder;
 
 		setDrawer(null);
 		persistHero(hero).then(() => navigation.goToHeroEdit(hero.id, 'start'));
 	};
 
 	const deleteHero = (hero: Hero) => {
-		navigation.goToHeroList();
+		const copy = Utils.copy(heroes.filter(h => h.id !== hero.id));
+		const stayInFolder = copy.some(h => h.folder === hero.folder);
+		navigation.goToHeroList(stayInFolder ? hero.folder : undefined);
 
-		const copy = Utils.copy(heroes);
-		persistHeroes(copy.filter(h => h.id !== hero.id));
+		persistHeroes(copy);
 	};
 
 	const saveHero = (hero: Hero) => {
 		persistHero(hero).then(() => navigation.goToHeroView(hero.id));
 	};
 
-	const importHero = (hero: Hero, createCopy: boolean = false) => {
+	const importHero = (hero: Hero, folder: string, createCopy: boolean = false) => {
 		if (createCopy) {
 			hero = Utils.copy(hero);
 			hero.name = `Copy of ${hero.name}`;
 		}
 		hero.id = Utils.guid();
+		hero.folder = folder;
 		HeroLogic.updateHero(hero);
 
 		setDrawer(null);
@@ -181,7 +185,7 @@ export const Main = (props: Props) => {
 	};
 
 	const copyHero = (hero: Hero) => {
-		importHero(hero, true);
+		importHero(hero, hero.folder, true);
 	};
 
 	const exportHero = (hero: Hero, format: 'image' | 'pdf' | 'json') => {
@@ -189,7 +193,7 @@ export const Main = (props: Props) => {
 	};
 
 	const exportHeroPDF = (hero: Hero, format: 'portrait' | 'landscape') => {
-		PDFExport.startExport(hero, format);
+		PDFExport.startExport(hero, [ SourcebookData.core, SourcebookData.orden, ...homebrewSourcebooks ], format);
 	};
 
 	//#endregion
@@ -437,18 +441,24 @@ export const Main = (props: Props) => {
 		}
 	};
 
-	const exportLibraryElement = (kind: SourcebookElementKind, element: Element, format: 'image' | 'pdf' | 'json') => {
-		let name: string;
-		let extension: string;
+	const exportLibraryElement = (kind: SourcebookElementKind, isSubElement: boolean, element: Element, format: 'image' | 'pdf' | 'json') => {
+		let name = Format.capitalize(kind);
+		let extension = kind.toString();
 
 		switch (kind) {
+			case 'class':
+				if (isSubElement) {
+					name = 'Subclass';
+					extension = 'subclass';
+				}
+				break;
 			case 'monster-group':
 				name = 'Monster Group';
 				extension = 'monster-group';
-				break;
-			default:
-				name = Format.capitalize(kind);
-				extension = kind;
+				if (isSubElement) {
+					name = 'Monster';
+					extension = 'monster';
+				}
 				break;
 		};
 
@@ -937,12 +947,6 @@ export const Main = (props: Props) => {
 
 	//#endregion
 
-	//#region Session
-
-	//
-
-	//#endregion
-
 	//#region Modals
 
 	const showDirectoryPane = () => {
@@ -972,8 +976,8 @@ export const Main = (props: Props) => {
 		);
 	};
 
-	const showRules = () => {
-		onShowRules(null);
+	const showReference = () => {
+		onshowReference(null);
 	};
 
 	const onSelectLibraryElement = (element: Element, kind: SourcebookElementKind) => {
@@ -983,7 +987,7 @@ export const Main = (props: Props) => {
 				element={element}
 				options={options}
 				onClose={() => setDrawer(null)}
-				export={format => exportLibraryElement(kind, element, format)}
+				export={format => exportLibraryElement(kind, false, element, format)}
 			/>
 		);
 	};
@@ -1053,9 +1057,19 @@ export const Main = (props: Props) => {
 		);
 	};
 
-	const onShowRules = (hero: Hero | null, page?: RulesPage) => {
+	const onShowParty = (folder: string) => {
 		setDrawer(
-			<RulesModal
+			<PartyModal
+				heroes={heroes.filter(h => h.folder === folder)}
+				sourcebooks={[ SourcebookData.core, SourcebookData.orden, ...homebrewSourcebooks ]}
+				onClose={() => setDrawer(null)}
+			/>
+		);
+	};
+
+	const onshowReference = (hero: Hero | null, page?: RulesPage) => {
+		setDrawer(
+			<ReferenceModal
 				hero={hero}
 				sourcebooks={[ SourcebookData.core, SourcebookData.orden, ...homebrewSourcebooks ]}
 				startPage={page}
@@ -1124,7 +1138,7 @@ export const Main = (props: Props) => {
 									showDirectory={showDirectoryPane}
 									showAbout={showAbout}
 									showRoll={showRoll}
-									showRules={showRules}
+									showReference={showReference}
 								/>
 							}
 						/>
@@ -1140,9 +1154,10 @@ export const Main = (props: Props) => {
 										showDirectory={showDirectoryPane}
 										showAbout={showAbout}
 										showRoll={showRoll}
-										showRules={showRules}
+										showReference={showReference}
 										addHero={createHero}
 										importHero={importHero}
+										showParty={onShowParty}
 									/>
 								}
 							/>
@@ -1172,7 +1187,7 @@ export const Main = (props: Props) => {
 										showCharacteristic={onSelectCharacteristic}
 										showAbility={onSelectAbility}
 										showHeroState={onShowHeroState}
-										showRules={onShowRules}
+										showReference={onshowReference}
 									/>
 								}
 							/>
@@ -1190,7 +1205,7 @@ export const Main = (props: Props) => {
 										showDirectory={showDirectoryPane}
 										showAbout={showAbout}
 										showRoll={showRoll}
-										showRules={showRules}
+										showReference={showReference}
 										saveChanges={saveHero}
 										importSourcebook={sourcebook => {
 											const copy = Utils.copy(homebrewSourcebooks);
@@ -1221,7 +1236,7 @@ export const Main = (props: Props) => {
 										showDirectory={showDirectoryPane}
 										showAbout={showAbout}
 										showRoll={showRoll}
-										showRules={showRules}
+										showReference={showReference}
 										setOptions={persistOptions}
 										showSourcebooks={showSourcebooks}
 										createElement={(kind, sourcebookID) => createLibraryElement(kind, sourcebookID, null)}
@@ -1239,7 +1254,7 @@ export const Main = (props: Props) => {
 										showDirectory={showDirectoryPane}
 										showAbout={showAbout}
 										showRoll={showRoll}
-										showRules={showRules}
+										showReference={showReference}
 										createElement={createLibraryElement}
 										export={exportLibraryElement}
 										copy={copyLibraryElement}
@@ -1258,7 +1273,7 @@ export const Main = (props: Props) => {
 										showDirectory={showDirectoryPane}
 										showAbout={showAbout}
 										showRoll={showRoll}
-										showRules={showRules}
+										showReference={showReference}
 										showMonster={onSelectMonster}
 										saveChanges={saveLibraryElement}
 										setOptions={persistOptions}
@@ -1282,7 +1297,7 @@ export const Main = (props: Props) => {
 										showDirectory={showDirectoryPane}
 										showAbout={showAbout}
 										showRoll={showRoll}
-										showRules={showRules}
+										showReference={showReference}
 										createElement={createPlaybookElement}
 										importElement={importPlaybookElement}
 										setOptions={persistOptions}
@@ -1300,7 +1315,7 @@ export const Main = (props: Props) => {
 										showDirectory={showDirectoryPane}
 										showAbout={showAbout}
 										showRoll={showRoll}
-										showRules={showRules}
+										showReference={showReference}
 										showEncounterTools={showEncounterTools}
 										export={exportPlaybookElement}
 										start={startPlaybookElement}
@@ -1321,7 +1336,7 @@ export const Main = (props: Props) => {
 										showDirectory={showDirectoryPane}
 										showAbout={showAbout}
 										showRoll={showRoll}
-										showRules={showRules}
+										showReference={showReference}
 										showMonster={onSelectMonster}
 										showTerrain={onSelectTerrain}
 										saveChanges={savePlaybookElement}
@@ -1347,7 +1362,7 @@ export const Main = (props: Props) => {
 										showDirectory={showDirectoryPane}
 										showAbout={showAbout}
 										showRoll={showRoll}
-										showRules={showRules}
+										showReference={showReference}
 										showPlayerView={showPlayerView}
 										updateHero={persistHero}
 										updateSession={persistSession}
@@ -1366,7 +1381,7 @@ export const Main = (props: Props) => {
 										options={options}
 										showAbout={showAbout}
 										showRoll={showRoll}
-										showRules={showRules}
+										showReference={showReference}
 										setOptions={persistOptions}
 									/>
 								}

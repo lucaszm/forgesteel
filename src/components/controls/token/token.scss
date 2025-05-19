@@ -12,7 +12,6 @@ $monster-mount: rgb(190, 220, 231);
 $monster-support: rgb(245, 213, 184);
 
 .token {
-	aspect-ratio: 1/1;
 	border-radius: 50%;
 	background-color: $monster-default;
 	border: 1px solid color.scale($monster-default, $lightness: -20%);
@@ -77,6 +76,7 @@ $monster-support: rgb(245, 213, 184);
 		color: white;
 		font-weight: 600;
 		user-select: none;
+		overflow: hidden;
 
 		&.hero {
 			background: rgb(0, 80, 0);
@@ -88,6 +88,30 @@ $monster-support: rgb(245, 213, 184);
 
 		&.defeated {
 			text-decoration: line-through;
+		}
+	}
+}
+
+.combatant-button-content {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 6px;
+
+	.combatant-button-details {
+		flex: 1 1 0;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+
+		.combatant-name {
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.combatant-info {
+			font-size: 10px;
+			opacity: 0.7;
 		}
 	}
 }

@@ -99,11 +99,12 @@ Promise.all(promises).then(results => {
 	let options = results[5] as Options | null;
 	if (!options) {
 		options = {
-			showSkillsInGroups: false,
-			showFreeStrikes: false,
-			showStandardAbilities: false,
-			dimUnavailableAbilities: false,
-			featureWidth: PanelWidth.Medium,
+			singlePage: false,
+			separateInventoryFeatures: false,
+			showSkillsInGroups: true,
+			showStandardAbilities: true,
+			dimUnavailableAbilities: true,
+			showSources: true,
 			abilityWidth: PanelWidth.Medium,
 			showMonstersInGroups: true,
 			showSimilarMonsters: false,
@@ -113,20 +114,30 @@ Promise.all(promises).then(results => {
 			similarSize: true,
 			minionCount: 8,
 			party: '',
+			heroParty: '',
 			heroCount: 4,
 			heroLevel: 1,
 			heroVictories: 0,
+			showDefeatedCombatants: false,
 			gridSize: 50,
 			playerGridSize: 50
 		};
 	}
 
-	if (options.featureWidth === undefined) {
-		options.featureWidth = PanelWidth.Medium;
+	if (options.singlePage === undefined) {
+		options.singlePage = false;
+	}
+
+	if (options.separateInventoryFeatures === undefined) {
+		options.separateInventoryFeatures = false;
 	}
 
 	if (options.abilityWidth === undefined) {
 		options.abilityWidth = PanelWidth.Medium;
+	}
+
+	if (options.showSources === undefined) {
+		options.showSources = false;
 	}
 
 	if (options.showMonstersInGroups === undefined) {
@@ -161,6 +172,10 @@ Promise.all(promises).then(results => {
 		options.party = '';
 	}
 
+	if (options.heroParty === undefined) {
+		options.heroParty = '';
+	}
+
 	if (options.heroCount === undefined) {
 		options.heroCount = 4;
 	}
@@ -171,6 +186,10 @@ Promise.all(promises).then(results => {
 
 	if (options.heroVictories === undefined) {
 		options.heroVictories = 0;
+	}
+
+	if (options.showDefeatedCombatants === undefined) {
+		options.showDefeatedCombatants = false;
 	}
 
 	if (options.gridSize === undefined) {

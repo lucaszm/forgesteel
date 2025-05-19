@@ -380,7 +380,7 @@ export const AbilityEditPanel = (props: Props) => {
 									<div>
 										<HeaderText>Name</HeaderText>
 										<Input
-											className={ability.name === '' ? 'input-empty' : ''}
+											status={ability.name === '' ? 'warning' : ''}
 											placeholder='Name'
 											allowClear={true}
 											value={ability.name}
@@ -403,6 +403,15 @@ export const AbilityEditPanel = (props: Props) => {
 												placeholder='Select usage type'
 												options={[ AbilityUsage.Action, AbilityUsage.Maneuver, AbilityUsage.Move, AbilityUsage.Trigger, AbilityUsage.VillainAction, AbilityUsage.NoAction, AbilityUsage.Other ].map(option => ({ value: option }))}
 												optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+												showSearch={true}
+												filterOption={(input, option) => {
+													const strings = option ?
+														[
+															option.value
+														]
+														: [];
+													return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+												}}
 												value={ability.type.usage}
 												onChange={setTypeUsage}
 											/>
@@ -414,7 +423,7 @@ export const AbilityEditPanel = (props: Props) => {
 											{
 												ability.type.usage === AbilityUsage.Trigger ?
 													<Input
-														className={ability.type.trigger === '' ? 'input-empty' : ''}
+														status={ability.type.trigger === '' ? 'warning' : ''}
 														placeholder='Trigger'
 														allowClear={true}
 														value={ability.type.trigger}
@@ -425,7 +434,7 @@ export const AbilityEditPanel = (props: Props) => {
 											{
 												ability.type.usage === AbilityUsage.Other ?
 													<Input
-														className={ability.type.time === '' ? 'input-empty' : ''}
+														status={ability.type.time === '' ? 'warning' : ''}
 														placeholder='Other'
 														allowClear={true}
 														value={ability.type.time}
@@ -442,6 +451,15 @@ export const AbilityEditPanel = (props: Props) => {
 											allowClear={true}
 											options={AbilityLogic.getKeywords().map(option => ({ value: option }))}
 											optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+											showSearch={true}
+											filterOption={(input, option) => {
+												const strings = option ?
+													[
+														option.value
+													]
+													: [];
+												return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+											}}
 											value={ability.keywords}
 											onChange={setKeywords}
 										/>
@@ -480,6 +498,15 @@ export const AbilityEditPanel = (props: Props) => {
 																		placeholder='Area type'
 																		options={[ AbilityDistanceType.Aura, AbilityDistanceType.Burst, AbilityDistanceType.Cube, AbilityDistanceType.Wall ].map(option => ({ value: option }))}
 																		optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+																		showSearch={true}
+																		filterOption={(input, option) => {
+																			const strings = option ?
+																				[
+																					option.value
+																				]
+																				: [];
+																			return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+																		}}
 																		value={distance.type}
 																		onChange={value => setDistanceType(n, value)}
 																	/>
@@ -523,7 +550,7 @@ export const AbilityEditPanel = (props: Props) => {
 															{
 																getDistanceMainType(n) === 'Special' ?
 																	<Input
-																		className={distance.special === '' ? 'input-empty' : ''}
+																		status={distance.special === '' ? 'warning' : ''}
 																		placeholder='Special'
 																		allowClear={true}
 																		value={distance.special}
@@ -547,7 +574,7 @@ export const AbilityEditPanel = (props: Props) => {
 										</Space>
 										<HeaderText>Target</HeaderText>
 										<Input
-											className={ability.target === '' ? 'input-empty' : ''}
+											status={ability.target === '' ? 'warning' : ''}
 											placeholder='Target'
 											allowClear={true}
 											value={ability.target}
@@ -582,11 +609,20 @@ export const AbilityEditPanel = (props: Props) => {
 												ability.powerRoll ?
 													<Select
 														style={{ width: '100%' }}
-														className={ability.powerRoll.characteristic.length === 0 ? 'selection-empty' : ''}
+														status={ability.powerRoll.characteristic.length === 0 ? 'warning' : ''}
 														placeholder='Characteristics'
 														mode='multiple'
 														options={[ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ].map(option => ({ value: option }))}
 														optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+														showSearch={true}
+														filterOption={(input, option) => {
+															const strings = option ?
+																[
+																	option.value
+																]
+																: [];
+															return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+														}}
 														value={ability.powerRoll.characteristic}
 														onChange={setPowerRollCharacteristics}
 													/>
@@ -595,7 +631,7 @@ export const AbilityEditPanel = (props: Props) => {
 											{
 												ability.powerRoll ?
 													<Input
-														className={ability.powerRoll.tier1 === '' ? 'input-empty' : ''}
+														status={ability.powerRoll.tier1 === '' ? 'warning' : ''}
 														placeholder='Tier 1'
 														allowClear={true}
 														value={ability.powerRoll.tier1}
@@ -606,7 +642,7 @@ export const AbilityEditPanel = (props: Props) => {
 											{
 												ability.powerRoll ?
 													<Input
-														className={ability.powerRoll.tier2 === '' ? 'input-empty' : ''}
+														status={ability.powerRoll.tier2 === '' ? 'warning' : ''}
 														placeholder='Tier 2'
 														allowClear={true}
 														value={ability.powerRoll.tier2}
@@ -617,7 +653,7 @@ export const AbilityEditPanel = (props: Props) => {
 											{
 												ability.powerRoll ?
 													<Input
-														className={ability.powerRoll.tier3 === '' ? 'input-empty' : ''}
+														status={ability.powerRoll.tier3 === '' ? 'warning' : ''}
 														placeholder='Tier 3'
 														allowClear={true}
 														value={ability.powerRoll.tier3}
@@ -650,7 +686,7 @@ export const AbilityEditPanel = (props: Props) => {
 														]}
 													>
 														<Input
-															className={effect === '' ? 'input-empty' : ''}
+															status={effect === '' ? 'warning' : ''}
 															placeholder='Alternate Effect'
 															allowClear={true}
 															value={effect}
@@ -684,7 +720,7 @@ export const AbilityEditPanel = (props: Props) => {
 													>
 														<Space direction='vertical' style={{ width: '100%' }}>
 															<Input
-																className={spend.effect === '' ? 'input-empty' : ''}
+																status={spend.effect === '' ? 'warning' : ''}
 																placeholder='Spend effect'
 																allowClear={true}
 																value={spend.effect}
@@ -720,7 +756,7 @@ export const AbilityEditPanel = (props: Props) => {
 													>
 														<Space direction='vertical' style={{ width: '100%' }}>
 															<Input
-																className={persist.effect === '' ? 'input-empty' : ''}
+																status={persist.effect === '' ? 'warning' : ''}
 																placeholder='Persistence Effect'
 																allowClear={true}
 																value={persist.effect}

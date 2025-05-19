@@ -7,7 +7,9 @@ import { EncounterObjectivePanel } from '../encounter-objective/encounter-object
 import { ErrorBoundary } from '../../../controls/error-boundary/error-boundary';
 import { FeaturePanel } from '../feature-panel/feature-panel';
 import { FeatureType } from '../../../../enums/feature-type';
+import { Field } from '../../../controls/field/field';
 import { HeaderText } from '../../../controls/header-text/header-text';
+import { Hero } from '../../../../models/hero';
 import { Markdown } from '../../../controls/markdown/markdown';
 import { MonsterLogic } from '../../../../logic/monster-logic';
 import { MonsterPanel } from '../monster-panel/monster-panel';
@@ -25,6 +27,7 @@ import './encounter-panel.scss';
 interface Props {
 	encounter: Encounter;
 	sourcebooks: Sourcebook[];
+	heroes: Hero[];
 	options: Options;
 	mode?: PanelMode;
 }
@@ -45,7 +48,7 @@ export const EncounterPanel = (props: Props) => {
 			<div className='encounter-groups'>
 				{
 					props.encounter.groups.filter(g => g.slots.length > 0).map((group, n) => (
-						<div key={group.id} className='encounter-group'>
+						<div key={group.id} className='encounter-group-info'>
 							{
 								props.encounter.groups.filter(g => g.slots.length > 0).length > 1 ?
 									<HeaderText>Group {(n + 1).toString()}</HeaderText>
@@ -85,7 +88,7 @@ export const EncounterPanel = (props: Props) => {
 				}
 				{
 					props.encounter.terrain.length > 0 ?
-						<div key='terrain' className='terrain-group'>
+						<div key='terrain' className='terrain-group-info'>
 							<HeaderText>Terrain</HeaderText>
 							{
 								props.encounter.terrain.map(slot => {
@@ -114,8 +117,9 @@ export const EncounterPanel = (props: Props) => {
 
 		return (
 			<div className='encounter-meta'>
-				<EncounterObjectivePanel objective={props.encounter.objective} mode={PanelMode.Full} />
-				<EncounterDifficultyPanel encounter={props.encounter} sourcebooks={props.sourcebooks} options={props.options} />
+				{props.encounter.objective ? <EncounterObjectivePanel objective={props.encounter.objective} mode={PanelMode.Full} /> : null}
+				<EncounterDifficultyPanel encounter={props.encounter} sourcebooks={props.sourcebooks} heroes={props.heroes} options={props.options} />
+				{props.encounter.notes.map(note => <Field key={note.id} label={note.name} value={<Markdown text={note.description} useSpan={true} />} />)}
 			</div>
 		);
 	};
@@ -214,7 +218,7 @@ export const EncounterPanel = (props: Props) => {
 
 	try {
 		const strength = EncounterLogic.getStrength(props.encounter, props.sourcebooks);
-		const difficulty = EncounterLogic.getDifficulty(strength, props.options);
+		const difficulty = EncounterLogic.getDifficulty(strength, props.options, props.heroes);
 
 		return (
 			<ErrorBoundary>

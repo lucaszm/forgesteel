@@ -1,5 +1,5 @@
 import { AbilityCustomization, Hero } from '../../../../models/hero';
-import { Alert, Button, Tag } from 'antd';
+import { Alert, Button, Space, Tag } from 'antd';
 import { Badge, HeroicResourceBadge } from '../../../controls/badge/badge';
 import { ThunderboltFilled, ThunderboltOutlined } from '@ant-design/icons';
 import { useMemo, useState } from 'react';
@@ -7,6 +7,8 @@ import { Ability } from '../../../../models/ability';
 import { AbilityData } from '../../../../data/ability-data';
 import { AbilityKeyword } from '../../../../enums/ability-keyword';
 import { AbilityLogic } from '../../../../logic/ability-logic';
+import { AbilityUsage } from '../../../../enums/ability-usage';
+import { ConditionType } from '../../../../enums/condition-type';
 import { ErrorBoundary } from '../../../controls/error-boundary/error-boundary';
 import { FeatureType } from '../../../../enums/feature-type';
 import { Field } from '../../../controls/field/field';
@@ -14,6 +16,8 @@ import { FormatLogic } from '../../../../logic/format-logic';
 import { HeaderText } from '../../../controls/header-text/header-text';
 import { HeroLogic } from '../../../../logic/hero-logic';
 import { Markdown } from '../../../controls/markdown/markdown';
+import { Monster } from '../../../../models/monster';
+import { MonsterLogic } from '../../../../logic/monster-logic';
 import { Options } from '../../../../models/options';
 import { PanelMode } from '../../../../enums/panel-mode';
 import { PowerRollPanel } from '../../power-roll/power-roll-panel';
@@ -23,6 +27,7 @@ import './ability-panel.scss';
 interface Props {
 	ability: Ability;
 	hero?: Hero;
+	monster?: Monster;
 	cost?: number | 'signature';
 	repeatable?: boolean;
 	options?: Options;
@@ -40,6 +45,7 @@ export const AbilityPanel = (props: Props) => {
 				return cost;
 			}
 			const modifierSum = HeroLogic.getFeatures(props.hero)
+				.map(f => f.feature)
 				.filter(f => f.type === FeatureType.AbilityCost)
 				.filter(f => f.data.keywords.every(k => props.ability.keywords.includes(k)))
 				.map(f => f.data.modifier)
@@ -68,6 +74,7 @@ export const AbilityPanel = (props: Props) => {
 		() => (props.options?.dimUnavailableAbilities ?? false)
 			&& props.hero
 			&& cost !== 'signature'
+			&& cost > 0
 			&& cost > props.hero.state.heroicResource,
 		[ props.hero, props.options, cost ]
 	);
@@ -78,6 +85,112 @@ export const AbilityPanel = (props: Props) => {
 		}
 
 		return text;
+	};
+
+	const autoCalcAvailable = () => {
+		const texts = [
+			props.ability.preEffect,
+			props.ability.effect,
+			props.ability.strained,
+			...props.ability.alternateEffects,
+			...props.ability.spend.map(s => s.effect),
+			...props.ability.persistence.map(p => p.effect)
+		];
+
+		return props.hero
+			&& (
+				props.ability.powerRoll || props.ability.test || texts.some(text => AbilityLogic.getTextEffect(text, props.hero!) !== text)
+			);
+	};
+
+	const getWarnings = () => {
+		let conditions: ConditionType[] = [];
+		let state = 'healthy';
+		if (props.hero) {
+			conditions = props.hero.state.conditions.map(c => c.type);
+			state = HeroLogic.getCombatState(props.hero);
+		}
+		if (props.monster) {
+			conditions = props.monster.state.conditions.map(c => c.type);
+			state = MonsterLogic.getCombatState(props.monster);
+		}
+
+		const warnings: { label: string, text: string }[] = [];
+
+		if ((conditions.includes(ConditionType.Bleeding) || ((state === 'dying') && (props.ability.id !== AbilityData.catchBreath.id))) && ([ AbilityUsage.Action, AbilityUsage.Maneuver, AbilityUsage.Trigger ].includes(props.ability.type.usage) || props.ability.keywords.includes(AbilityKeyword.Strike))) {
+			warnings.push({
+				label: ConditionType.Bleeding,
+				text: 'After using this ability, you lose 1d6 Stamina.'
+			});
+		}
+		if (conditions.includes(ConditionType.Dazed) && (props.ability.type.usage === AbilityUsage.Trigger)) {
+			warnings.push({
+				label: ConditionType.Dazed,
+				text: 'You can’t use this ability.'
+			});
+		}
+		if (conditions.includes(ConditionType.Dazed) && ((props.ability.type.usage === AbilityUsage.Maneuver) && props.ability.type.free)) {
+			warnings.push({
+				label: ConditionType.Dazed,
+				text: 'You can’t use this ability.'
+			});
+		}
+		if (conditions.includes(ConditionType.Frightened) && (props.ability.powerRoll || props.ability.test)) {
+			warnings.push({
+				label: ConditionType.Frightened,
+				text: 'This ability takes a bane if it targets the source of your fear.'
+			});
+		}
+		if (conditions.includes(ConditionType.Grabbed) && (props.ability.powerRoll || props.ability.test)) {
+			warnings.push({
+				label: ConditionType.Grabbed,
+				text: 'This ability takes a bane if it doesn’t target the creature grabbing you.'
+			});
+		}
+		if (conditions.includes(ConditionType.Grabbed) && (props.ability.id === AbilityData.knockback.id)) {
+			warnings.push({
+				label: ConditionType.Grabbed,
+				text: 'You can’t use this ability.'
+			});
+		}
+		if (conditions.includes(ConditionType.Prone) && props.ability.keywords.includes(AbilityKeyword.Strike)) {
+			warnings.push({
+				label: ConditionType.Prone,
+				text: 'This ability takes a bane.'
+			});
+		}
+		if (conditions.includes(ConditionType.Restrained) && (props.ability.powerRoll || props.ability.test)) {
+			warnings.push({
+				label: ConditionType.Restrained,
+				text: 'This ability takes a bane.'
+			});
+		}
+		if (conditions.includes(ConditionType.Restrained) && (props.ability.id === AbilityData.standUp.id)) {
+			warnings.push({
+				label: ConditionType.Restrained,
+				text: 'You can’t use this ability.'
+			});
+		}
+		if (conditions.includes(ConditionType.Taunted) && (props.ability.powerRoll || props.ability.test)) {
+			warnings.push({
+				label: ConditionType.Taunted,
+				text: 'This ability takes a bane if it doesn’t target the creature who taunted you, and you have line of effect to that creature.'
+			});
+		}
+		if (conditions.includes(ConditionType.Weakened) && (props.ability.powerRoll || props.ability.test)) {
+			warnings.push({
+				label: ConditionType.Weakened,
+				text: 'This ability takes a bane.'
+			});
+		}
+		if ((state === 'dying') && (props.ability.id === AbilityData.catchBreath.id)) {
+			warnings.push({
+				label: 'Dying',
+				text: 'You can’t use this ability.'
+			});
+		}
+
+		return warnings;
 	};
 
 	try {
@@ -97,11 +210,23 @@ export const AbilityPanel = (props: Props) => {
 		return (
 			<ErrorBoundary>
 				<div className={className} id={props.mode === PanelMode.Full ? props.ability.id : undefined}>
+					<Space direction='vertical' style={{ marginTop: '15px', width: '100%' }}>
+						{
+							getWarnings().map((warn, n) => (
+								<Alert
+									key={n}
+									type='warning'
+									showIcon={true}
+									message={<div><b>{warn.label}</b>: {warn.text}</div>}
+								/>
+							))
+						}
+					</Space>
 					<HeaderText
 						ribbon={headerRibbon}
 						tags={props.tags}
 						extra={
-							props.hero ?
+							autoCalcAvailable() ?
 								<Button
 									type='text'
 									title='Auto-calculate damage, potancy, etc'
@@ -113,7 +238,7 @@ export const AbilityPanel = (props: Props) => {
 					>
 						{customization?.name || props.ability.name || 'Unnamed Ability'}
 					</HeaderText>
-					<Markdown text={customization?.description || props.ability.description} />
+					<Markdown text={customization?.description || props.ability.description} className='ability-description-text' />
 					{
 						props.mode === PanelMode.Full ?
 							<div>
@@ -177,6 +302,7 @@ export const AbilityPanel = (props: Props) => {
 								{
 									props.ability.strained ?
 										<Field
+											danger={props.hero && (props.hero.state.heroicResource < 0)}
 											label='Strained'
 											value={<Markdown text={parseText(props.ability.strained)} useSpan={true} />}
 										/>

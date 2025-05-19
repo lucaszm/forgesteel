@@ -1,4 +1,6 @@
 import { Button, Popover } from 'antd';
+import { DownOutlined, SettingOutlined } from '@ant-design/icons';
+import { AppFooter } from '../../../panels/app-footer/app-footer';
 import { AppHeader } from '../../../panels/app-header/app-header';
 import { CounterRunPanel } from '../../../panels/run/counter-run/counter-run-panel';
 import { Empty } from '../../../controls/empty/empty';
@@ -11,10 +13,10 @@ import { Options } from '../../../../models/options';
 import { OptionsPanel } from '../../../panels/options/options-panel';
 import { PanelMode } from '../../../../enums/panel-mode';
 import { Playbook } from '../../../../models/playbook';
-import { SettingOutlined } from '@ant-design/icons';
 import { Sourcebook } from '../../../../models/sourcebook';
 import { TacticalMapDisplayType } from '../../../../enums/tactical-map-display-type';
 import { TacticalMapPanel } from '../../../panels/elements/tactical-map-panel/tactical-map-panel';
+import localforage from 'localforage';
 
 import './session-player-page.scss';
 
@@ -26,11 +28,21 @@ interface Props {
 	options: Options;
 	showAbout: () => void;
 	showRoll: () => void;
-	showRules: () => void;
+	showReference: () => void;
 	setOptions: (options: Options) => void;
 }
 
 export const SessionPlayerPage = (props: Props) => {
+	setInterval(() => {
+		localforage
+			.getItem<Playbook>('forgesteel-session')
+			.then(session => {
+				if (session && (JSON.stringify(session) !== JSON.stringify(props.session))) {
+					window.location.reload();
+				}
+			});
+	}, 5 * 1000);
+
 	try {
 		const getContent = () => {
 			const encounter = props.session.encounters.find(e => e.id === props.session.playerViewID);
@@ -98,19 +110,21 @@ export const SessionPlayerPage = (props: Props) => {
 		return (
 			<ErrorBoundary>
 				<div className='session-player-page'>
-					<AppHeader subheader='Forge Steel' showAbout={props.showAbout} showRoll={props.showRoll} showRules={props.showRules}>
+					<AppHeader subheader='Forge Steel'>
 						<Popover
 							trigger='click'
 							content={<OptionsPanel mode='player' options={props.options} heroes={props.heroes} setOptions={props.setOptions} />}
 						>
 							<Button icon={<SettingOutlined />}>
 								Options
+								<DownOutlined />
 							</Button>
 						</Popover>
 					</AppHeader>
 					<div className='session-page-content'>
 						{getContent()}
 					</div>
+					<AppFooter showAbout={props.showAbout} showRoll={props.showRoll} showReference={props.showReference} />
 				</div>
 			</ErrorBoundary>
 		);

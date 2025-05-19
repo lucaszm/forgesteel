@@ -18,7 +18,7 @@ export interface EncounterSlot {
 export interface EncounterGroup {
 	id: string;
 	slots: EncounterSlot[];
-	acted: boolean;
+	encounterState: 'ready' | 'current' | 'finished';
 }
 
 export interface TerrainSlot {
@@ -40,7 +40,9 @@ export interface Encounter extends Element {
 	groups: EncounterGroup[];
 	terrain: TerrainSlot[];
 	heroes: Hero[];
-	objective: EncounterObjective;
+	objective: EncounterObjective | null;
+	notes: Element[];
+	initiative: 'heroes' | 'monsters' | undefined;
 	round: number;
 	malice: number;
 }

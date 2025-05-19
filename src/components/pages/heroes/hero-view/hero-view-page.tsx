@@ -1,8 +1,9 @@
 import { Button, Popover } from 'antd';
-import { CloseOutlined, CopyOutlined, EditOutlined, FileOutlined, SettingOutlined, ToolOutlined, UploadOutlined } from '@ant-design/icons';
+import { CloseOutlined, CopyOutlined, DownOutlined, EditOutlined, SettingOutlined, ToolOutlined, UploadOutlined } from '@ant-design/icons';
 import { Monster, MonsterGroup } from '../../../../models/monster';
 import { Ability } from '../../../../models/ability';
 import { Ancestry } from '../../../../models/ancestry';
+import { AppFooter } from '../../../panels/app-footer/app-footer';
 import { AppHeader } from '../../../panels/app-header/app-header';
 import { Career } from '../../../../models/career';
 import { Characteristic } from '../../../../enums/characteristic';
@@ -34,6 +35,7 @@ interface Props {
 	showDirectory: () => void;
 	showAbout: () => void;
 	showRoll: () => void;
+	showReference: (hero: Hero, page?: RulesPage) => void;
 	setOptions: (options: Options) => void;
 	exportHero: (hero: Hero, format: 'image' | 'pdf' | 'json') => void;
 	exportHeroPDF: (hero: Hero, format: 'portrait' | 'landscape') => void;
@@ -50,7 +52,6 @@ interface Props {
 	showCharacteristic: (characteristic: Characteristic, hero: Hero) => void;
 	showAbility: (ability: Ability, hero: Hero) => void;
 	showHeroState: (hero: Hero, page: HeroStatePage) => void;
-	showRules: (hero: Hero, page?: RulesPage) => void;
 }
 
 export const HeroViewPage = (props: Props) => {
@@ -79,48 +80,42 @@ export const HeroViewPage = (props: Props) => {
 		return (
 			<ErrorBoundary>
 				<div className='hero-view-page'>
-					<AppHeader subheader='Hero' showDirectory={props.showDirectory} showAbout={props.showAbout} showRoll={props.showRoll} showRules={() => props.showRules(hero)}>
+					<AppHeader subheader='Hero' showDirectory={props.showDirectory}>
 						<Button icon={<CloseOutlined />} onClick={() => navigation.goToHeroList(hero.folder)}>
 							Close
 						</Button>
 						<div className='divider' />
+						<Button icon={<EditOutlined />} onClick={() => navigation.goToHeroEdit(heroID!, 'details')}>
+							Edit
+						</Button>
+						<Button icon={<CopyOutlined />} onClick={() => props.copyHero(hero)}>
+							Copy
+						</Button>
 						<Popover
 							trigger='click'
 							content={(
-								<div style={{ minWidth: '120px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-									<Button icon={<EditOutlined />} onClick={() => navigation.goToHeroEdit(heroID!, 'details')}>
-										Edit
-									</Button>
-									<Button icon={<CopyOutlined />} onClick={() => props.copyHero(hero)}>
-										Copy
-									</Button>
-									<Popover
-										trigger='click'
-										content={(
-											<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-												<Button onClick={() => exportHero('image')}>Export As Image</Button>
-												<Button onClick={() => exportHero('pdf-portrait')}>Export As PDF (portrait)</Button>
-												<Button onClick={() => exportHero('pdf-landscape')}>Export As PDF (landscape)</Button>
-												<Button onClick={() => exportHero('json')}>Export As Data</Button>
-											</div>
-										)}
-									>
-										<Button icon={<UploadOutlined />}>
-											Export
-										</Button>
-									</Popover>
-									<DangerButton
-										mode='block'
-										onConfirm={() => props.deleteHero(hero)}
-									/>
+								<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+									<Button onClick={() => exportHero('image')}>Export As Image</Button>
+									<Button onClick={() => exportHero('pdf-portrait')}>Export As PDF (portrait)</Button>
+									<Button onClick={() => exportHero('pdf-landscape')}>Export As PDF (landscape)</Button>
+									<Button onClick={() => exportHero('json')}>Export As Data</Button>
 								</div>
 							)}
 						>
-							<Button icon={<FileOutlined />}>
-								File
+							<Button icon={<UploadOutlined />}>
+								Export
+								<DownOutlined />
 							</Button>
 						</Popover>
-						<Button icon={<ToolOutlined />} onClick={() => props.showHeroState(hero, HeroStatePage.Hero)}>
+						<DangerButton
+							mode='block'
+							onConfirm={() => props.deleteHero(hero)}
+						/>
+						<div className='divider' />
+						<Button
+							icon={<ToolOutlined />}
+							onClick={() => props.showHeroState ? props.showHeroState(hero, HeroStatePage.Hero) : null}
+						>
 							Manage
 						</Button>
 						<Popover
@@ -129,6 +124,7 @@ export const HeroViewPage = (props: Props) => {
 						>
 							<Button icon={<SettingOutlined />}>
 								Options
+								<DownOutlined />
 							</Button>
 						</Popover>
 					</AppHeader>
@@ -149,9 +145,10 @@ export const HeroViewPage = (props: Props) => {
 							onSelectCharacteristic={characteristic => props.showCharacteristic(characteristic, hero)}
 							onSelectAbility={ability => props.showAbility(ability, hero)}
 							onShowState={page => props.showHeroState(hero, page)}
-							onShowRules={page => props.showRules(hero, page)}
+							onshowReference={page => props.showReference(hero, page)}
 						/>
 					</div>
+					<AppFooter page='heroes' showAbout={props.showAbout} showRoll={props.showRoll} showReference={() => props.showReference(hero)} />
 				</div>
 			</ErrorBoundary>
 		);

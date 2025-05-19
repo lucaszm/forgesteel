@@ -32,16 +32,34 @@ export const ClassPanel = (props: Props) => {
 				<div className={props.mode === PanelMode.Full ? 'class-panel' : 'class-panel compact'} id={props.mode === PanelMode.Full ? props.heroClass.id : undefined}>
 					<HeaderText level={1}>{props.heroClass.name || 'Unnamed Class'}</HeaderText>
 					<Markdown text={props.heroClass.description} />
-					<Field label='Heroic Resource' value={props.heroClass.heroicResource} />
-					{props.heroClass.subclasses.length > 0 ? <Field label={`${props.heroClass.subclassName}s`} value={props.heroClass.subclasses.map(c => c.name).join(', ')} /> : null}
-					<Field label='Primary Characteristics' value={props.heroClass.primaryCharacteristics.join(', ') || props.heroClass.primaryCharacteristicsOptions.map(array => array.join(', ') || 'None').join(' or ') || 'None'} />
+					{
+						props.mode === PanelMode.Full ?
+							<Field label='Heroic Resource' value={props.heroClass.heroicResource} />
+							: null
+					}
+					{
+						(props.mode === PanelMode.Full) && (props.heroClass.subclasses.length > 0) ?
+							<Field label={`${props.heroClass.subclassName}s`} value={props.heroClass.subclasses.map(c => c.name).join(', ')} />
+							: null
+					}
+					{
+						props.mode === PanelMode.Full ?
+							<Field label='Primary Characteristics' value={props.heroClass.primaryCharacteristics.join(', ') || props.heroClass.primaryCharacteristicsOptions.map(array => array.join(', ') || 'None').join(' or ') || 'None'} />
+							: null
+					}
 					{
 						props.mode === PanelMode.Full ?
 							props.heroClass.featuresByLevel.filter(lvl => lvl.features.length > 0).map(lvl => (
 								<Space key={lvl.level} direction='vertical'>
 									<HeaderText level={1}>Level {lvl.level.toString()}</HeaderText>
 									<div className='features'>
-										{...lvl.features.map(f => <SelectablePanel key={f.id}><FeaturePanel feature={f} options={props.options} hero={props.hero} sourcebooks={props.sourcebooks} mode={PanelMode.Full} /></SelectablePanel>)}
+										{
+											...lvl.features.map(f =>
+												<SelectablePanel key={f.id}>
+													<FeaturePanel feature={f} options={props.options} hero={props.hero} sourcebooks={props.sourcebooks} mode={PanelMode.Full} />
+												</SelectablePanel>
+											)
+										}
 									</div>
 								</Space>
 							))
@@ -52,7 +70,13 @@ export const ClassPanel = (props: Props) => {
 							<Space direction='vertical'>
 								<HeaderText level={1}>Abilities</HeaderText>
 								<div className='abilities'>
-									{...props.heroClass.abilities.map(a => <SelectablePanel key={a.id}><AbilityPanel ability={a} hero={props.hero} mode={PanelMode.Full} /></SelectablePanel>)}
+									{
+										...props.heroClass.abilities.map(a =>
+											<SelectablePanel key={a.id}>
+												<AbilityPanel ability={a} hero={props.hero} mode={PanelMode.Full} />
+											</SelectablePanel>
+										)
+									}
 								</div>
 							</Space>
 							: null
@@ -62,7 +86,13 @@ export const ClassPanel = (props: Props) => {
 							<Space direction='vertical'>
 								<HeaderText level={1}>Subclasses</HeaderText>
 								<div className='subclasses'>
-									{...props.heroClass.subclasses.map(sc => <SelectablePanel key={sc.id} onSelect={props.onSelectSubclass ? () => props.onSelectSubclass!(sc) : undefined}><SubclassPanel subclass={sc} options={props.options} hero={props.hero} mode={PanelMode.Full} /></SelectablePanel>)}
+									{
+										...props.heroClass.subclasses.map(sc =>
+											<SelectablePanel key={sc.id} onSelect={props.onSelectSubclass ? () => props.onSelectSubclass!(sc) : undefined}>
+												<SubclassPanel subclass={sc} options={props.options} hero={props.hero} mode={sc.selected ? PanelMode.Full : PanelMode.Compact} />
+											</SelectablePanel>
+										)
+									}
 								</div>
 							</Space>
 							: null

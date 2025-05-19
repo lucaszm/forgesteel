@@ -1,6 +1,6 @@
 import { Ability, AbilityDistance, AbilityType } from '../models/ability';
 import { Encounter, EncounterGroup, EncounterObjective, EncounterSlot } from '../models/encounter';
-import { Feature, FeatureAbility, FeatureAbilityCost, FeatureAbilityDamage, FeatureAbilityData, FeatureAbilityDistance, FeatureAddOn, FeatureAddOnType, FeatureAncestryChoice, FeatureAncestryFeatureChoice, FeatureBonus, FeatureCharacteristicBonus, FeatureChoice, FeatureClassAbility, FeatureCompanion, FeatureDamageModifier, FeatureDomain, FeatureDomainFeature, FeatureItemChoice, FeatureKit, FeatureLanguage, FeatureLanguageChoice, FeatureMalice, FeatureMultiple, FeaturePackage, FeaturePerk, FeatureSize, FeatureSkill, FeatureSkillChoice, FeatureSpeed, FeatureTaggedFeature, FeatureTaggedFeatureChoice, FeatureText, FeatureTitleChoice } from '../models/feature';
+import { Feature, FeatureAbility, FeatureAbilityCost, FeatureAbilityDamage, FeatureAbilityData, FeatureAbilityDistance, FeatureAddOn, FeatureAddOnType, FeatureAncestryChoice, FeatureAncestryFeatureChoice, FeatureBonus, FeatureCharacteristicBonus, FeatureChoice, FeatureClassAbility, FeatureCompanion, FeatureConditionImmunity, FeatureDamageModifier, FeatureDomain, FeatureDomainFeature, FeatureItemChoice, FeatureKit, FeatureLanguage, FeatureLanguageChoice, FeatureMalice, FeatureMultiple, FeaturePackage, FeaturePerk, FeatureSize, FeatureSkill, FeatureSkillChoice, FeatureSpeed, FeatureTaggedFeature, FeatureTaggedFeatureChoice, FeatureText, FeatureTitleChoice } from '../models/feature';
 import { Kit, KitDamageBonus } from '../models/kit';
 import { MapFog, MapMini, MapTile, MapWall, MapZone, TacticalMap } from '../models/tactical-map';
 import { Monster, MonsterGroup, MonsterRole } from '../models/monster';
@@ -16,13 +16,13 @@ import { Ancestry } from '../models/ancestry';
 import { Career } from '../models/career';
 import { Characteristic } from '../enums/characteristic';
 import { Complication } from '../models/complication';
+import { ConditionType } from '../enums/condition-type';
 import { Culture } from '../models/culture';
 import { DamageModifier } from '../models/damage-modifier';
 import { DamageModifierType } from '../enums/damage-modifier-type';
 import { DamageType } from '../enums/damage-type';
 import { Domain } from '../models/domain';
 import { Element } from '../models/element';
-import { EncounterObjectiveData } from '../data/encounter-objective-data';
 import { FeatureField } from '../enums/feature-field';
 import { FeatureType } from '../enums/feature-type';
 import { Format } from '../utils/format';
@@ -94,7 +94,7 @@ export class FactoryLogic {
 				inventory: [],
 				projects: [],
 				notes: '',
-				acted: false,
+				encounterState: 'ready',
 				hidden: false,
 				defeated: false
 			},
@@ -502,7 +502,9 @@ export class FactoryLogic {
 			description: '',
 			groups: [],
 			terrain: [],
-			objective: EncounterObjectiveData.diminishNumbers,
+			objective: null,
+			notes: [],
+			initiative: undefined,
 			round: 0,
 			malice: 0,
 			heroes: []
@@ -513,7 +515,7 @@ export class FactoryLogic {
 		return {
 			id: Utils.guid(),
 			slots: [],
-			acted: false
+			encounterState: 'ready'
 		};
 	};
 
@@ -831,6 +833,15 @@ export class FactoryLogic {
 				time: '',
 				qualifiers: []
 			};
+		},
+		createFreeStrike: (): AbilityType => {
+			return {
+				usage: AbilityUsage.FreeStrike,
+				free: false,
+				trigger: '',
+				time: '',
+				qualifiers: []
+			};
 		}
 	};
 
@@ -911,7 +922,7 @@ export class FactoryLogic {
 		createAbilityCost: (data: { id: string, name?: string, description?: string, keywords: AbilityKeyword[], modifier: number }): FeatureAbilityCost => {
 			return {
 				id: data.id,
-				name: data.name || `${data.keywords.join(', ')} cost modifier`,
+				name: data.name || 'Ability cost modifier',
 				description: data.description || '',
 				type: FeatureType.AbilityCost,
 				data: {
@@ -923,7 +934,7 @@ export class FactoryLogic {
 		createAbilityDamage: (data: { id: string, name?: string, description?: string, keywords: AbilityKeyword[], modifier: number, damageType?: DamageType }): FeatureAbilityDamage => {
 			return {
 				id: data.id,
-				name: data.name || `${data.keywords.join(', ')} damage modifier`,
+				name: data.name || 'Ability damage modifier',
 				description: data.description || '',
 				type: FeatureType.AbilityDamage,
 				data: {
@@ -940,7 +951,7 @@ export class FactoryLogic {
 		createAbilityDistance: (data: { id: string, name?: string, description?: string, keywords: AbilityKeyword[], modifier: number }): FeatureAbilityDistance => {
 			return {
 				id: data.id,
-				name: data.name || `${data.keywords.join(', ')} distance modifier`,
+				name: data.name || 'Ability distance modifier',
 				description: data.description || '',
 				type: FeatureType.AbilityDistance,
 				data: {
@@ -976,7 +987,7 @@ export class FactoryLogic {
 				}
 			};
 		},
-		createAncestryFeature: (data: { id: string, name?: string, description?: string, current: boolean, former: boolean, value: number }): FeatureAncestryFeatureChoice => {
+		createAncestryFeature: (data: { id: string, name?: string, description?: string, current: boolean, former: boolean, customID: string, value: number }): FeatureAncestryFeatureChoice => {
 			return {
 				id: data.id,
 				name: data.name || 'Ancestry Feature',
@@ -985,7 +996,8 @@ export class FactoryLogic {
 				data: {
 					source: {
 						current: data.current,
-						former: data.former
+						former: data.former,
+						customID: data.customID
 					},
 					value: data.value,
 					selected: null
@@ -1059,6 +1071,17 @@ export class FactoryLogic {
 				data: {
 					type: data.type,
 					selected: null
+				}
+			};
+		},
+		createConditionImmunity: (data: { id: string, name?: string, description?: string, conditions: ConditionType[] }): FeatureConditionImmunity => {
+			return {
+				id: data.id,
+				name: data.name || 'Condition Immunity',
+				description: data.description || data.conditions.join(', '),
+				type: FeatureType.ConditionImmunity,
+				data: {
+					conditions: data.conditions
 				}
 			};
 		},

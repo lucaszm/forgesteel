@@ -1,11 +1,17 @@
-import { Alert, Button, Drawer, Input, Select, Space } from 'antd';
+import { Alert, Button, Drawer, Flex, Input, Select, Space } from 'antd';
 import { Badge, HeroicResourceBadge } from '../../../controls/badge/badge';
-import { Feature, FeatureAbilityCostData, FeatureAbilityDamageData, FeatureAbilityDistanceData, FeatureAncestryChoiceData, FeatureAncestryFeatureChoiceData, FeatureBonusData, FeatureCharacteristicBonusData, FeatureChoiceData, FeatureClassAbilityData, FeatureCompanionData, FeatureDamageModifierData, FeatureData, FeatureDomainData, FeatureDomainFeatureData, FeatureItemChoiceData, FeatureKitData, FeatureLanguageChoiceData, FeatureLanguageData, FeatureMaliceData, FeatureMultipleData, FeaturePerkData, FeatureSizeData, FeatureSkillChoiceData, FeatureSkillData, FeatureSpeedData, FeatureTaggedFeatureChoiceData, FeatureTaggedFeatureData, FeatureTitleChoiceData } from '../../../../models/feature';
+import { CSSProperties, useState } from 'react';
+import { DeleteOutlined, InfoCircleOutlined, ThunderboltFilled, ThunderboltOutlined } from '@ant-design/icons';
+import { Feature, FeatureAbilityCostData, FeatureAbilityDamageData, FeatureAbilityDistanceData, FeatureAncestryChoiceData, FeatureAncestryFeatureChoiceData, FeatureBonusData, FeatureCharacteristicBonusData, FeatureChoiceData, FeatureClassAbilityData, FeatureCompanionData, FeatureConditionImmunityData, FeatureDamageModifierData, FeatureData, FeatureDomainData, FeatureDomainFeatureData, FeatureItemChoiceData, FeatureKitData, FeatureLanguageChoiceData, FeatureLanguageData, FeatureMaliceData, FeatureMultipleData, FeaturePerkData, FeatureSizeData, FeatureSkillChoiceData, FeatureSkillData, FeatureSpeedData, FeatureTaggedFeatureChoiceData, FeatureTaggedFeatureData, FeatureTitleChoiceData } from '../../../../models/feature';
 import { Ability } from '../../../../models/ability';
+import { AbilityLogic } from '../../../../logic/ability-logic';
+import { AbilityModal } from '../../../modals/ability/ability-modal';
 import { AbilityPanel } from '../ability-panel/ability-panel';
+import { AbilitySelectModal } from '../../../modals/select/ability-select/ability-select-modal';
 import { Ancestry } from '../../../../models/ancestry';
 import { AncestryPanel } from '../ancestry-panel/ancestry-panel';
 import { Collections } from '../../../../utils/collections';
+import { Domain } from '../../../../models/domain';
 import { DomainPanel } from '../domain-panel/domain-panel';
 import { Empty } from '../../../controls/empty/empty';
 import { ErrorBoundary } from '../../../controls/error-boundary/error-boundary';
@@ -19,40 +25,59 @@ import { HeaderText } from '../../../controls/header-text/header-text';
 import { Hero } from '../../../../models/hero';
 import { HeroClass } from '../../../../models/class';
 import { HeroLogic } from '../../../../logic/hero-logic';
+import { Item } from '../../../../models/item';
 import { ItemPanel } from '../item-panel/item-panel';
+import { Kit } from '../../../../models/kit';
 import { KitPanel } from '../kit-panel/kit-panel';
+import { KitSelectModal } from '../../../modals/select/kit-select/kit-select-modal';
 import { Markdown } from '../../../controls/markdown/markdown';
+import { Modal } from '../../../modals/modal/modal';
 import { Monster } from '../../../../models/monster';
+import { MonsterInfo } from '../../../controls/token/token';
+import { MonsterModal } from '../../../modals/monster/monster-modal';
 import { MonsterPanel } from '../monster-panel/monster-panel';
-import { MonsterSelectModal } from '../../../modals/monster-select/monster-select-modal';
+import { MonsterSelectModal } from '../../../modals/select/monster-select/monster-select-modal';
 import { NameGenerator } from '../../../../utils/name-generator';
 import { Options } from '../../../../models/options';
 import { PanelMode } from '../../../../enums/panel-mode';
 import { Perk } from '../../../../models/perk';
 import { PerkPanel } from '../perk-panel/perk-panel';
+import { PerkSelectModal } from '../../../modals/select/perk-select/perk-select-modal';
 import { PowerRollPanel } from '../../power-roll/power-roll-panel';
 import { Sourcebook } from '../../../../models/sourcebook';
 import { SourcebookLogic } from '../../../../logic/sourcebook-logic';
-import { ThunderboltOutlined } from '@ant-design/icons';
 import { TitlePanel } from '../title-panel/title-panel';
 import { Utils } from '../../../../utils/utils';
-import { useState } from 'react';
 
 import './feature-panel.scss';
 
 interface Props {
 	feature: Feature | Perk;
+	source?: string;
 	options: Options;
 	cost?: number | 'signature';
 	repeatable?: boolean;
 	hero?: Hero;
 	sourcebooks?: Sourcebook[];
 	mode?: PanelMode;
+	style?: CSSProperties;
 	setData?: (featureID: string, data: FeatureData) => void;
 }
 
 export const FeaturePanel = (props: Props) => {
-	const [ drawerOpen, setDrawerOpen ] = useState<boolean>(false);
+	const [ autoCalc, setAutoCalc ] = useState<boolean>(true);
+	const [ abilitySelectorOpen, setAbilitySelectorOpen ] = useState<boolean>(false);
+	const [ kitSelectorOpen, setKitSelectorOpen ] = useState<boolean>(false);
+	const [ monsterSelectorOpen, setMonsterSelectorOpen ] = useState<boolean>(false);
+	const [ perkSelectorOpen, setPerkSelectorOpen ] = useState<boolean>(false);
+	const [ selectedAbility, setSelectedAbility ] = useState<Ability | null>(null);
+	const [ selectedAncestry, setSelectedAncestry ] = useState<Ancestry | null>(null);
+	const [ selectedDomain, setSelectedDomain ] = useState<Domain | null>(null);
+	const [ selectedItem, setSelectedItem ] = useState<Item | null>(null);
+	const [ selectedKit, setSelectedKit ] = useState<Kit | null>(null);
+	const [ selectedMonster, setSelectedMonster ] = useState<Monster | null>(null);
+	const [ selectedPerk, setSelectedPerk ] = useState<Perk | null>(null);
+	const [ selectedTitleFeature, setSelectedTitleFeature ] = useState<Feature | null>(null);
 
 	// #region Selection
 
@@ -70,11 +95,21 @@ export const FeaturePanel = (props: Props) => {
 			<Space direction='vertical' style={{ width: '100%' }}>
 				<Select
 					style={{ width: '100%' }}
-					className={!data.selected ? 'selection-empty' : ''}
+					status={!data.selected ? 'warning' : ''}
 					allowClear={true}
 					placeholder='Select an ancestry'
 					options={sortedAncestries.map(a => ({ label: a.name, value: a.id, desc: a.description }))}
 					optionRender={option => <Field label={option.data.label} value={option.data.desc} />}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label,
+								option.desc
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={data.selected ? data.selected.id : null}
 					onChange={value => {
 						const dataCopy = Utils.copy(data);
@@ -86,9 +121,27 @@ export const FeaturePanel = (props: Props) => {
 				/>
 				{
 					data.selected ?
-						<AncestryPanel ancestry={data.selected} options={props.options} />
+						<Flex className='selection-box' align='center' gap={10}>
+							<Field
+								style={{ flex: '1 1 0' }}
+								label={data.selected.name}
+								value={<Markdown text={data.selected.description} useSpan={true} />}
+							/>
+							<Button
+								style={{ flex: '0 0 auto' }}
+								type='text'
+								icon={<InfoCircleOutlined />}
+								onClick={() => setSelectedAncestry(data.selected)}
+							/>
+						</Flex>
 						: null
 				}
+				<Drawer open={!!selectedAncestry} onClose={() => setSelectedAncestry(null)} closeIcon={null} width='500px'>
+					<Modal
+						content={selectedAncestry ? <AncestryPanel ancestry={selectedAncestry} options={props.options} mode={PanelMode.Full} /> : null}
+						onClose={() => setSelectedAncestry(null)}
+					/>
+				</Drawer>
 			</Space>
 		);
 	};
@@ -99,15 +152,23 @@ export const FeaturePanel = (props: Props) => {
 		}
 
 		const currentFeatureIDs = HeroLogic.getFeatures(props.hero)
+			.map(f => f.feature)
 			.filter(f => f.id !== props.feature.id)
 			.map(f => f.id);
 
 		const ancestries: Ancestry[] = [];
-		if (data.source.current && props.hero.ancestry) {
-			ancestries.push(props.hero.ancestry);
-		}
-		if (data.source.former) {
-			ancestries.push(...HeroLogic.getFormerAncestries(props.hero));
+		if (data.source.customID && props.sourcebooks) {
+			const a = SourcebookLogic.getAncestries(props.sourcebooks).find(a => a.id === data.source.customID);
+			if (a) {
+				ancestries.push(a);
+			}
+		} else {
+			if (data.source.current && props.hero.ancestry) {
+				ancestries.push(props.hero.ancestry);
+			}
+			if (data.source.former) {
+				ancestries.push(...HeroLogic.getFormerAncestries(props.hero));
+			}
 		}
 
 		const features = ancestries
@@ -129,11 +190,21 @@ export const FeaturePanel = (props: Props) => {
 			<Space direction='vertical' style={{ width: '100%' }}>
 				<Select
 					style={{ width: '100%' }}
-					className={!data.selected ? 'selection-empty' : ''}
+					status={!data.selected ? 'warning' : ''}
 					allowClear={true}
 					placeholder='Select an ability from an ancestry'
 					options={sortedFeatures.map(a => ({ label: a.name, value: a.id, desc: a.description, disabled: currentFeatureIDs.includes(a.id) }))}
 					optionRender={option => <Field disabled={option.data.disabled} label={option.data.label} value={option.data.desc} />}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label,
+								option.desc
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={data.selected ? data.selected.id : null}
 					onChange={value => {
 						const dataCopy = Utils.copy(data);
@@ -199,7 +270,7 @@ export const FeaturePanel = (props: Props) => {
 				</div>
 				<Select
 					style={{ width: '100%' }}
-					className={pointsLeft > 0 ? 'selection-empty' : ''}
+					status={pointsLeft > 0 ? 'warning' : ''}
 					mode={data.count === 1 ? undefined : 'multiple'}
 					maxCount={data.count === 1 ? undefined : data.count}
 					allowClear={true}
@@ -217,6 +288,16 @@ export const FeaturePanel = (props: Props) => {
 							value={option.data.desc}
 						/>
 					)}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label,
+								option.desc
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={data.count === 1 ? (data.selected.length > 0 ? data.selected[0].id : null) : data.selected.map(f => f.id)}
 					onChange={value => {
 						let ids: string[] = [];
@@ -255,6 +336,7 @@ export const FeaturePanel = (props: Props) => {
 		}
 
 		const currentAbilityIDs = HeroLogic.getFeatures(props.hero)
+			.map(f => f.feature)
 			.filter(f => f.id !== props.feature.id)
 			.filter(f => f.type === FeatureType.ClassAbility)
 			.flatMap(f => f.data.selectedIDs);
@@ -280,39 +362,69 @@ export const FeaturePanel = (props: Props) => {
 
 		return (
 			<Space direction='vertical' style={{ width: '100%' }}>
-				{data.count > 1 ? <div className='ds-text'>Choose {data.count}:</div> : null}
-				<Select
-					style={{ width: '100%' }}
-					className={data.selectedIDs.length < data.count ? 'selection-empty' : ''}
-					mode={data.count === 1 ? undefined : 'multiple'}
-					maxCount={data.count === 1 ? undefined : data.count}
-					allowClear={true}
-					placeholder={data.count === 1 ? 'Select an ability' : 'Select abilities'}
-					options={sortedAbilities.map(a => ({ label: a.name, value: a.id, desc: a.description, disabled: currentAbilityIDs.includes(a.id) }))}
-					optionRender={option => <Field disabled={option.data.disabled} label={option.data.label} value={option.data.desc} />}
-					value={data.count === 1 ? (data.selectedIDs.length > 0 ? data.selectedIDs[0] : null) : data.selectedIDs}
-					onChange={value => {
-						let ids: string[] = [];
-						if (data.count === 1) {
-							ids = value !== undefined ? [ value as string ] : [];
-						} else {
-							ids = value as string[];
-						}
-						const dataCopy = Utils.copy(data);
-						dataCopy.selectedIDs = ids;
-						if (props.setData) {
-							props.setData(props.feature.id, dataCopy);
-						}
-					}}
-				/>
+				<div className='ds-text'>
+					Choose {data.count > 1 ? data.count : 'a'} {data.cost === 'signature' ? 'signature' : `${data.cost}pt`} {data.count > 1 ? 'abilities' : 'ability'}.
+				</div>
 				{
 					data.selectedIDs.map(id => {
 						const ability = abilities.find(a => a.id === id) as Ability;
 						return (
-							<AbilityPanel key={ability.id} ability={ability} mode={PanelMode.Full} />
+							<Flex key={ability.id} className='selection-box' align='center' gap={10}>
+								<Field
+									style={{ flex: '1 1 0' }}
+									label={ability.name}
+									value={<Markdown text={ability.description} useSpan={true} />}
+								/>
+								<Flex vertical={true}>
+									<Button
+										style={{ flex: '0 0 auto' }}
+										type='text'
+										icon={<InfoCircleOutlined />}
+										onClick={() => setSelectedAbility(ability)}
+									/>
+									<Button
+										style={{ flex: '0 0 auto' }}
+										type='text'
+										icon={<DeleteOutlined />}
+										onClick={() => {
+											const dataCopy = Utils.copy(data);
+											dataCopy.selectedIDs = dataCopy.selectedIDs.filter(id => id !== ability.id);
+											if (props.setData) {
+												props.setData(props.feature.id, dataCopy);
+											}
+										}}
+									/>
+								</Flex>
+							</Flex>
 						);
 					})
 				}
+				{
+					data.selectedIDs.length < data.count ?
+						<Button className='status-warning' block={true} onClick={() => setAbilitySelectorOpen(true)}>
+							Choose an ability
+						</Button>
+						: null
+				}
+				<Drawer open={abilitySelectorOpen} onClose={() => setAbilitySelectorOpen(false)} closeIcon={null} width='500px'>
+					<AbilitySelectModal
+						abilities={sortedAbilities.filter(a => !currentAbilityIDs.includes(a.id))}
+						hero={props.hero}
+						onSelect={ability => {
+							setAbilitySelectorOpen(false);
+
+							const dataCopy = Utils.copy(data);
+							dataCopy.selectedIDs.push(ability.id);
+							if (props.setData) {
+								props.setData(props.feature.id, dataCopy);
+							}
+						}}
+						onClose={() => setAbilitySelectorOpen(false)}
+					/>
+				</Drawer>
+				<Drawer open={!!selectedAbility} onClose={() => setSelectedAbility(null)} closeIcon={null} width='500px'>
+					{selectedAbility ? <AbilityModal ability={selectedAbility} hero={props.hero} onClose={() => setSelectedAncestry(null)} /> : null}
+				</Drawer>
 			</Space>
 		);
 	};
@@ -356,13 +468,13 @@ export const FeaturePanel = (props: Props) => {
 							))
 						: null
 				}
-				<Button block={true} onClick={() => setDrawerOpen(true)}>{data.selected ? 'Change' : 'Select'}</Button>
+				<Button block={true} onClick={() => setMonsterSelectorOpen(true)}>{data.selected ? 'Change' : 'Select'}</Button>
 				{
 					data.selected ?
 						<Expander title='Customize'>
 							<HeaderText>Customize</HeaderText>
 							<Input
-								className={data.selected.name === '' ? 'input-empty' : ''}
+								status={data.selected.name === '' ? 'warning' : ''}
 								placeholder='Name'
 								allowClear={true}
 								addonAfter={<ThunderboltOutlined className='random-btn' onClick={() => setName(NameGenerator.generateName())} />}
@@ -374,16 +486,27 @@ export const FeaturePanel = (props: Props) => {
 				}
 				{
 					data.selected ?
-						<MonsterPanel monster={data.selected} options={props.options} />
+						<Flex className='selection-box' align='center' gap={10}>
+							<MonsterInfo
+								style={{ flex: '1 1 0' }}
+								monster={data.selected}
+							/>
+							<Button
+								style={{ flex: '0 0 auto' }}
+								type='text'
+								icon={<InfoCircleOutlined />}
+								onClick={() => setSelectedMonster(data.selected)}
+							/>
+						</Flex>
 						: null
 				}
-				<Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} closeIcon={null} width='500px'>
+				<Drawer open={monsterSelectorOpen} onClose={() => setMonsterSelectorOpen(false)} closeIcon={null} width='500px'>
 					<MonsterSelectModal
 						type={data.type}
 						sourcebooks={props.sourcebooks || []}
 						options={props.options}
 						onSelect={monster => {
-							setDrawerOpen(false);
+							setMonsterSelectorOpen(false);
 
 							const monsterCopy = Utils.copy(monster) as Monster;
 							if (monsterCopy.retainer) {
@@ -396,8 +519,11 @@ export const FeaturePanel = (props: Props) => {
 								props.setData(props.feature.id, dataCopy);
 							}
 						}}
-						onClose={() => setDrawerOpen(false)}
+						onClose={() => setMonsterSelectorOpen(false)}
 					/>
+				</Drawer>
+				<Drawer open={!!selectedMonster} onClose={() => setSelectedMonster(null)} closeIcon={null} width='500px'>
+					{selectedMonster ? <MonsterModal monster={selectedMonster} options={props.options} onClose={() => setSelectedMonster(null)} /> : null}
 				</Drawer>
 			</Space>
 		);
@@ -422,13 +548,23 @@ export const FeaturePanel = (props: Props) => {
 				{data.count > 1 ? <div className='ds-text'>Choose {data.count}:</div> : null}
 				<Select
 					style={{ width: '100%' }}
-					className={data.selected.length < data.count ? 'selection-empty' : ''}
+					status={data.selected.length < data.count ? 'warning' : ''}
 					mode={data.count === 1 ? undefined : 'multiple'}
 					maxCount={data.count === 1 ? undefined : data.count}
 					allowClear={true}
 					placeholder={data.count === 1 ? 'Select a domain' : 'Select domains'}
 					options={sortedDomains.map(a => ({ label: a.name, value: a.id, desc: a.description }))}
 					optionRender={option => <Field label={option.data.label} value={option.data.desc} />}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label,
+								option.desc
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={data.count === 1 ? (data.selected.length > 0 ? data.selected[0].id : null) : data.selected.map(k => k.id)}
 					onChange={value => {
 						let ids: string[] = [];
@@ -450,6 +586,29 @@ export const FeaturePanel = (props: Props) => {
 						}
 					}}
 				/>
+				{
+					data.selected.map(domain => (
+						<Flex key={domain.id} className='selection-box' align='center' gap={10}>
+							<Field
+								style={{ flex: '1 1 0' }}
+								label={domain.name}
+								value={<Markdown text={domain.description} useSpan={true} />}
+							/>
+							<Button
+								style={{ flex: '0 0 auto' }}
+								type='text'
+								icon={<InfoCircleOutlined />}
+								onClick={() => setSelectedDomain(domain)}
+							/>
+						</Flex>
+					))
+				}
+				<Drawer open={!!selectedDomain} onClose={() => setSelectedDomain(null)} closeIcon={null} width='500px'>
+					<Modal
+						content={selectedDomain ? <DomainPanel domain={selectedDomain} options={props.options} mode={PanelMode.Full} /> : null}
+						onClose={() => setSelectedDomain(null)}
+					/>
+				</Drawer>
 			</Space>
 		);
 	};
@@ -481,13 +640,23 @@ export const FeaturePanel = (props: Props) => {
 				{data.count > 1 ? <div className='ds-text'>Choose {data.count}:</div> : null}
 				<Select
 					style={{ width: '100%' }}
-					className={data.selected.length < data.count ? 'selection-empty' : ''}
+					status={data.selected.length < data.count ? 'warning' : ''}
 					mode={data.count === 1 ? undefined : 'multiple'}
 					maxCount={data.count === 1 ? undefined : data.count}
 					allowClear={true}
 					placeholder={data.count === 1 ? 'Select an option' : 'Select options'}
 					options={options.map(o => ({ label: o.name, value: o.id, desc: o.description }))}
 					optionRender={option => <Field label={option.data.label} value={option.data.desc} />}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label,
+								option.desc
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={data.count === 1 ? (data.selected.length > 0 ? data.selected[0].id : null) : data.selected.map(f => f.id)}
 					onChange={value => {
 						let ids: string[] = [];
@@ -541,13 +710,23 @@ export const FeaturePanel = (props: Props) => {
 				{data.count > 1 ? <div className='ds-text'>Choose {data.count}:</div> : null}
 				<Select
 					style={{ width: '100%' }}
-					className={data.selected.length < data.count ? 'selection-empty' : ''}
+					status={data.selected.length < data.count ? 'warning' : ''}
 					mode={data.count === 1 ? undefined : 'multiple'}
 					maxCount={data.count === 1 ? undefined : data.count}
 					allowClear={true}
 					placeholder={data.count === 1 ? 'Select an item' : 'Select items'}
 					options={sortedItems.map(a => ({ label: a.name, value: a.id, desc: a.description }))}
 					optionRender={option => <Field label={option.data.label} value={option.data.desc} />}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label,
+								option.desc
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={data.count === 1 ? (data.selected.length > 0 ? data.selected[0].id : null) : data.selected.map(i => i.id)}
 					onChange={value => {
 						let ids: string[] = [];
@@ -569,7 +748,29 @@ export const FeaturePanel = (props: Props) => {
 						}
 					}}
 				/>
-				{data.selected.map(i => (<ItemPanel key={i.id} item={i} options={props.options} />))}
+				{
+					data.selected.map(item => (
+						<Flex key={item.id} className='selection-box' align='center' gap={10}>
+							<Field
+								style={{ flex: '1 1 0' }}
+								label={item.name}
+								value={<Markdown text={item.description} useSpan={true} />}
+							/>
+							<Button
+								style={{ flex: '0 0 auto' }}
+								type='text'
+								icon={<InfoCircleOutlined />}
+								onClick={() => setSelectedItem(item)}
+							/>
+						</Flex>
+					))
+				}
+				<Drawer open={!!selectedItem} onClose={() => setSelectedItem(null)} closeIcon={null} width='500px'>
+					<Modal
+						content={selectedItem ? <ItemPanel item={selectedItem} options={props.options} /> : null}
+						onClose={() => setSelectedItem(null)}
+					/>
+				</Drawer>
 			</Space>
 		);
 	};
@@ -578,6 +779,8 @@ export const FeaturePanel = (props: Props) => {
 		if (!props.hero) {
 			return null;
 		}
+
+		const currentKitIDs = HeroLogic.getKits(props.hero).map(k => k.id);
 
 		const kitTypes = data.types.length > 0 ? data.types : [ '' ];
 		const kits = SourcebookLogic.getKits(props.sourcebooks as Sourcebook[])
@@ -594,43 +797,69 @@ export const FeaturePanel = (props: Props) => {
 		return (
 			<Space direction='vertical' style={{ width: '100%' }}>
 				{data.count > 1 ? <div className='ds-text'>Choose {data.count}:</div> : null}
-				<Select
-					style={{ width: '100%' }}
-					className={data.selected.length < data.count ? 'selection-empty' : ''}
-					mode={data.count === 1 ? undefined : 'multiple'}
-					maxCount={data.count === 1 ? undefined : data.count}
-					allowClear={true}
-					placeholder={data.count === 1 ? 'Select a kit' : 'Select kits'}
-					options={sortedKits.map(a => ({ label: a.name, value: a.id, desc: a.description }))}
-					optionRender={option => <Field label={option.data.label} value={option.data.desc} />}
-					value={data.count === 1 ? (data.selected.length > 0 ? data.selected[0].id : null) : data.selected.map(k => k.id)}
-					onChange={value => {
-						let ids: string[] = [];
-						if (data.count === 1) {
-							ids = value !== undefined ? [ value as string ] : [];
-						} else {
-							ids = value as string[];
-						}
-						const dataCopy = Utils.copy(data);
-						dataCopy.selected = [];
-						ids.forEach(id => {
-							const kit = kits.find(k => k.id === id);
-							if (kit) {
-								dataCopy.selected.push(kit);
-							}
-						});
-						if (props.setData) {
-							props.setData(props.feature.id, dataCopy);
-						}
-					}}
-				/>
 				{
-					data.selected.map(k => {
-						return (
-							<KitPanel key={k.id} kit={k} options={props.options} mode={PanelMode.Full} />
-						);
-					})
+					data.selected.length < data.count ?
+						<Button className='status-warning' block={true} onClick={() => setKitSelectorOpen(true)}>
+							Choose a kit
+						</Button>
+						: null
 				}
+				<Drawer open={kitSelectorOpen} onClose={() => setKitSelectorOpen(false)} closeIcon={null} width='500px'>
+					<KitSelectModal
+						kits={sortedKits.filter(k => !currentKitIDs.includes(k.id))}
+						hero={props.hero}
+						options={props.options}
+						onSelect={kit => {
+							setKitSelectorOpen(false);
+
+							const kitCopy = Utils.copy(kit);
+
+							const dataCopy = Utils.copy(data);
+							dataCopy.selected.push(kitCopy);
+							if (props.setData) {
+								props.setData(props.feature.id, dataCopy);
+							}
+						}}
+						onClose={() => setKitSelectorOpen(false)}
+					/>
+				</Drawer>
+				{
+					data.selected.map(kit => (
+						<Flex key={kit.id} className='selection-box' align='center' gap={10}>
+							<Field
+								style={{ flex: '1 1 0' }}
+								label={kit.name}
+								value={<Markdown text={kit.description} useSpan={true} />}
+							/>
+							<Flex vertical={true}>
+								<Button
+									style={{ flex: '0 0 auto' }}
+									type='text'
+									icon={<InfoCircleOutlined />}
+									onClick={() => setSelectedKit(kit)}
+								/>
+								<Button
+									style={{ flex: '0 0 auto' }}
+									type='text'
+									icon={<DeleteOutlined />}
+									onClick={() => {
+										const dataCopy = Utils.copy(data);
+										dataCopy.selected = dataCopy.selected.filter(k => k.id !== kit.id);
+										if (props.setData) {
+											props.setData(props.feature.id, dataCopy);
+										}
+									}}
+								/>
+							</Flex>
+						</Flex>
+					))
+				}
+				<Drawer open={!!selectedKit} onClose={() => setSelectedKit(null)} closeIcon={null} width='500px'>
+					<Modal
+						content={selectedKit ? <KitPanel kit={selectedKit} options={props.options} mode={PanelMode.Full} /> : null}
+						onClose={() => setSelectedKit(null)}
+					/>
+				</Drawer>
 			</Space>
 		);
 	};
@@ -639,6 +868,7 @@ export const FeaturePanel = (props: Props) => {
 		const currentLanguages: string[] = [];
 		if (props.hero) {
 			HeroLogic.getFeatures(props.hero)
+				.map(f => f.feature)
 				.filter(f => f.id !== props.feature.id)
 				.forEach(f => {
 					const addCurrent = (language: string) => {
@@ -675,13 +905,23 @@ export const FeaturePanel = (props: Props) => {
 				{data.count > 1 ? <div className='ds-text'>Choose {data.count}:</div> : null}
 				<Select
 					style={{ width: '100%' }}
-					className={data.selected.length < data.count ? 'selection-empty' : ''}
+					status={data.selected.length < data.count ? 'warning' : ''}
 					mode={data.count == 1 ? undefined : 'multiple'}
 					maxCount={data.count === 1 ? undefined : data.count}
 					allowClear={true}
 					placeholder={data.count === 1 ? 'Select a language' : 'Select languages'}
 					options={sortedLanguages.map(l => ({ label: l.name, value: l.name, desc: l.description, disabled: currentLanguages.includes(l.name) }))}
 					optionRender={option => <Field disabled={option.data.disabled} label={option.data.label} value={option.data.desc} />}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label,
+								option.desc
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={data.count === 1 ? (data.selected.length > 0 ? data.selected[0] : null) : data.selected}
 					onChange={value => {
 						let ids: string[] = [];
@@ -714,6 +954,7 @@ export const FeaturePanel = (props: Props) => {
 		}
 
 		const currentPerkIDs = HeroLogic.getFeatures(props.hero)
+			.map(f => f.feature)
 			.filter(f => f.id !== props.feature.id)
 			.filter(f => f.type === FeatureType.Perk)
 			.flatMap(f => f.data.selected)
@@ -731,39 +972,67 @@ export const FeaturePanel = (props: Props) => {
 		return (
 			<Space direction='vertical' style={{ width: '100%' }}>
 				{data.count > 1 ? <div className='ds-text'>Choose {data.count}:</div> : null}
-				<Select
-					style={{ width: '100%' }}
-					className={data.selected.length < data.count ? 'selection-empty' : ''}
-					mode={data.count === 1 ? undefined : 'multiple'}
-					maxCount={data.count === 1 ? undefined : data.count}
-					allowClear={true}
-					placeholder={data.count === 1 ? 'Select a perk' : 'Select perks'}
-					options={sortedPerks.map(a => ({ label: a.name, value: a.id, desc: a.description, disabled: currentPerkIDs.includes(a.id) }))}
-					optionRender={option => <Field disabled={option.data.disabled} label={option.data.label} value={option.data.desc} />}
-					value={data.count === 1 ? (data.selected.length > 0 ? data.selected[0].id : null) : data.selected.map(k => k.id)}
-					onChange={value => {
-						let ids: string[] = [];
-						if (data.count === 1) {
-							ids = value !== undefined ? [ value as string ] : [];
-						} else {
-							ids = value as string[];
-						}
-						const dataCopy = Utils.copy(data);
-						dataCopy.selected = [];
-						ids.forEach(id => {
-							const perk = perks.find(p => p.id === id);
-							if (perk) {
-								dataCopy.selected.push(perk);
-							}
-						});
-						if (props.setData) {
-							props.setData(props.feature.id, dataCopy);
-						}
-					}}
-				/>
 				{
-					data.selected.map(p => <PerkPanel key={p.id} perk={p} options={props.options} mode={PanelMode.Full} />)
+					data.selected.map(perk => (
+						<Flex key={perk.id} className='selection-box' align='center' gap={10}>
+							<Field
+								style={{ flex: '1 1 0' }}
+								label={perk.name}
+								value={<Markdown text={perk.description} useSpan={true} />}
+							/>
+							<Flex vertical={true}>
+								<Button
+									style={{ flex: '0 0 auto' }}
+									type='text'
+									icon={<InfoCircleOutlined />}
+									onClick={() => setSelectedPerk(perk)}
+								/>
+								<Button
+									style={{ flex: '0 0 auto' }}
+									type='text'
+									icon={<DeleteOutlined />}
+									onClick={() => {
+										const dataCopy = Utils.copy(data);
+										dataCopy.selected = dataCopy.selected.filter(p => p.id !== perk.id);
+										if (props.setData) {
+											props.setData(props.feature.id, dataCopy);
+										}
+									}}
+								/>
+							</Flex>
+						</Flex>
+					))
 				}
+				{
+					data.selected.length < data.count ?
+						<Button className='status-warning' block={true} onClick={() => setPerkSelectorOpen(true)}>
+							Choose a perk
+						</Button>
+						: null
+				}
+				<Drawer open={perkSelectorOpen} onClose={() => setPerkSelectorOpen(false)} closeIcon={null} width='500px'>
+					<PerkSelectModal
+						perks={sortedPerks.filter(p => !currentPerkIDs.includes(p.id))}
+						hero={props.hero}
+						options={props.options}
+						onSelect={perk => {
+							setPerkSelectorOpen(false);
+
+							const dataCopy = Utils.copy(data);
+							dataCopy.selected.push(perk);
+							if (props.setData) {
+								props.setData(props.feature.id, dataCopy);
+							}
+						}}
+						onClose={() => setAbilitySelectorOpen(false)}
+					/>
+				</Drawer>
+				<Drawer open={!!selectedPerk} onClose={() => setSelectedPerk(null)} closeIcon={null} width='500px'>
+					<Modal
+						content={selectedPerk ? <PerkPanel perk={selectedPerk} options={props.options} mode={PanelMode.Full} /> : null}
+						onClose={() => setSelectedPerk(null)}
+					/>
+				</Drawer>
 			</Space>
 		);
 	};
@@ -772,6 +1041,7 @@ export const FeaturePanel = (props: Props) => {
 		const currentSkills: string[] = [];
 		if (props.hero) {
 			HeroLogic.getFeatures(props.hero)
+				.map(f => f.feature)
 				.filter(f => f.id !== props.feature.id)
 				.forEach(f => {
 					const addCurrent = (skill: string) => {
@@ -806,13 +1076,23 @@ export const FeaturePanel = (props: Props) => {
 				{data.count > 1 ? <div className='ds-text'>Choose {data.count}:</div> : null}
 				<Select
 					style={{ width: '100%' }}
-					className={data.selected.length < data.count ? 'selection-empty' : ''}
+					status={data.selected.length < data.count ? 'warning' : ''}
 					mode={data.count === 1 ? undefined : 'multiple'}
 					maxCount={data.count === 1 ? undefined : data.count}
 					allowClear={true}
 					placeholder={data.count === 1 ? 'Select a skill' : 'Select skills'}
 					options={sortedSkills.map(s => ({ label: s.name, value: s.name, desc: s.description, disabled: currentSkills.includes(s.name) }))}
 					optionRender={option => <Field disabled={option.data.disabled} label={option.data.label} value={option.data.desc} />}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label,
+								option.desc
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={data.count === 1 ? (data.selected.length > 0 ? data.selected[0] : null) : data.selected}
 					onChange={value => {
 						let ids: string[] = [];
@@ -845,6 +1125,7 @@ export const FeaturePanel = (props: Props) => {
 		}
 
 		const currentTaggedFeatureIDs = HeroLogic.getFeatures(props.hero)
+			.map(f => f.feature)
 			.filter(f => f.id !== props.feature.id)
 			.filter(f => f.type === FeatureType.TaggedFeatureChoice)
 			.filter(f => f.data.tag === data.tag)
@@ -852,6 +1133,7 @@ export const FeaturePanel = (props: Props) => {
 			.map(p => p.id);
 
 		const features = HeroLogic.getFeatures(props.hero)
+			.map(f => f.feature)
 			.filter(f => f.type === FeatureType.TaggedFeature)
 			.filter(f => f.data.tag === data.tag);
 		const sortedFeatures = Collections.sort(features, f => f.name);
@@ -863,13 +1145,23 @@ export const FeaturePanel = (props: Props) => {
 					sortedFeatures.length > 0 ?
 						<Select
 							style={{ width: '100%' }}
-							className={data.selected.length < data.count ? 'selection-empty' : ''}
+							status={data.selected.length < data.count ? 'warning' : ''}
 							mode={data.count === 1 ? undefined : 'multiple'}
 							maxCount={data.count === 1 ? undefined : data.count}
 							allowClear={true}
 							placeholder={data.count === 1 ? 'Select a title' : 'Select titles'}
 							options={sortedFeatures.map(a => ({ label: a.name, value: a.id, desc: a.description, disabled: currentTaggedFeatureIDs.includes(a.id) }))}
 							optionRender={option => <Field disabled={option.data.disabled} label={option.data.label} value={option.data.desc} />}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.label,
+										option.desc
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.count === 1 ? (data.selected.length > 0 ? data.selected[0].id : null) : data.selected.map(k => k.id)}
 							onChange={value => {
 								let ids: string[] = [];
@@ -911,6 +1203,7 @@ export const FeaturePanel = (props: Props) => {
 		}
 
 		const currentTitleIDs = HeroLogic.getFeatures(props.hero)
+			.map(f => f.feature)
 			.filter(f => f.id !== props.feature.id)
 			.filter(f => f.type === FeatureType.TitleChoice)
 			.flatMap(f => f.data.selected)
@@ -926,13 +1219,23 @@ export const FeaturePanel = (props: Props) => {
 					sortedTitles.length > 0 ?
 						<Select
 							style={{ width: '100%' }}
-							className={data.selected.length < data.count ? 'selection-empty' : ''}
+							status={data.selected.length < data.count ? 'warning' : ''}
 							mode={data.count === 1 ? undefined : 'multiple'}
 							maxCount={data.count === 1 ? undefined : data.count}
 							allowClear={true}
 							placeholder={data.count === 1 ? 'Select a title' : 'Select titles'}
 							options={sortedTitles.map(a => ({ label: a.name, value: a.id, desc: a.description, disabled: currentTitleIDs.includes(a.id) }))}
 							optionRender={option => <Field disabled={option.data.disabled} label={option.data.label} value={option.data.desc} />}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.label,
+										option.desc
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.count === 1 ? (data.selected.length > 0 ? data.selected[0].id : null) : data.selected.map(k => k.id)}
 							onChange={value => {
 								let ids: string[] = [];
@@ -962,11 +1265,21 @@ export const FeaturePanel = (props: Props) => {
 						<Select
 							key={title.id}
 							style={{ width: '100%' }}
-							className={title.selectedFeatureID === '' ? 'selection-empty' : ''}
+							status={title.selectedFeatureID === '' ? 'warning' : ''}
 							allowClear={true}
 							placeholder='Select a title feature'
 							options={title.features.map(f => ({ label: f.name, value: f.id, desc: f.description }))}
 							optionRender={option => <Field label={option.data.label} value={option.data.desc} />}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.label,
+										option.desc
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={title.selectedFeatureID || null}
 							onChange={value => {
 								const dataCopy = Utils.copy(data);
@@ -980,16 +1293,33 @@ export const FeaturePanel = (props: Props) => {
 				}
 				{
 					data.selected.map(title => {
-						const f = title.features.find(ft => ft.id === title.selectedFeatureID);
-						if (f) {
-							return (
-								<FeaturePanel key={f.id} feature={f} options={props.options} hero={props.hero} sourcebooks={props.sourcebooks} mode={PanelMode.Full} />
-							);
+						const feature = title.features.find(ft => ft.id === title.selectedFeatureID);
+						if (!feature) {
+							return null;
 						}
-
-						return null;
+						return (
+							<Flex key={feature.id} className='selection-box' align='center' gap={10}>
+								<Field
+									style={{ flex: '1 1 0' }}
+									label={feature.name}
+									value={<Markdown text={feature.description} useSpan={true} />}
+								/>
+								<Button
+									style={{ flex: '0 0 auto' }}
+									type='text'
+									icon={<InfoCircleOutlined />}
+									onClick={() => setSelectedTitleFeature(feature)}
+								/>
+							</Flex>
+						);
 					})
 				}
+				<Drawer open={!!selectedTitleFeature} onClose={() => setSelectedTitleFeature(null)} closeIcon={null} width='500px'>
+					<Modal
+						content={selectedTitleFeature ? <FeaturePanel style={{ padding: '0 20px 20px 20px' }} feature={selectedTitleFeature} options={props.options} mode={PanelMode.Full} /> : null}
+						onClose={() => setSelectedTitleFeature(null)}
+					/>
+				</Drawer>
 			</Space>
 		);
 	};
@@ -1087,7 +1417,7 @@ export const FeaturePanel = (props: Props) => {
 		if (data.selected.length > 0) {
 			return (
 				<Space direction='vertical' style={{ width: '100%', padding: '0 20px', borderLeft: '5px solid rgb(200 200 200)' }}>
-					{data.selected.map(f => <FeaturePanel key={f.id} feature={f} options={props.options} mode={PanelMode.Full} />)}
+					{data.selected.map(f => <FeaturePanel key={f.id} feature={f} options={props.options} />)}
 				</Space>
 			);
 		}
@@ -1108,7 +1438,7 @@ export const FeaturePanel = (props: Props) => {
 					}
 				</div>
 				<Space direction='vertical' style={{ width: '100%', padding: '0 20px', borderLeft: '5px solid rgb(200 200 200)' }}>
-					{data.options.map(o => <FeaturePanel key={o.feature.id} feature={o.feature} options={props.options} cost={showCosts ? o.value : undefined} mode={PanelMode.Full} />)}
+					{data.options.map(o => <FeaturePanel key={o.feature.id} feature={o.feature} options={props.options} cost={showCosts ? o.value : undefined} />)}
 				</Space>
 			</div>
 		);
@@ -1123,7 +1453,7 @@ export const FeaturePanel = (props: Props) => {
 						data.selectedIDs.map(id => {
 							const ability = abilities.find(a => a.id === id) as Ability;
 							return (
-								<AbilityPanel key={ability.id} ability={ability} mode={PanelMode.Full} />
+								<AbilityPanel key={ability.id} ability={ability} />
 							);
 						})
 					}
@@ -1154,6 +1484,12 @@ export const FeaturePanel = (props: Props) => {
 		return <MonsterPanel monster={data.selected} options={props.options} />;
 	};
 
+	const getInformationConditionImmunity = (data: FeatureConditionImmunityData) => {
+		return (
+			<Field label='Cannot Be' value={data.conditions.join(', ')} />
+		);
+	};
+
 	const getInformationDamageModifier = (data: FeatureDamageModifierData) => {
 		if (!props.feature.description) {
 			return (
@@ -1171,7 +1507,7 @@ export const FeaturePanel = (props: Props) => {
 			return (
 				<Space direction='vertical' style={{ width: '100%' }}>
 					{
-						data.selected.map(d => <DomainPanel key={d.id} domain={d} options={props.options} mode={PanelMode.Full} />)
+						data.selected.map(d => <DomainPanel key={d.id} domain={d} options={props.options} />)
 					}
 				</Space>
 			);
@@ -1195,7 +1531,7 @@ export const FeaturePanel = (props: Props) => {
 			return (
 				<Space direction='vertical' style={{ width: '100%' }}>
 					{
-						data.selected.map(f => <FeaturePanel key={f.id} feature={f} options={props.options} mode={PanelMode.Full} />)
+						data.selected.map(f => <FeaturePanel key={f.id} feature={f} options={props.options} />)
 					}
 				</Space>
 			);
@@ -1209,7 +1545,7 @@ export const FeaturePanel = (props: Props) => {
 			return (
 				<Space direction='vertical' style={{ width: '100%' }}>
 					{
-						data.selected.map(i => <ItemPanel key={i.id} item={i} options={props.options} mode={PanelMode.Full} />)
+						data.selected.map(i => <ItemPanel key={i.id} item={i} options={props.options} />)
 					}
 				</Space>
 			);
@@ -1239,7 +1575,7 @@ export const FeaturePanel = (props: Props) => {
 			return (
 				<Space direction='vertical' style={{ width: '100%' }}>
 					{
-						data.selected.map(k => <KitPanel key={k.id} kit={k} options={props.options} mode={PanelMode.Full} />)
+						data.selected.map(k => <KitPanel key={k.id} kit={k} options={props.options} />)
 					}
 				</Space>
 			);
@@ -1302,7 +1638,7 @@ export const FeaturePanel = (props: Props) => {
 		return (
 			<div>
 				<Space direction='vertical' style={{ width: '100%', padding: '0 20px', borderLeft: '5px solid rgb(200 200 200)' }}>
-					{data.features.map(f => <FeaturePanel key={f.id} feature={f} options={props.options} mode={PanelMode.Full} />)}
+					{data.features.map(f => <FeaturePanel key={f.id} feature={f} options={props.options} />)}
 				</Space>
 			</div>
 		);
@@ -1332,7 +1668,7 @@ export const FeaturePanel = (props: Props) => {
 			return (
 				<Space direction='vertical' style={{ width: '100%' }}>
 					{
-						data.selected.map(p => <PerkPanel key={p.id} perk={p} options={props.options} mode={PanelMode.Full} />)
+						data.selected.map(p => <PerkPanel key={p.id} perk={p} options={props.options} />)
 					}
 				</Space>
 			);
@@ -1428,7 +1764,7 @@ export const FeaturePanel = (props: Props) => {
 			return (
 				<Space direction='vertical' style={{ width: '100%' }}>
 					{
-						data.selected.map(t => <TitlePanel key={t.id} title={t} options={props.options} mode={PanelMode.Full} />)
+						data.selected.map(t => <TitlePanel key={t.id} title={t} options={props.options} />)
 					}
 				</Space>
 			);
@@ -1465,6 +1801,8 @@ export const FeaturePanel = (props: Props) => {
 				return getInformationClassAbility(props.feature.data);
 			case FeatureType.Companion:
 				return getInformationCompanion(props.feature.data);
+			case FeatureType.ConditionImmunity:
+				return getInformationConditionImmunity(props.feature.data);
 			case FeatureType.DamageModifier:
 				return getInformationDamageModifier(props.feature.data);
 			case FeatureType.Domain:
@@ -1508,8 +1846,17 @@ export const FeaturePanel = (props: Props) => {
 
 	// #endregion
 
+	const autoCalcAvailable = () => {
+		return props.hero
+			&& (props.feature.type === FeatureType.Text)
+			&& (AbilityLogic.getTextEffect(props.feature.description, props.hero) !== props.feature.description);
+	};
+
 	try {
 		const tags = [];
+		if (props.source) {
+			tags.push(props.source);
+		}
 		const list = (props.feature as Perk).list;
 		if (list !== undefined) {
 			tags.push(list);
@@ -1530,18 +1877,45 @@ export const FeaturePanel = (props: Props) => {
 		if (props.feature.type === FeatureType.AncestryFeatureChoice) {
 			if (props.feature.data.selected) {
 				return (
-					<FeaturePanel feature={props.feature.data.selected} options={props.options} />
+					<FeaturePanel feature={props.feature.data.selected} options={props.options} style={props.style} />
 				);
 			}
 		}
 
 		return (
 			<ErrorBoundary>
-				<div className={props.mode === PanelMode.Full ? 'feature-panel' : 'feature-panel compact'} id={props.mode === PanelMode.Full ? props.feature.id : undefined}>
-					<HeaderText ribbon={props.cost === 'signature' ? <Badge>Signature</Badge> : props.cost ? <HeroicResourceBadge value={props.cost} repeatable={props.repeatable} /> : null} tags={tags}>
+				<div className={props.mode === PanelMode.Full ? 'feature-panel' : 'feature-panel compact'} id={props.mode === PanelMode.Full ? props.feature.id : undefined} style={props.style}>
+					<HeaderText
+						ribbon={
+							props.cost === 'signature' ?
+								<Badge>Signature</Badge>
+								:
+								props.cost ?
+									<HeroicResourceBadge value={props.cost} repeatable={props.repeatable} />
+									: null
+						}
+						tags={tags}
+						extra={
+							autoCalcAvailable() ?
+								<Button
+									type='text'
+									title='Auto-calculate damage, potancy, etc'
+									icon={autoCalc ? <ThunderboltFilled style={{ color: 'rgb(22, 119, 255)' }} /> : <ThunderboltOutlined />}
+									onClick={e => { e.stopPropagation(); setAutoCalc(!autoCalc); }}
+								/>
+								: null
+						}
+					>
 						{props.feature.name}
 					</HeaderText>
-					<Markdown text={props.feature.description} />
+					<Markdown
+						text={
+							(props.feature.type === FeatureType.Text) && autoCalc && props.hero ?
+								AbilityLogic.getTextEffect(props.feature.description, props.hero)
+								:
+								props.feature.description
+						}
+					/>
 					{
 						props.mode === PanelMode.Full
 							? (props.setData ? getSelection() : getInformation())

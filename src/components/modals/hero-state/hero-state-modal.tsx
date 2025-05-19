@@ -13,7 +13,7 @@ import { HeroLogic } from '../../../logic/hero-logic';
 import { HeroStatePage } from '../../../enums/hero-state-page';
 import { Item } from '../../../models/item';
 import { ItemPanel } from '../../panels/elements/item-panel/item-panel';
-import { ItemSelectModal } from '../item-select/item-select-modal';
+import { ItemSelectModal } from '../select/item-select/item-select-modal';
 import { ItemType } from '../../../enums/item-type';
 import { Modal } from '../modal/modal';
 import { MultiLine } from '../../controls/multi-line/multi-line';
@@ -22,7 +22,7 @@ import { Options } from '../../../models/options';
 import { PanelMode } from '../../../enums/panel-mode';
 import { Project } from '../../../models/project';
 import { ProjectPanel } from '../../panels/elements/project-panel/project-panel';
-import { ProjectSelectModal } from '../project-select/project-select-modal';
+import { ProjectSelectModal } from '../select/project-select/project-select-modal';
 import { Sourcebook } from '../../../models/sourcebook';
 import { Utils } from '../../../utils/utils';
 import { talent } from '../../../data/classes/talent';
@@ -131,18 +131,48 @@ export const HeroStateModal = (props: Props) => {
 
 		return (
 			<Space direction='vertical' style={{ width: '100%' }}>
-				<NumberSpin
-					label={hero.class ? hero.class.heroicResource : 'Heroic Resource'}
-					value={hero.state.heroicResource}
-					min={hero.class && (hero.class.id === talent.id) ? undefined : 0}
-					onChange={setHeroicResource}
-				/>
-				<NumberSpin
-					label='Surges'
-					value={hero.state.surges}
-					min={0}
-					onChange={setSurges}
-				/>
+				<Flex gap={20}>
+					<Space direction='vertical' style={{ width: '100%' }}>
+						<NumberSpin
+							label={hero.class ? hero.class.heroicResource : 'Heroic Resource'}
+							value={hero.state.heroicResource}
+							min={hero.class && (hero.class.id === talent.id) ? undefined : 0}
+							onChange={setHeroicResource}
+						/>
+						<NumberSpin
+							label='Victories'
+							value={hero.state.victories}
+							min={0}
+							onChange={setVictories}
+						/>
+						<NumberSpin
+							label='Renown'
+							value={hero.state.renown}
+							format={() => HeroLogic.getRenown(hero).toString()}
+							onChange={setRenown}
+						/>
+					</Space>
+					<Space direction='vertical' style={{ width: '100%' }}>
+						<NumberSpin
+							label='Surges'
+							value={hero.state.surges}
+							min={0}
+							onChange={setSurges}
+						/>
+						<NumberSpin
+							label='XP'
+							value={hero.state.xp}
+							min={0}
+							onChange={setXP}
+						/>
+						<NumberSpin
+							label='Wealth'
+							value={hero.state.wealth}
+							format={() => HeroLogic.getWealth(hero).toString()}
+							onChange={setWealth}
+						/>
+					</Space>
+				</Flex>
 				{
 					hero.state.surges > 0 ?
 						<Alert
@@ -161,18 +191,6 @@ export const HeroStateModal = (props: Props) => {
 						/>
 						: null
 				}
-				<NumberSpin
-					label='Victories'
-					value={hero.state.victories}
-					min={0}
-					onChange={setVictories}
-				/>
-				<NumberSpin
-					label='XP'
-					value={hero.state.xp}
-					min={0}
-					onChange={setXP}
-				/>
 				{
 					HeroLogic.canLevelUp(hero) ?
 						<Alert
@@ -183,11 +201,17 @@ export const HeroStateModal = (props: Props) => {
 						/>
 						: null
 				}
+				<Divider />
 				<NumberSpin
 					label='Hero Tokens'
 					value={hero.state.heroTokens}
 					min={0}
 					onChange={setHeroTokens}
+				/>
+				<Alert
+					type='info'
+					showIcon={true}
+					message='Hero tokens are a resource shared by your party; they typically refresh at the beginning of each game session.'
 				/>
 				{
 					hero.state.heroTokens > 0 ?
@@ -227,18 +251,6 @@ export const HeroStateModal = (props: Props) => {
 						/>
 						: null
 				}
-				<NumberSpin
-					label='Renown'
-					value={hero.state.renown}
-					format={() => HeroLogic.getRenown(hero).toString()}
-					onChange={setRenown}
-				/>
-				<NumberSpin
-					label='Wealth'
-					value={hero.state.wealth}
-					format={() => HeroLogic.getWealth(hero).toString()}
-					onChange={setWealth}
-				/>
 				<Divider />
 				<Flex align='center' justify='space-evenly' gap={10}>
 					<Button
@@ -303,13 +315,27 @@ export const HeroStateModal = (props: Props) => {
 				</div>
 				<ul>
 					<li>
-						Your Stamina and Recoveries reset (and any temporary Stamina goes away)
+						Your Stamina and Recoveries are reset (and any temporary Stamina goes away)
 					</li>
 					<li>
 						Your Victories are turned into XP
 					</li>
 					<li>
 						Any conditions affecting you are removed
+					</li>
+				</ul>
+				<div className='ds-text'>
+					During a respite you can take one respite action. Standard respite actions are:
+				</div>
+				<ul>
+					<li>
+						Make a project roll
+					</li>
+					<li>
+						Change your kit / prayer / enchantment / augmentation / ward
+					</li>
+					<li>
+						Attract followers (for every 3 renown, you can have 1 follower)
 					</li>
 				</ul>
 				<Divider />
@@ -376,6 +402,7 @@ export const HeroStateModal = (props: Props) => {
 
 		return (
 			<Space direction='vertical' style={{ width: '100%' }}>
+				<HeaderText>Inventory</HeaderText>
 				{warning}
 				{
 					hero.state.inventory.map(item => (
@@ -467,6 +494,7 @@ export const HeroStateModal = (props: Props) => {
 
 		return (
 			<Space direction='vertical' style={{ width: '100%' }}>
+				<HeaderText>Projects</HeaderText>
 				<NumberSpin
 					label='Project Points'
 					value={hero.state.projectPoints}
@@ -549,20 +577,30 @@ export const HeroStateModal = (props: Props) => {
 	};
 
 	try {
+		let pages: HeroStatePage[] = [];
+		if (HeroLogic.getStamina(hero) !== 0) {
+			pages = [
+				HeroStatePage.Hero,
+				HeroStatePage.Vitals,
+				HeroStatePage.Respite,
+				HeroStatePage.Inventory,
+				HeroStatePage.Projects,
+				HeroStatePage.Notes
+			];
+		} else {
+			pages = [
+				HeroStatePage.Vitals,
+				HeroStatePage.Notes
+			];
+		}
+
 		return (
 			<Modal
 				toolbar={
 					<div style={{ width: '100%', textAlign: 'center' }}>
 						<Segmented
 							name='tabs'
-							options={[
-								HeroStatePage.Hero,
-								HeroStatePage.Vitals,
-								HeroStatePage.Respite,
-								HeroStatePage.Inventory,
-								HeroStatePage.Projects,
-								HeroStatePage.Notes
-							]}
+							options={pages}
 							value={page}
 							onChange={setPage}
 						/>

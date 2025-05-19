@@ -1,12 +1,13 @@
 import { Button, Flex, Input, Segmented, Select, Space, Tabs } from 'antd';
 import { CaretDownOutlined, CaretUpOutlined, PlusOutlined } from '@ant-design/icons';
-import { Feature, FeatureAbilityCostData, FeatureAbilityDamageData, FeatureAbilityData, FeatureAbilityDistanceData, FeatureAddOnData, FeatureAddOnType, FeatureAncestryChoiceData, FeatureAncestryFeatureChoiceData, FeatureBonusData, FeatureCharacteristicBonusData, FeatureChoiceData, FeatureClassAbilityData, FeatureCompanionData, FeatureDamageModifierData, FeatureData, FeatureDomainData, FeatureDomainFeatureData, FeatureItemChoiceData, FeatureKitData, FeatureLanguageChoiceData, FeatureLanguageData, FeatureMaliceData, FeatureMultipleData, FeaturePackageData, FeaturePerkData, FeatureSizeData, FeatureSkillChoiceData, FeatureSkillData, FeatureSpeedData, FeatureTaggedFeatureChoiceData, FeatureTaggedFeatureData, FeatureTitleChoiceData } from '../../../../models/feature';
+import { Feature, FeatureAbilityCostData, FeatureAbilityDamageData, FeatureAbilityData, FeatureAbilityDistanceData, FeatureAddOnData, FeatureAddOnType, FeatureAncestryChoiceData, FeatureAncestryFeatureChoiceData, FeatureBonusData, FeatureCharacteristicBonusData, FeatureChoiceData, FeatureClassAbilityData, FeatureCompanionData, FeatureConditionImmunityData, FeatureDamageModifierData, FeatureData, FeatureDomainData, FeatureDomainFeatureData, FeatureItemChoiceData, FeatureKitData, FeatureLanguageChoiceData, FeatureLanguageData, FeatureMaliceData, FeatureMultipleData, FeaturePackageData, FeaturePerkData, FeatureSizeData, FeatureSkillChoiceData, FeatureSkillData, FeatureSpeedData, FeatureTaggedFeatureChoiceData, FeatureTaggedFeatureData, FeatureTitleChoiceData } from '../../../../models/feature';
 import { Ability } from '../../../../models/ability';
 import { AbilityEditPanel } from '../ability-edit/ability-edit-panel';
 import { AbilityKeyword } from '../../../../enums/ability-keyword';
 import { AbilityLogic } from '../../../../logic/ability-logic';
 import { Characteristic } from '../../../../enums/characteristic';
 import { Collections } from '../../../../utils/collections';
+import { ConditionType } from '../../../../enums/condition-type';
 import { DamageModifierType } from '../../../../enums/damage-modifier-type';
 import { DamageType } from '../../../../enums/damage-type';
 import { DangerButton } from '../../../controls/danger-button/danger-button';
@@ -119,7 +120,8 @@ export const FeatureEditPanel = (props: Props) => {
 				data = {
 					source: {
 						current: true,
-						former: true
+						former: true,
+						customID: ''
 					},
 					value: 1,
 					selected: null
@@ -156,6 +158,11 @@ export const FeatureEditPanel = (props: Props) => {
 					minLevel: 1,
 					selectedIDs: []
 				} as FeatureClassAbilityData;
+				break;
+			case FeatureType.ConditionImmunity:
+				data = {
+					conditions: []
+				} as FeatureConditionImmunityData;
 				break;
 			case FeatureType.DamageModifier:
 				data = {
@@ -366,6 +373,12 @@ export const FeatureEditPanel = (props: Props) => {
 		const setCompanionType = (value: 'companion' | 'mount' | 'retainer') => {
 			const copy = Utils.copy(feature.data) as FeatureCompanionData;
 			copy.type = value;
+			setData(copy);
+		};
+
+		const setConditions = (value: ConditionType[]) => {
+			const copy = Utils.copy(feature.data) as FeatureConditionImmunityData;
+			copy.conditions = value;
 			setData(copy);
 		};
 
@@ -691,6 +704,15 @@ export const FeatureEditPanel = (props: Props) => {
 							allowClear={true}
 							options={AbilityLogic.getKeywords().map(o => ({ value: o }))}
 							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.keywords}
 							onChange={setKeywords}
 						/>
@@ -711,6 +733,15 @@ export const FeatureEditPanel = (props: Props) => {
 							allowClear={true}
 							options={AbilityLogic.getKeywords().map(o => ({ value: o }))}
 							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.keywords}
 							onChange={setKeywords}
 						/>
@@ -724,6 +755,15 @@ export const FeatureEditPanel = (props: Props) => {
 							mode='multiple'
 							options={[ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ].map(option => ({ value: option }))}
 							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.valueCharacteristics}
 							onChange={setValueCharacteristics}
 						/>
@@ -742,6 +782,15 @@ export const FeatureEditPanel = (props: Props) => {
 							allowClear={true}
 							options={AbilityLogic.getKeywords().map(o => ({ value: o }))}
 							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.keywords}
 							onChange={setKeywords}
 						/>
@@ -755,6 +804,15 @@ export const FeatureEditPanel = (props: Props) => {
 							mode='multiple'
 							options={[ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ].map(option => ({ value: option }))}
 							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.valueCharacteristics}
 							onChange={setValueCharacteristics}
 						/>
@@ -804,6 +862,15 @@ export const FeatureEditPanel = (props: Props) => {
 							placeholder='Select field'
 							options={[ FeatureField.Disengage, FeatureField.ProjectPoints, FeatureField.Recoveries, FeatureField.RecoveryValue, FeatureField.Renown, FeatureField.Speed, FeatureField.Stability, FeatureField.Stamina, FeatureField.Wealth ].map(o => ({ value: o }))}
 							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.field}
 							onChange={setField}
 						/>
@@ -817,6 +884,15 @@ export const FeatureEditPanel = (props: Props) => {
 							mode='multiple'
 							options={[ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ].map(option => ({ value: option }))}
 							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.valueCharacteristics}
 							onChange={setValueCharacteristics}
 						/>
@@ -833,6 +909,15 @@ export const FeatureEditPanel = (props: Props) => {
 							placeholder='Select field'
 							options={[ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ].map(o => ({ value: o }))}
 							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.characteristic}
 							onChange={setCharacteristic}
 						/>
@@ -892,6 +977,15 @@ export const FeatureEditPanel = (props: Props) => {
 							placeholder='Select class'
 							options={[ { id: '', name: 'Your Class', description: 'An ability from your own class.' }, ...SourcebookLogic.getClasses(props.sourcebooks) ].map(o => ({ value: o.id, label: o.name, description: o.description }))}
 							optionRender={option => <Field label={option.data.label} value={option.data.description} />}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.label
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.classID || ''}
 							onChange={setAbilityClassID}
 						/>
@@ -927,6 +1021,33 @@ export const FeatureEditPanel = (props: Props) => {
 					</Space>
 				);
 			}
+			case FeatureType.ConditionImmunity: {
+				const data = feature.data as FeatureConditionImmunityData;
+				return (
+					<Space direction='vertical' style={{ width: '100%' }}>
+						<HeaderText>Conditions</HeaderText>
+						<Select
+							style={{ width: '100%' }}
+							placeholder='Select conditions'
+							mode='multiple'
+							allowClear={true}
+							options={[ ConditionType.Bleeding, ConditionType.Dazed, ConditionType.Frightened, ConditionType.Grabbed, ConditionType.Prone, ConditionType.Restrained, ConditionType.Slowed, ConditionType.Taunted, ConditionType.Weakened ].map(o => ({ value: o }))}
+							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
+							value={data.conditions}
+							onChange={conditions => setConditions(conditions)}
+						/>
+					</Space>
+				);
+			}
 			case FeatureType.DamageModifier: {
 				const data = feature.data as FeatureDamageModifierData;
 				return (
@@ -942,6 +1063,15 @@ export const FeatureEditPanel = (props: Props) => {
 											placeholder='Damage type'
 											options={[ DamageType.Damage, DamageType.Acid, DamageType.Cold, DamageType.Corruption, DamageType.Fire, DamageType.Holy, DamageType.Lightning, DamageType.Poison, DamageType.Psychic, DamageType.Sonic ].map(option => ({ value: option }))}
 											optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+											showSearch={true}
+											filterOption={(input, option) => {
+												const strings = option ?
+													[
+														option.value
+													]
+													: [];
+												return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+											}}
 											value={mod.damageType}
 											onChange={value => setDamageModifierDamageType(data, n, value)}
 										/>
@@ -950,6 +1080,15 @@ export const FeatureEditPanel = (props: Props) => {
 											placeholder='Modifier type'
 											options={[ DamageModifierType.Immunity, DamageModifierType.Weakness ].map(o => ({ value: o }))}
 											optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+											showSearch={true}
+											filterOption={(input, option) => {
+												const strings = option ?
+													[
+														option.value
+													]
+													: [];
+												return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+											}}
 											value={mod.type}
 											onChange={value => setDamageModifierType(data, n, value)}
 										/>
@@ -960,6 +1099,15 @@ export const FeatureEditPanel = (props: Props) => {
 											mode='multiple'
 											options={[ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ].map(option => ({ value: option }))}
 											optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+											showSearch={true}
+											filterOption={(input, option) => {
+												const strings = option ?
+													[
+														option.value
+													]
+													: [];
+												return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+											}}
 											value={mod.valueCharacteristics}
 											onChange={value => setDamageModifierValueCharacteristics(data, n, value)}
 										/>
@@ -1009,12 +1157,21 @@ export const FeatureEditPanel = (props: Props) => {
 						<HeaderText>Types</HeaderText>
 						<Select
 							style={{ width: '100%' }}
-							className={data.types.length === 0 ? 'selection-empty' : ''}
+							status={data.types.length === 0 ? 'warning' : ''}
 							placeholder='Item types'
 							mode='multiple'
 							allowClear={true}
 							options={[ ItemType.Artifact, ItemType.Consumable, ItemType.Leveled, ItemType.Trinket ].map(option => ({ value: option }))}
 							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.types}
 							onChange={setItemTypes}
 						/>
@@ -1030,7 +1187,7 @@ export const FeatureEditPanel = (props: Props) => {
 						<HeaderText>Types</HeaderText>
 						<Select
 							style={{ width: '100%' }}
-							className={data.types.length === 0 ? 'selection-empty' : ''}
+							status={data.types.length === 0 ? 'warning' : ''}
 							placeholder='Kit types'
 							mode='multiple'
 							allowClear={true}
@@ -1039,6 +1196,15 @@ export const FeatureEditPanel = (props: Props) => {
 								{ value: 'Stormwight', label: 'Stormwight' }
 							]}
 							optionRender={option => <div className='ds-text'>{option.data.label}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.label
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.types}
 							onChange={setKitTypes}
 						/>
@@ -1054,11 +1220,20 @@ export const FeatureEditPanel = (props: Props) => {
 						<HeaderText>Language</HeaderText>
 						<Select
 							style={{ width: '100%' }}
-							className={data.language === '' ? 'selection-empty' : ''}
+							status={data.language === '' ? 'warning' : ''}
 							placeholder='Language'
 							allowClear={true}
 							options={SourcebookLogic.getLanguages(props.sourcebooks).map(option => ({ value: option.name, description: option.description }))}
 							optionRender={option => <Field label={option.data.value} value={option.data.description} />}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.language || ''}
 							onChange={setLanguage}
 						/>
@@ -1072,12 +1247,21 @@ export const FeatureEditPanel = (props: Props) => {
 						<HeaderText>Options</HeaderText>
 						<Select
 							style={{ width: '100%' }}
-							className={data.options.length === 0 ? 'selection-empty' : ''}
+							status={data.options.length === 0 ? 'warning' : ''}
 							placeholder='Options'
 							mode='multiple'
 							allowClear={true}
 							options={SourcebookLogic.getLanguages(props.sourcebooks).map(option => ({ value: option.name, description: option.description }))}
 							optionRender={option => <Field label={option.data.value} value={option.data.description} />}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.options}
 							onChange={setLanguageOptions}
 						/>
@@ -1121,30 +1305,39 @@ export const FeatureEditPanel = (props: Props) => {
 														<HeaderText>Power Roll</HeaderText>
 														<Select
 															style={{ width: '100%' }}
-															className={section.characteristic.length === 0 ? 'selection-empty' : ''}
+															status={section.characteristic.length === 0 ? 'warning' : ''}
 															placeholder='Characteristics'
 															mode='multiple'
 															options={[ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ].map(option => ({ value: option }))}
 															optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+															showSearch={true}
+															filterOption={(input, option) => {
+																const strings = option ?
+																	[
+																		option.value
+																	]
+																	: [];
+																return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+															}}
 															value={section.characteristic}
 															onChange={value => setMaliceSectionPowerRollCharacteristics(data, n, value)}
 														/>
 														<Input
-															className={section.tier1 === '' ? 'input-empty' : ''}
+															status={section.tier1 === '' ? 'warning' : ''}
 															placeholder='Tier 1'
 															allowClear={true}
 															value={section.tier1}
 															onChange={e => setMaliceSectionPowerRoll1(data, n, e.target.value)}
 														/>
 														<Input
-															className={section.tier1 === '' ? 'input-empty' : ''}
+															status={section.tier1 === '' ? 'warning' : ''}
 															placeholder='Tier 2'
 															allowClear={true}
 															value={section.tier2}
 															onChange={e => setMaliceSectionPowerRoll2(data, n, e.target.value)}
 														/>
 														<Input
-															className={section.tier1 === '' ? 'input-empty' : ''}
+															status={section.tier1 === '' ? 'warning' : ''}
 															placeholder='Tier 3'
 															allowClear={true}
 															value={section.tier3}
@@ -1212,12 +1405,21 @@ export const FeatureEditPanel = (props: Props) => {
 						<HeaderText>Lists</HeaderText>
 						<Select
 							style={{ width: '100%' }}
-							className={data.lists.length === 0 ? 'selection-empty' : ''}
+							status={data.lists.length === 0 ? 'warning' : ''}
 							placeholder='Perk lists'
 							mode='multiple'
 							allowClear={true}
 							options={[ PerkList.Crafting, PerkList.Exploration, PerkList.Interpersonal, PerkList.Intrigue, PerkList.Lore, PerkList.Supernatural ].map(option => ({ value: option }))}
 							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.lists}
 							onChange={setPerkLists}
 						/>
@@ -1258,11 +1460,20 @@ export const FeatureEditPanel = (props: Props) => {
 						<HeaderText>Skill</HeaderText>
 						<Select
 							style={{ width: '100%' }}
-							className={data.skill === '' ? 'selection-empty' : ''}
+							status={data.skill === '' ? 'warning' : ''}
 							placeholder='Skill'
 							allowClear={true}
 							options={SourcebookLogic.getSkills(props.sourcebooks).map(option => ({ value: option.name, description: option.description }))}
 							optionRender={option => <Field label={option.data.value} value={option.data.description} />}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.skill || ''}
 							onChange={setSkill}
 						/>
@@ -1281,6 +1492,15 @@ export const FeatureEditPanel = (props: Props) => {
 							mode='multiple'
 							options={SourcebookLogic.getSkills(props.sourcebooks).map(option => ({ value: option.name, description: option.description }))}
 							optionRender={option => <Field label={option.data.value} value={option.data.description} />}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.options}
 							onChange={setSkillOptions}
 						/>
@@ -1292,6 +1512,15 @@ export const FeatureEditPanel = (props: Props) => {
 							mode='multiple'
 							options={[ SkillList.Crafting, SkillList.Exploration, SkillList.Interpersonal, SkillList.Intrigue, SkillList.Lore ].map(option => ({ value: option }))}
 							optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+							showSearch={true}
+							filterOption={(input, option) => {
+								const strings = option ?
+									[
+										option.value
+									]
+									: [];
+								return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+							}}
 							value={data.listOptions}
 							onChange={setSkillListOptions}
 						/>
@@ -1315,7 +1544,7 @@ export const FeatureEditPanel = (props: Props) => {
 					<Space direction='vertical' style={{ width: '100%' }}>
 						<HeaderText>Tag</HeaderText>
 						<Input
-							className={data.tag === '' ? 'input-empty' : ''}
+							status={data.tag === '' ? 'warning' : ''}
 							placeholder='Tag'
 							allowClear={true}
 							value={data.tag}
@@ -1337,7 +1566,7 @@ export const FeatureEditPanel = (props: Props) => {
 					<Space direction='vertical' style={{ width: '100%' }}>
 						<HeaderText>Tag</HeaderText>
 						<Input
-							className={data.tag === '' ? 'input-empty' : ''}
+							status={data.tag === '' ? 'warning' : ''}
 							placeholder='Tag'
 							allowClear={true}
 							value={data.tag}
@@ -1406,7 +1635,7 @@ export const FeatureEditPanel = (props: Props) => {
 									<div>
 										<HeaderText>Name</HeaderText>
 										<Input
-											className={feature.name === '' ? 'input-empty' : ''}
+											status={feature.name === '' ? 'warning' : ''}
 											placeholder='Name'
 											allowClear={true}
 											value={feature.name}
@@ -1431,6 +1660,15 @@ export const FeatureEditPanel = (props: Props) => {
 														placeholder='Select type'
 														options={(props.allowedTypes || featureTypes).map(o => ({ value: o }))}
 														optionRender={option => <Field label={option.data.value} value={FeatureLogic.getFeatureTypeDescription(option.data.value)} />}
+														showSearch={true}
+														filterOption={(input, option) => {
+															const strings = option ?
+																[
+																	option.value
+																]
+																: [];
+															return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+														}}
 														value={feature.type}
 														onChange={setType}
 													/>
@@ -1446,6 +1684,15 @@ export const FeatureEditPanel = (props: Props) => {
 														placeholder='Select list'
 														options={[ PerkList.Crafting, PerkList.Exploration, PerkList.Interpersonal, PerkList.Intrigue, PerkList.Lore, PerkList.Supernatural ].map(o => ({ value: o }))}
 														optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+														showSearch={true}
+														filterOption={(input, option) => {
+															const strings = option ?
+																[
+																	option.value
+																]
+																: [];
+															return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+														}}
 														value={(feature as Perk).list}
 														onChange={setList}
 													/>

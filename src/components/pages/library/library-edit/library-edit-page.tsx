@@ -1,5 +1,5 @@
-import { Alert, Button, Drawer, Flex, Input, Popover, Segmented, Select, Space, Tabs } from 'antd';
-import { CaretDownOutlined, CaretUpOutlined, CloseOutlined, DownloadOutlined, EditOutlined, LeftOutlined, PlusOutlined, SaveOutlined, SettingOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { Alert, Button, Drawer, Flex, Input, Popover, Segmented, Select, Space, Tabs, Upload } from 'antd';
+import { CaretDownOutlined, CaretUpOutlined, CloseOutlined, CopyOutlined, DownOutlined, DownloadOutlined, EditOutlined, LeftOutlined, PlusOutlined, SaveOutlined, SettingOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { EnvironmentData, OrganizationData, UpbringingData } from '../../../../data/culture-data';
 import { Feature, FeatureAbility, FeatureAddOn, FeatureAddOnType, FeatureMalice, FeatureText } from '../../../../models/feature';
 import { Monster, MonsterGroup } from '../../../../models/monster';
@@ -10,6 +10,7 @@ import { AbilityKeyword } from '../../../../enums/ability-keyword';
 import { AbilityLogic } from '../../../../logic/ability-logic';
 import { Ancestry } from '../../../../models/ancestry';
 import { AncestryPanel } from '../../../panels/elements/ancestry-panel/ancestry-panel';
+import { AppFooter } from '../../../panels/app-footer/app-footer';
 import { AppHeader } from '../../../panels/app-header/app-header';
 import { Career } from '../../../../models/career';
 import { CareerPanel } from '../../../panels/elements/career-panel/career-panel';
@@ -53,7 +54,7 @@ import { MonsterLogic } from '../../../../logic/monster-logic';
 import { MonsterOrganizationType } from '../../../../enums/monster-organization-type';
 import { MonsterPanel } from '../../../panels/elements/monster-panel/monster-panel';
 import { MonsterRoleType } from '../../../../enums/monster-role-type';
-import { MonsterSelectModal } from '../../../modals/monster-select/monster-select-modal';
+import { MonsterSelectModal } from '../../../modals/select/monster-select/monster-select-modal';
 import { MultiLine } from '../../../controls/multi-line/multi-line';
 import { NameGenerator } from '../../../../utils/name-generator';
 import { NumberSpin } from '../../../controls/number-spin/number-spin';
@@ -88,7 +89,7 @@ interface Props {
 	showDirectory: () => void;
 	showAbout: () => void;
 	showRoll: () => void;
-	showRules: () => void;
+	showReference: () => void;
  	showMonster: (monster: Monster, monsterGroup: MonsterGroup) => void;
 	saveChanges: (kind: SourcebookElementKind, sourcebookID: string, element: Element) => void;
 	setOptions: (options: Options) => void;
@@ -167,7 +168,7 @@ export const LibraryEditPage = (props: Props) => {
 			<Space direction='vertical' style={{ width: '100%' }}>
 				<HeaderText>Name</HeaderText>
 				<Input
-					className={element.name === '' ? 'input-empty' : ''}
+					status={element.name === '' ? 'warning' : ''}
 					placeholder='Name'
 					allowClear={true}
 					addonAfter={<ThunderboltOutlined className='random-btn' onClick={() => setName(NameGenerator.generateName())} />}
@@ -333,11 +334,21 @@ export const LibraryEditPage = (props: Props) => {
 			<Space direction='vertical' style={{ width: '100%' }}>
 				<Select
 					style={{ width: '100%' }}
-					className={culture.languages.length === 0 ? 'selection-empty' : ''}
+					status={culture.languages.length === 0 ? 'warning' : ''}
 					allowClear={true}
 					placeholder='Select language'
 					options={SourcebookLogic.getLanguages(props.sourcebooks).map(l => ({ label: l.name, value: l.name, desc: l.description }))}
 					optionRender={option => <Field label={option.data.label} value={option.data.desc} />}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label,
+								option.desc
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={culture.languages.length > 0 ? culture.languages[0] : null}
 					onChange={value => {
 						const copy = Utils.copy(element) as Culture;
@@ -348,11 +359,20 @@ export const LibraryEditPage = (props: Props) => {
 				/>
 				<Select
 					style={{ width: '100%' }}
-					className={culture.environment === null ? 'selection-empty' : ''}
+					status={culture.environment === null ? 'warning' : ''}
 					allowClear={true}
 					placeholder='Select environment'
 					options={EnvironmentData.getEnvironments().map(s => ({ value: s.id, label: s.name }))}
 					optionRender={option => <div className='ds-text'>{option.data.label}</div>}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={culture.environment ? culture.environment.id : null}
 					onChange={value => {
 						const copy = Utils.copy(element) as Culture;
@@ -367,11 +387,20 @@ export const LibraryEditPage = (props: Props) => {
 				/>
 				<Select
 					style={{ width: '100%' }}
-					className={culture.organization === null ? 'selection-empty' : ''}
+					status={culture.organization === null ? 'warning' : ''}
 					allowClear={true}
 					placeholder='Select organization'
 					options={OrganizationData.getOrganizations().map(s => ({ value: s.id, label: s.name }))}
 					optionRender={option => <div className='ds-text'>{option.data.label}</div>}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={culture.organization ? culture.organization.id : null}
 					onChange={value => {
 						const copy = Utils.copy(element) as Culture;
@@ -386,11 +415,20 @@ export const LibraryEditPage = (props: Props) => {
 				/>
 				<Select
 					style={{ width: '100%' }}
-					className={culture.upbringing === null ? 'selection-empty' : ''}
+					status={culture.upbringing === null ? 'warning' : ''}
 					allowClear={true}
 					placeholder='Select upbringing'
 					options={UpbringingData.getUpbringings().map(s => ({ value: s.id, label: s.name }))}
 					optionRender={option => <div className='ds-text'>{option.data.label}</div>}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={culture.upbringing ? culture.upbringing.id : null}
 					onChange={value => {
 						const copy = Utils.copy(element) as Culture;
@@ -467,7 +505,7 @@ export const LibraryEditPage = (props: Props) => {
 			<Space direction='vertical' style={{ width: '100%' }}>
 				<HeaderText>Heroic Resource</HeaderText>
 				<Input
-					className={heroClass.heroicResource === '' ? 'input-empty' : ''}
+					status={heroClass.heroicResource === '' ? 'warning' : ''}
 					placeholder='Heroic resource'
 					allowClear={true}
 					value={heroClass.heroicResource}
@@ -475,7 +513,7 @@ export const LibraryEditPage = (props: Props) => {
 				/>
 				<HeaderText>Subclass Name</HeaderText>
 				<Input
-					className={heroClass.subclassName === '' ? 'input-empty' : ''}
+					status={heroClass.subclassName === '' ? 'warning' : ''}
 					placeholder='Subclass name'
 					allowClear={true}
 					value={heroClass.subclassName}
@@ -908,7 +946,7 @@ export const LibraryEditPage = (props: Props) => {
 							<div>
 								<HeaderText>Name</HeaderText>
 								<Input
-									className={subclass.name === '' ? 'input-empty' : ''}
+									status={subclass.name === '' ? 'warning' : ''}
 									placeholder='Name'
 									allowClear={true}
 									value={subclass.name}
@@ -983,24 +1021,42 @@ export const LibraryEditPage = (props: Props) => {
 				<HeaderText>Armor</HeaderText>
 				<Select
 					style={{ width: '100%' }}
-					className={kit.armor.length === 0 ? 'selection-empty' : ''}
+					status={kit.armor.length === 0 ? 'warning' : ''}
 					mode='multiple'
 					allowClear={true}
 					placeholder='Select armor'
 					options={[ KitArmor.Light, KitArmor.Medium, KitArmor.Heavy, KitArmor.Shield ].map(option => ({ value: option }))}
 					optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.value
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={kit.armor}
 					onChange={setArmor}
 				/>
 				<HeaderText>Weapons</HeaderText>
 				<Select
 					style={{ width: '100%' }}
-					className={kit.weapon.length === 0 ? 'selection-empty' : ''}
+					status={kit.weapon.length === 0 ? 'warning' : ''}
 					mode='multiple'
 					allowClear={true}
 					placeholder='Select weapon'
 					options={[ KitWeapon.Bow, KitWeapon.Ensnaring, KitWeapon.Heavy, KitWeapon.Light, KitWeapon.Medium, KitWeapon.Polearm, KitWeapon.Unarmed, KitWeapon.Whip ].map(option => ({ value: option }))}
 					optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.value
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={kit.weapon}
 					onChange={setWeapon}
 				/>
@@ -1257,6 +1313,15 @@ export const LibraryEditPage = (props: Props) => {
 					allowClear={true}
 					options={AbilityLogic.getKeywords().map(option => ({ value: option }))}
 					optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.value
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={item.keywords}
 					onChange={setKeywords}
 				/>
@@ -1450,6 +1515,15 @@ export const LibraryEditPage = (props: Props) => {
 								mode='multiple'
 								options={[ Characteristic.Might, Characteristic.Agility, Characteristic.Reason, Characteristic.Intuition, Characteristic.Presence ].map(option => ({ value: option }))}
 								optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+								showSearch={true}
+								filterOption={(input, option) => {
+									const strings = option ?
+										[
+											option.value
+										]
+										: [];
+									return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+								}}
 								value={item.crafting.characteristic}
 								onChange={setCharacteristic}
 							/>
@@ -1537,6 +1611,15 @@ export const LibraryEditPage = (props: Props) => {
 					style={{ width: '100%' }}
 					options={[ TerrainCategory.ArcaneObject, TerrainCategory.Environmental, TerrainCategory.Fieldwork, TerrainCategory.Mechanism, TerrainCategory.PowerFixture, TerrainCategory.SiegeEngine ].map(c => ({ label: c, value: c }))}
 					optionRender={option => <div className='ds-text'>{option.data.label}</div>}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={terrain.category}
 					onChange={setCategory}
 				/>
@@ -1552,6 +1635,16 @@ export const LibraryEditPage = (props: Props) => {
 					style={{ width: '100%' }}
 					options={[ MonsterRoleType.NoRole, MonsterRoleType.Ambusher, MonsterRoleType.Artillery, MonsterRoleType.Brute, MonsterRoleType.Controller, MonsterRoleType.Defender, MonsterRoleType.Harrier, MonsterRoleType.Hexer, MonsterRoleType.Mount, MonsterRoleType.Support ].map(type => ({ label: type, value: type, desc: MonsterLogic.getRoleTypeDescription(type) }))}
 					optionRender={option => <Field label={option.data.label} value={option.data.desc} />}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label,
+								option.desc
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={terrain.role.type}
 					onChange={setRoleType}
 				/>
@@ -1559,6 +1652,15 @@ export const LibraryEditPage = (props: Props) => {
 					style={{ width: '100%' }}
 					options={[ TerrainRoleType.Fortification, TerrainRoleType.Hazard, TerrainRoleType.Relic, TerrainRoleType.SiegeEngine, TerrainRoleType.Trap, TerrainRoleType.Trigger ].map(type => ({ label: type, value: type }))}
 					optionRender={option => <div className='ds-text'>{option.data.label}</div>}
+					showSearch={true}
+					filterOption={(input, option) => {
+						const strings = option ?
+							[
+								option.label
+							]
+							: [];
+						return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+					}}
 					value={terrain.role.terrainType}
 					onChange={setTerrainRoleType}
 				/>
@@ -1660,6 +1762,15 @@ export const LibraryEditPage = (props: Props) => {
 								placeholder='Damage type'
 								options={[ DamageType.Damage, DamageType.Acid, DamageType.Cold, DamageType.Corruption, DamageType.Fire, DamageType.Holy, DamageType.Lightning, DamageType.Poison, DamageType.Psychic, DamageType.Sonic ].map(option => ({ value: option }))}
 								optionRender={option => <div className='ds-text'>{option.data.value}</div>}
+								showSearch={true}
+								filterOption={(input, option) => {
+									const strings = option ?
+										[
+											option.value
+										]
+										: [];
+									return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+								}}
 								value={dm.damageType}
 								onChange={value => setDamageType(n, value)}
 							/>
@@ -1939,7 +2050,7 @@ export const LibraryEditPage = (props: Props) => {
 							<Space direction='vertical' style={{ width: '100%' }}>
 								<HeaderText>Label</HeaderText>
 								<Input
-									className={upgrade.label === '' ? 'input-empty' : ''}
+									status={upgrade.label === '' ? 'warning' : ''}
 									placeholder='Label'
 									allowClear={true}
 									value={upgrade.label}
@@ -2254,8 +2365,27 @@ export const LibraryEditPage = (props: Props) => {
 						<PlusOutlined />
 						Add a new monster
 					</Button>
+					<Upload
+						style={{ width: '100%' }}
+						accept='.drawsteel-monster'
+						showUploadList={false}
+						beforeUpload={file => {
+							file
+								.text()
+								.then(json => {
+									const monster = (JSON.parse(json) as Monster);
+									copyMonster(monster);
+								});
+							return false;
+						}}
+					>
+						<Button block={true} onClick={() => null}>
+							<DownloadOutlined />
+							Import a monster
+						</Button>
+					</Upload>
 					<Button block={true} onClick={() => setDrawerOpen(true)}>
-						<DownloadOutlined />
+						<CopyOutlined />
 						Copy an existing monster
 					</Button>
 				</Flex>
@@ -2476,6 +2606,15 @@ export const LibraryEditPage = (props: Props) => {
 								style={{ width: '100%' }}
 								options={[ null, ...heroClass.subclasses ].map(sc => ({ label: sc ? sc.name || 'Unnamed Subclass' : 'Class', value: sc ? sc.id : '' }))}
 								optionRender={option => <div className='ds-text'>{option.data.label}</div>}
+								showSearch={true}
+								filterOption={(input, option) => {
+									const strings = option ?
+										[
+											option.label
+										]
+										: [];
+									return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+								}}
 								value={subElementID || ''}
 								onChange={id => navigation.goToLibraryEdit(kind!, sourcebookID!, elementID!, id)}
 							/>
@@ -2493,6 +2632,15 @@ export const LibraryEditPage = (props: Props) => {
 								style={{ width: '100%' }}
 								options={[ null, ...monsterGroup.monsters ].map(m => ({ label: m ? MonsterLogic.getMonsterName(m, monsterGroup) : 'Monster Group', value: m ? m.id : '' }))}
 								optionRender={option => <div className='ds-text'>{option.data.label}</div>}
+								showSearch={true}
+								filterOption={(input, option) => {
+									const strings = option ?
+										[
+											option.label
+										]
+										: [];
+									return strings.some(str => str.toLowerCase().includes(input.toLowerCase()));
+								}}
 								value={subElementID || ''}
 								onChange={id => navigation.goToLibraryEdit(kind!, sourcebookID!, elementID!, id)}
 							/>
@@ -2995,7 +3143,7 @@ export const LibraryEditPage = (props: Props) => {
 		return (
 			<ErrorBoundary>
 				<div className='library-edit-page'>
-					<AppHeader subheader={getSubheader()} showDirectory={props.showDirectory} showAbout={props.showAbout} showRoll={props.showRoll} showRules={props.showRules}>
+					<AppHeader subheader={getSubheader()} showDirectory={props.showDirectory}>
 						<Button type='primary' icon={<SaveOutlined />} disabled={!dirty} onClick={() => props.saveChanges(kind!, sourcebookID!, element)}>
 							Save Changes
 						</Button>
@@ -3015,6 +3163,7 @@ export const LibraryEditPage = (props: Props) => {
 								>
 									<Button icon={<SettingOutlined />}>
 										Options
+										<DownOutlined />
 									</Button>
 								</Popover>
 								: null
@@ -3030,6 +3179,7 @@ export const LibraryEditPage = (props: Props) => {
 							{getPreview()}
 						</div>
 					</div>
+					<AppFooter page='library' showAbout={props.showAbout} showRoll={props.showRoll} showReference={props.showReference} />
 				</div>
 			</ErrorBoundary>
 		);

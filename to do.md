@@ -2,10 +2,12 @@
 
 ### Heroes
 
+* Automatic update of library resources when there is a newer version
+  * Indicate an update in the hero sheet (subtly)
+  * Attempt to reselect anything that needs to be selected
 * Make sure multiple melee / ranged damage bonuses are handled correctly
 * Hero Builder:
   * Revenants should have 3 ancestry points if small
-  * Auto-create heroes
 
 ### Library
 
@@ -33,13 +35,12 @@
 ### Session
 
 * Encounter
+  * Retainers:
+    * For each hero, select a retainer to add to the encounter
+    * Retainers should have 6 recoveries
   * Monsters:
     * Ability to set 'used reaction' flag on heroes / monsters / minions
     * Ability to duplicate / delete monsters in a slot
-    * Button to roll for initiative (heroes / monsters)
-    * Button to end current turn
-      * Handle EoT (remove) / save ends (roll to remove) conditions on combatants in current group
-      * Select (ready, active) group from other faction; if no more, next turn (mark all as ready)
   * Terrain:
     * Show number of squares on terrain encounter row
     * Show 'should be N squares' for terrain
@@ -47,10 +48,12 @@
 * Tactical map
   * Minis should not be allowed to walk through walls
   * Add terrain minis / overlays
+  * Show distance between selected mini and hovered square
 
 ### Player View
 
 * Add a way to check if data has changed; if it has, update the screen
+  * Currently it updates every 5 seconds
 
 ### Ideas
 

@@ -1,11 +1,12 @@
-import { Col, Row, Segmented, Statistic } from 'antd';
+import { Col, Divider, Flex, Row, Segmented, Select, Statistic } from 'antd';
 import { Monster, MonsterGroup } from '../../../models/monster';
-import { ReactNode, useState } from 'react';
 import { Ability } from '../../../models/ability';
+import { AbilityData } from '../../../data/ability-data';
 import { AbilityLogic } from '../../../logic/ability-logic';
 import { AbilityPanel } from '../elements/ability-panel/ability-panel';
 import { AbilityUsage } from '../../../enums/ability-usage';
 import { Ancestry } from '../../../models/ancestry';
+import { ArrowDownOutlined } from '@ant-design/icons';
 import { Career } from '../../../models/career';
 import { Characteristic } from '../../../enums/characteristic';
 import { Complication } from '../../../models/complication';
@@ -20,14 +21,14 @@ import { ErrorBoundary } from '../../controls/error-boundary/error-boundary';
 import { FeaturePanel } from '../elements/feature-panel/feature-panel';
 import { FeatureType } from '../../../enums/feature-type';
 import { Field } from '../../controls/field/field';
-import { FormatLogic } from '../../../logic/format-logic';
 import { HeaderText } from '../../controls/header-text/header-text';
 import { Hero } from '../../../models/hero';
 import { HeroClass } from '../../../models/class';
 import { HeroLogic } from '../../../logic/hero-logic';
 import { HeroStatePage } from '../../../enums/hero-state-page';
 import { Kit } from '../../../models/kit';
-import { MonsterLogic } from '../../../logic/monster-logic';
+import { Markdown } from '../../controls/markdown/markdown';
+import { MonsterInfo } from '../../controls/token/token';
 import { Options } from '../../../models/options';
 import { PanelMode } from '../../../enums/panel-mode';
 import { RulesPage } from '../../../enums/rules-page';
@@ -36,6 +37,7 @@ import { Skill } from '../../../models/skill';
 import { SkillList } from '../../../enums/skill-list';
 import { Sourcebook } from '../../../models/sourcebook';
 import { useMediaQuery } from '../../../hooks/use-media-query';
+import { useState } from 'react';
 
 import './hero-panel.scss';
 
@@ -55,14 +57,26 @@ interface Props {
  	onSelectCharacteristic?: (characteristic: Characteristic) => void;
  	onSelectAbility?: (ability: Ability) => void;
  	onShowState?: (page: HeroStatePage) => void;
- 	onShowRules?: (page: RulesPage) => void;
+ 	onshowReference?: (page: RulesPage) => void;
 }
 
 export const HeroPanel = (props: Props) => {
 	const isSmall = useMediaQuery('(max-width: 1000px)');
-	const [ tab, setTab ] = useState<string>('Hero');
+	const [ tab, setTab ] = useState<string>(isSmall ? 'Overview' : 'Hero');
 
-	const getLeftColumn = (showBorder: boolean) => {
+	const getName = () => {
+		return (
+			<HeaderText
+				style={{ marginTop: '5px' }}
+				level={1}
+				tags={props.hero.folder ? [ props.hero.folder ] : []}
+			>
+				{props.hero.name || 'Unnamed Hero'}
+			</HeaderText>
+		);
+	};
+
+	const getLeftColumn = () => {
 		const onSelectAncestry = () => {
 			if (props.hero.ancestry && props.onSelectAncestry) {
 				props.onSelectAncestry(props.hero.ancestry);
@@ -117,7 +131,7 @@ export const HeroPanel = (props: Props) => {
 		}
 
 		return (
-			<div className={showBorder ? 'hero-left-column border' : 'hero-left-column'}>
+			<div className={isSmall ? 'hero-left-column full-width' : 'hero-left-column'}>
 				{
 					props.hero.ancestry ?
 						<div className='overview-tile clickable' onClick={onSelectAncestry}>
@@ -211,7 +225,7 @@ export const HeroPanel = (props: Props) => {
 						HeroLogic.getCompanions(props.hero).map(monster => (
 							<div key={monster.id} className='overview-tile clickable' onClick={() => onSelectCompanion(monster)}>
 								<HeaderText>Companion</HeaderText>
-								<Field label='Name' value={MonsterLogic.getMonsterName(monster)} />
+								<MonsterInfo monster={monster} style={{ marginBottom: '10px' }} />
 							</div>
 						))
 						:
@@ -221,19 +235,26 @@ export const HeroPanel = (props: Props) => {
 		);
 	};
 
-	const getRightColumn = (showBorder: boolean) => {
+	const getRightColumn = () => {
+		const onShowConditions = () => {
+			if (props.onshowReference) {
+				props.onshowReference(RulesPage.Conditions);
+			}
+		};
+
 		const onShowSkills = () => {
-			if (props.onShowRules) {
-				props.onShowRules(RulesPage.Skills);
+			if (props.onshowReference) {
+				props.onshowReference(RulesPage.Skills);
 			}
 		};
 
 		const onShowLanguages = () => {
-			if (props.onShowRules) {
-				props.onShowRules(RulesPage.Languages);
+			if (props.onshowReference) {
+				props.onshowReference(RulesPage.Languages);
 			}
 		};
 
+		const conditions = HeroLogic.getConditionImmunities(props.hero);
 		const immunities = HeroLogic.getDamageModifiers(props.hero, DamageModifierType.Immunity);
 		const weaknesses = HeroLogic.getDamageModifiers(props.hero, DamageModifierType.Weakness);
 
@@ -253,7 +274,15 @@ export const HeroPanel = (props: Props) => {
 		};
 
 		return (
-			<div className={showBorder ? 'hero-right-column border' : 'hero-right-column'}>
+			<div className={isSmall ? 'hero-right-column full-width' : 'hero-right-column'}>
+				{
+					conditions.length > 0 ?
+						<div className='overview-tile clickable' onClick={onShowConditions}>
+							<HeaderText>Cannot Be</HeaderText>
+							{conditions.map((c, n) => <div key={n} className='ds-text'>{c}</div>)}
+						</div>
+						: null
+				}
 				{
 					immunities.length > 0 ?
 						<div className='overview-tile'>
@@ -297,7 +326,7 @@ export const HeroPanel = (props: Props) => {
 			md: 24,
 			lg: 10,
 			xl: 10,
-			xxl: 5
+			xxl: 10
 		};
 
 		const sizeLarge = {
@@ -306,8 +335,14 @@ export const HeroPanel = (props: Props) => {
 			md: 24,
 			lg: 14,
 			xl: 14,
-			xxl: 7
+			xxl: 14
 		};
+
+		const size = HeroLogic.getSize(props.hero);
+		const sizeSuffix = size.mod || undefined;
+
+		const speed = HeroLogic.getSpeed(props.hero);
+		const speedSuffix = HeroLogic.getSpeedModified(props.hero) ? <ArrowDownOutlined /> : undefined;
 
 		const maxStamina = HeroLogic.getStamina(props.hero);
 		const stamina = props.hero.state.staminaDamage === 0 ? maxStamina : maxStamina - props.hero.state.staminaDamage;
@@ -336,82 +371,87 @@ export const HeroPanel = (props: Props) => {
 		};
 
 		return (
-			<Row gutter={[ 16, 16 ]}>
+			<Row gutter={[ 16, 16 ]} className='stats-section'>
 				<Col span={24}>
-					<div className='characteristics-box'>
-						<div className='characteristic clickable' onClick={() => onSelectCharacteristic(Characteristic.Might)}>
-							<Statistic title='Might' value={HeroLogic.getCharacteristic(props.hero, Characteristic.Might)} />
+					<div className='stats-box'>
+						<div className='stats'>
+							<div className='stat clickable' onClick={() => onSelectCharacteristic(Characteristic.Might)}>
+								<Statistic title='Might' value={HeroLogic.getCharacteristic(props.hero, Characteristic.Might)} />
+							</div>
+							<div className='stat clickable' onClick={() => onSelectCharacteristic(Characteristic.Agility)}>
+								<Statistic title='Agility' value={HeroLogic.getCharacteristic(props.hero, Characteristic.Agility)} />
+							</div>
+							<div className='stat clickable' onClick={() => onSelectCharacteristic(Characteristic.Reason)}>
+								<Statistic title='Reason' value={HeroLogic.getCharacteristic(props.hero, Characteristic.Reason)} />
+							</div>
+							<div className='stat clickable' onClick={() => onSelectCharacteristic(Characteristic.Intuition)}>
+								<Statistic title='Intuition' value={HeroLogic.getCharacteristic(props.hero, Characteristic.Intuition)} />
+							</div>
+							<div className='stat clickable' onClick={() => onSelectCharacteristic(Characteristic.Presence)}>
+								<Statistic title='Presence' value={HeroLogic.getCharacteristic(props.hero, Characteristic.Presence)} />
+							</div>
 						</div>
-						<div className='characteristic clickable' onClick={() => onSelectCharacteristic(Characteristic.Agility)}>
-							<Statistic title='Agility' value={HeroLogic.getCharacteristic(props.hero, Characteristic.Agility)} />
+						<div className='stats-box-caption'>Characteristics</div>
+					</div>
+				</Col>
+				<Col span={24}>
+					<div className='stats-box clickable' onClick={onShowHero}>
+						<div className='stats'>
+							<div className='stat'>
+								<Statistic title={props.hero.class ? props.hero.class.heroicResource : 'Resource'} value={props.hero.state.heroicResource} />
+							</div>
+							<div className='stat'>
+								<Statistic title='Surges' value={props.hero.state.surges} />
+							</div>
+							<div className='stat'>
+								<Statistic title='Victories' value={props.hero.state.victories} />
+							</div>
+							<div className='stat'>
+								<Statistic title='XP' value={props.hero.state.xp} />
+							</div>
+							<div className='stat'>
+								<Statistic title='Renown' value={HeroLogic.getRenown(props.hero)} />
+							</div>
+							<div className='stat'>
+								<Statistic title='Wealth' value={HeroLogic.getWealth(props.hero)} />
+							</div>
 						</div>
-						<div className='characteristic clickable' onClick={() => onSelectCharacteristic(Characteristic.Reason)}>
-							<Statistic title='Reason' value={HeroLogic.getCharacteristic(props.hero, Characteristic.Reason)} />
-						</div>
-						<div className='characteristic clickable' onClick={() => onSelectCharacteristic(Characteristic.Intuition)}>
-							<Statistic title='Intuition' value={HeroLogic.getCharacteristic(props.hero, Characteristic.Intuition)} />
-						</div>
-						<div className='characteristic clickable' onClick={() => onSelectCharacteristic(Characteristic.Presence)}>
-							<Statistic title='Presence' value={HeroLogic.getCharacteristic(props.hero, Characteristic.Presence)} />
-						</div>
+						<div className='stats-box-caption'>Resources</div>
 					</div>
 				</Col>
 				<Col xs={sizeLarge.xs} sm={sizeLarge.sm} md={sizeLarge.md} lg={sizeLarge.lg} xl={sizeLarge.xl} xxl={sizeLarge.xxl}>
-					<div className='characteristics-box'>
-						<div className='characteristic'>
-							<Statistic title='Size' value={FormatLogic.getSize(HeroLogic.getSize(props.hero))} />
+					<div className='stats-box'>
+						<div className='stats'>
+							<div className='stat'>
+								<Statistic title='Size' value={size.value} suffix={sizeSuffix} />
+							</div>
+							<div className='stat'>
+								<Statistic title='Speed' value={speed} suffix={speedSuffix} />
+							</div>
+							<div className='stat'>
+								<Statistic title='Stability' value={HeroLogic.getStability(props.hero)} />
+							</div>
+							<div className='stat'>
+								<Statistic title='Disengage' value={HeroLogic.getDisengage(props.hero)} />
+							</div>
 						</div>
-						<div className='characteristic'>
-							<Statistic title='Speed' value={HeroLogic.getSpeed(props.hero)} />
-						</div>
-						<div className='characteristic'>
-							<Statistic title='Stability' value={HeroLogic.getStability(props.hero)} />
-						</div>
-						<div className='characteristic'>
-							<Statistic title='Disengage' value={HeroLogic.getDisengage(props.hero)} />
-						</div>
+						<div className='stats-box-caption'>Statistics</div>
 					</div>
 				</Col>
 				<Col xs={sizeSmall.xs} sm={sizeSmall.sm} md={sizeSmall.md} lg={sizeSmall.lg} xl={sizeSmall.xl} xxl={sizeSmall.xxl}>
-					<div className='characteristics-box clickable' onClick={onShowHero}>
-						<div className='characteristic'>
-							<Statistic title='Hero Tokens' value={props.hero.state.heroTokens} />
+					<div className='stats-box clickable' onClick={onShowVitals}>
+						<div className='stats'>
+							<div className='stat'>
+								<Statistic title='Stamina' value={stamina} suffix={staminaSuffix} />
+							</div>
+							<div className='stat'>
+								<Statistic title='Recoveries' value={recoveries} suffix={recoveriesSuffix} />
+							</div>
+							<div className='stat'>
+								<Statistic title='Recov Value' value={HeroLogic.getRecoveryValue(props.hero)} />
+							</div>
 						</div>
-						<div className='characteristic'>
-							<Statistic title='Renown' value={HeroLogic.getRenown(props.hero)} />
-						</div>
-						<div className='characteristic'>
-							<Statistic title='Wealth' value={props.hero.state.wealth} />
-						</div>
-					</div>
-				</Col>
-				<Col xs={sizeLarge.xs} sm={sizeLarge.sm} md={sizeLarge.md} lg={sizeLarge.lg} xl={sizeLarge.xl} xxl={sizeLarge.xxl}>
-					<div className='characteristics-box clickable' onClick={onShowHero}>
-						<div className='characteristic'>
-							<Statistic title={props.hero.class ? props.hero.class.heroicResource : 'Resource'} value={props.hero.state.heroicResource} />
-						</div>
-						<div className='characteristic'>
-							<Statistic title='Surges' value={props.hero.state.surges} />
-						</div>
-						<div className='characteristic'>
-							<Statistic title='Victories' value={props.hero.state.victories} />
-						</div>
-						<div className='characteristic'>
-							<Statistic title='XP' value={props.hero.state.xp} />
-						</div>
-					</div>
-				</Col>
-				<Col xs={sizeSmall.xs} sm={sizeSmall.sm} md={sizeSmall.md} lg={sizeSmall.lg} xl={sizeSmall.xl} xxl={sizeSmall.xxl}>
-					<div className='characteristics-box clickable' onClick={onShowVitals}>
-						<div className='characteristic'>
-							<Statistic title='Stamina' value={stamina} suffix={staminaSuffix} />
-						</div>
-						<div className='characteristic'>
-							<Statistic title='Recoveries' value={recoveries} suffix={recoveriesSuffix} />
-						</div>
-						<div className='characteristic'>
-							<Statistic title='Recov Value' value={HeroLogic.getRecoveryValue(props.hero)} />
-						</div>
+						<div className='stats-box-caption'>Health</div>
 					</div>
 				</Col>
 			</Row>
@@ -419,71 +459,97 @@ export const HeroPanel = (props: Props) => {
 	};
 
 	const getConditionsSection = () => {
-		if (props.hero.state.conditions.length === 0) {
+		const state = HeroLogic.getCombatState(props.hero);
+
+		if ((props.hero.state.conditions.length === 0) && (state !== 'dying')) {
 			return null;
 		}
 
-		const showConditions = () => {
-			if (props.onShowState) {
-				props.onShowState(HeroStatePage.Vitals);
-			}
-		};
-
 		return (
-			<div className='conditions-section'>
-				<HeaderText level={1}>Conditions</HeaderText>
-				<div className='conditions-grid'>
-					{
-						props.hero.state.conditions.map(c => (
-							<div key={c.id} className='condition-tile' onClick={showConditions}>
-								<HeaderText>{c.type}: {c.ends}</HeaderText>
-								<div className='ds-text'>
-									{
-										c.type === ConditionType.Custom ?
-											c.text || 'A custom condition.'
-											:
-											ConditionLogic.getDescription(c.type)
-									}
+			<>
+				{
+					state === 'dying' ?
+						<div>
+							<HeaderText>Dying</HeaderText>
+							<div className='ds-text'>
+								<div>
+									You can’t take the Catch Breath maneuver in combat, and you are bleeding, and this condition can’t be removed in any way until you are no longer dying.
+								</div>
+								<div>
+									Your allies can help you spend Recoveries in combat, and you can spend Recoveries out of combat as usual.
 								</div>
 							</div>
-						))
-					}
-				</div>
-			</div>
+						</div>
+						: null
+				}
+				{
+					props.hero.state.conditions.map(c => (
+						<div key={c.id}>
+							<HeaderText tags={[ c.ends ]}>{c.type}</HeaderText>
+							<Markdown text={c.type === ConditionType.Custom ? c.text || 'A custom condition.' : ConditionLogic.getDescription(c.type)} />
+						</div>
+					))
+				}
+			</>
 		);
 	};
 
-	const getFeaturesSection = (header?: string) => {
+	const getFeaturesSection = () => {
 		const featureTypes = [ FeatureType.Text, FeatureType.Package ];
 
 		const features = HeroLogic.getFeatures(props.hero)
-			.filter(feature => featureTypes.includes(feature.type));
-		if (features.length === 0) {
-			return null;
-		}
+			.filter(f => featureTypes.includes(f.feature.type));
+
+		const itemNames = props.hero.state.inventory.map(i => i.name);
+		const mainFeatures = features.filter(f => !props.options.separateInventoryFeatures || !itemNames.includes(f.source));
+		const inventoryFeatures = features.filter(f => props.options.separateInventoryFeatures && itemNames.includes(f.source));
 
 		return (
-			<div className='features-section'>
-				{header ? <HeaderText level={1}>{header}</HeaderText> : null}
-				<div className={`features-grid ${props.options.featureWidth.toLowerCase().replace(' ', '-')}`}>
-					{
-						features.map(feature => (
-							<FeaturePanel
-								key={feature.id}
-								feature={feature}
-								options={props.options}
-								hero={props.hero}
-								sourcebooks={props.sourcebooks}
-								mode={PanelMode.Full}
-							/>
-						))
-					}
-				</div>
-			</div>
+			<>
+				{
+					mainFeatures.length > 0 ?
+						<>
+							{
+								mainFeatures.map(f => (
+									<FeaturePanel
+										key={f.feature.id}
+										feature={f.feature}
+										source={props.options.showSources ? f.source : undefined}
+										options={props.options}
+										hero={props.hero}
+										sourcebooks={props.sourcebooks}
+										mode={PanelMode.Full}
+									/>
+								))
+							}
+						</>
+						: null
+				}
+				{
+					inventoryFeatures.length > 0 ?
+						<>
+							<HeaderText level={1}>Inventory</HeaderText>
+							{
+								inventoryFeatures.map(f => (
+									<FeaturePanel
+										key={f.feature.id}
+										feature={f.feature}
+										source={props.options.showSources ? f.source : undefined}
+										options={props.options}
+										hero={props.hero}
+										sourcebooks={props.sourcebooks}
+										mode={PanelMode.Full}
+									/>
+								))
+							}
+						</>
+						: null
+				}
+			</>
 		);
 	};
 
-	const getAbilitiesSection = (abilities: Ability[], header?: string) => {
+	const getAbilitiesSection = (abilities: { ability: Ability, source: string }[]) => {
 		if (abilities.length === 0) {
 			return null;
 		}
@@ -494,14 +560,42 @@ export const HeroPanel = (props: Props) => {
 			}
 		};
 
+		const nonStandard = abilities.filter(a => a.source !== 'Standard');
+		const standard = abilities.filter(a => a.source === 'Standard');
+
 		return (
 			<div className='abilities-section'>
-				{header ? <HeaderText level={1}>{header}</HeaderText> : null}
 				<div className={`abilities-grid ${props.options.abilityWidth.toLowerCase().replace(' ', '-')}`}>
 					{
-						abilities.map(ability => (
-							<SelectablePanel key={ability.id} style={ header ? { gridColumn: `span ${AbilityLogic.panelWidth(ability)}` } : undefined} onSelect={() => showAbility(ability)}>
-								<AbilityPanel ability={ability} hero={props.hero} options={props.options} mode={PanelMode.Full} />
+						nonStandard.map(a => (
+							<SelectablePanel key={a.ability.id} style={isSmall ? undefined : { gridColumn: `span ${AbilityLogic.panelWidth(a.ability)}` }} onSelect={() => showAbility(a.ability)}>
+								<AbilityPanel
+									ability={a.ability}
+									hero={props.hero}
+									options={props.options}
+									mode={PanelMode.Full}
+									tags={props.options.showSources ? [ a.source ] : undefined}
+								/>
+							</SelectablePanel>
+						))
+					}
+				</div>
+				{
+					(nonStandard.length > 0) && (standard.length > 0) ?
+						<Divider />
+						: null
+				}
+				<div className={`abilities-grid ${props.options.abilityWidth.toLowerCase().replace(' ', '-')}`}>
+					{
+						standard.map(a => (
+							<SelectablePanel key={a.ability.id} style={{ gridColumn: `span ${AbilityLogic.panelWidth(a.ability)}` }} onSelect={() => showAbility(a.ability)}>
+								<AbilityPanel
+									ability={a.ability}
+									hero={props.hero}
+									options={props.options}
+									mode={PanelMode.Full}
+									tags={props.options.showSources ? [ a.source ] : undefined}
+								/>
 							</SelectablePanel>
 						))
 					}
@@ -530,146 +624,160 @@ export const HeroPanel = (props: Props) => {
 			);
 		}
 
-		const abilities = HeroLogic.getAbilities(props.hero, true, props.options.showFreeStrikes, props.options.showStandardAbilities);
-		const actions = abilities.filter(a => a.type.usage === AbilityUsage.Action);
-		const maneuvers = abilities.filter(a => a.type.usage === AbilityUsage.Maneuver);
-		const moves = abilities.filter(a => a.type.usage === AbilityUsage.Move);
-		const triggers = abilities.filter(a => a.type.usage === AbilityUsage.Trigger);
-		const others = abilities.filter(a => (a.type.usage === AbilityUsage.Other) || (a.type.usage === AbilityUsage.NoAction));
+		const abilities = HeroLogic.getAbilities(props.hero, props.options.showStandardAbilities);
+		const actions = abilities.filter(a => a.ability.type.usage === AbilityUsage.Action);
+		const maneuvers = abilities.filter(a => a.ability.type.usage === AbilityUsage.Maneuver);
+		const moves = abilities.filter(a => a.ability.type.usage === AbilityUsage.Move);
+		const triggers = abilities.filter(a => a.ability.type.usage === AbilityUsage.Trigger);
+		const others = abilities.filter(a => (a.ability.type.usage === AbilityUsage.Other) || (a.ability.type.usage === AbilityUsage.NoAction));
 
+		const tabs = [];
 		if (isSmall) {
-			const tabs = [ 'Hero', 'Statistics', 'Features' ];
-			if (actions.length > 0) {
-				tabs.push('Actions');
-			}
-			if (maneuvers.length > 0) {
-				tabs.push('Maneuvers');
-			}
-			if (triggers.length > 0) {
-				tabs.push('Triggers');
-			}
-			if ((moves.length + others.length) > 0) {
-				tabs.push('Others');
+			tabs.push('Overview');
+		}
+		tabs.push('Hero');
+		tabs.push('Features');
+		if (actions.length > 0) {
+			tabs.push('Actions');
+		}
+		if (maneuvers.length > 0) {
+			tabs.push('Maneuvers');
+		}
+		if (triggers.length > 0) {
+			tabs.push('Triggers');
+		}
+		if (moves.length > 0) {
+			tabs.push('Moves');
+		}
+		if (others.length > 0) {
+			tabs.push('Others');
+		}
+		tabs.push('Free Strikes');
+
+		const getContent = () => {
+			if (props.options.singlePage) {
+				return (
+					<>
+						{
+							isSmall ?
+								<>
+									{getName()}
+									{getLeftColumn()}
+									{getRightColumn()}
+								</>
+								: null
+						}
+						{getStatsSection()}
+						{getConditionsSection()}
+						{getFeaturesSection()}
+						{actions.length > 0 ? <HeaderText level={1}>Actions</HeaderText> : null}
+						{getAbilitiesSection(actions)}
+						{maneuvers.length > 0 ? <HeaderText level={1}>Maneuvers</HeaderText> : null}
+						{getAbilitiesSection(maneuvers)}
+						{triggers.length > 0 ? <HeaderText level={1}>Triggered Actions</HeaderText> : null}
+						{getAbilitiesSection(triggers)}
+						{moves.length > 0 ? <HeaderText level={1}>Moves</HeaderText> : null}
+						{getAbilitiesSection(moves)}
+						{others.length > 0 ? <HeaderText level={1}>Other Abilities</HeaderText> : null}
+						{getAbilitiesSection(others)}
+						<HeaderText level={1}>Free Strikes</HeaderText>
+						{getAbilitiesSection([
+							{ ability: AbilityData.freeStrikeMelee, source: 'Standard' },
+							{ ability: AbilityData.freeStrikeRanged, source: 'Standard' }
+						])}
+					</>
+				);
 			}
 
-			let content: ReactNode;
 			switch (tab) {
-				case 'Hero':
-					content = (
+				case 'Overview':
+					return (
 						<>
-							<HeaderText tags={props.hero.folder ? [ props.hero.folder ] : []}>{props.hero.name || 'Unnamed Hero'}</HeaderText>
-							{getLeftColumn(false)}
-							{getRightColumn(false)}
+							{getName()}
+							{getLeftColumn()}
+							{getRightColumn()}
 						</>
 					);
-					break;
-				case 'Statistics':
-					content = (
+				case 'Hero':
+					return (
 						<>
 							{getStatsSection()}
 							{getConditionsSection()}
 						</>
 					);
-					break;
 				case 'Features':
-					content = getFeaturesSection();
-					break;
+					return getFeaturesSection();
 				case 'Actions':
-					content = getAbilitiesSection(actions);
-					break;
+					return getAbilitiesSection(actions);
 				case 'Maneuvers':
-					content = getAbilitiesSection(maneuvers);
-					break;
+					return getAbilitiesSection(maneuvers);
 				case 'Triggers':
-					content = getAbilitiesSection(triggers);
-					break;
+					return getAbilitiesSection(triggers);
+				case 'Moves':
+					return getAbilitiesSection(moves);
 				case 'Others':
-					content = getAbilitiesSection([ ...moves, ...others ]);
-					break;
+					return getAbilitiesSection(others);
+				case 'Free Strikes':
+					return getAbilitiesSection([
+						{ ability: AbilityData.freeStrikeMelee, source: 'Standard' },
+						{ ability: AbilityData.freeStrikeRanged, source: 'Standard' }
+					]);
 			}
 
-			return (
-				<div className='hero-panel small' id={props.hero.id}>
-					<Segmented
-						name='sections'
-						style={{ position: 'sticky', top: '0px', borderRadius: '0' }}
-						options={
-							tabs.map(tab => ({
-								value: tab,
-								label: <div className='page-button-title'>{tab}</div>
-							}))
-						}
-						block={true}
-						value={tab}
-						onChange={setTab}
-					/>
-					<div className='hero-main-section'>
-						<div className='hero-main-column'>
-							{content}
-						</div>
-					</div>
-				</div>
-			);
-		}
+			return null;
+		};
 
 		return (
 			<ErrorBoundary>
 				<div className='hero-panel' id={props.hero.id}>
-					<div className='hero-main-section' id='stats'>
-						{getLeftColumn(true)}
-						<div className='hero-main-column'>
-							<HeaderText level={1} tags={props.hero.folder ? [ props.hero.folder ] : []}>{props.hero.name || 'Unnamed Hero'}</HeaderText>
-							{getStatsSection()}
-							{getConditionsSection()}
-							{getFeaturesSection('Features')}
+					<div className='hero-main-section'>
+						{!isSmall ? getLeftColumn() : null}
+						<div className='hero-center-column'>
+							{
+								props.options.singlePage ?
+									null
+									:
+									<div className='center-top'>
+										{isSmall ? null : getName()}
+										<Flex align='center' justify='space-between' gap={10}>
+											{
+												isSmall ?
+													<Select
+														style={{ flex: '1 1 0' }}
+														options={
+															tabs.map(tab => ({
+																value: tab,
+																label: tab
+															}))
+														}
+														optionRender={o => <div className='ds-text'>{o.label}</div>}
+														value={tab}
+														onChange={setTab}
+													/>
+													:
+													<Segmented
+														style={{ flex: '1 1 0' }}
+														name='sections'
+														block={true}
+														options={
+															tabs.map(tab => ({
+																value: tab,
+																label: tab
+															}))
+														}
+														value={tab}
+														onChange={setTab}
+													/>
+											}
+										</Flex>
+									</div>
+							}
+							<div className='center-content'>
+								{getContent()}
+							</div>
 						</div>
-						{getRightColumn(true)}
+						{!isSmall ? getRightColumn() : null}
 					</div>
-					{
-						actions.length > 0 ?
-							<div className='hero-main-section' id='actions'>
-								<div className='hero-main-column'>
-									{getAbilitiesSection(actions, 'Actions')}
-								</div>
-							</div>
-							: null
-					}
-					{
-						maneuvers.length > 0 ?
-							<div className='hero-main-section' id='maneuvers'>
-								<div className='hero-main-column'>
-									{getAbilitiesSection(maneuvers, 'Maneuvers')}
-								</div>
-							</div>
-							: null
-					}
-					{
-						moves.length > 0 ?
-							<div className='hero-main-section' id='moves'>
-								<div className='hero-main-column'>
-									{getAbilitiesSection(moves, 'Move Actions')}
-								</div>
-							</div>
-							: null
-					}
-					{
-						triggers.length > 0 ?
-							<div className='hero-main-section' id='triggers'>
-								<div className='hero-main-column'>
-									{getAbilitiesSection(triggers, 'Triggered Actions')}
-								</div>
-							</div>
-							: null
-					}
-					{
-						others.length > 0 ?
-							<div className='hero-main-section' id='others'>
-								<div className='hero-main-column'>
-									{getAbilitiesSection(others, 'Other Abilities')}
-								</div>
-							</div>
-							: null
-					}
 				</div>
 			</ErrorBoundary>
 		);
